@@ -103,8 +103,10 @@ strong { font-weight: 650; }
 .stage-switch button { min-height: 34px; padding: 0 12px; font-size: 13px; }
 .maplibregl-popup.hs-popup .maplibregl-popup-content { background: rgba(16, 19, 27, 0.97); color: var(--ink); border: 1px solid #3a4152; border-radius: 12px; font: 12.5px/1.5 inherit; padding: 8px 11px; }
 .maplibregl-popup.hs-popup .maplibregl-popup-tip { display: none; }
-.maplibregl-ctrl-attrib { background: rgba(12, 13, 20, 0.7) !important; color: var(--ink-2); }
-.maplibregl-ctrl-attrib a { color: var(--ink-2) !important; }
+/* the imagery credit must stay readable on the dark map (MapLibre's own sheet draws it black on white) */
+.stage-map .maplibregl-ctrl-attrib.maplibregl-compact { background-color: rgba(12, 13, 20, 0.82); color: #d5d8e2; }
+.stage-map .maplibregl-ctrl-attrib a { color: #d5d8e2; }
+.stage-map .maplibregl-ctrl-attrib-button { filter: invert(1); }
 .maplibregl-ctrl-bottom-left { z-index: 3; }
 .stage-map .maplibregl-ctrl-group { background: rgba(12, 13, 20, 0.85); }
 .stage-map .maplibregl-ctrl-group button + button { border-top-color: var(--line); }
