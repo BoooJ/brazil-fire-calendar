@@ -18,6 +18,16 @@
   --ly-scale: 0.96;
   color-scheme: dark;
 }
+/* light theme: the kit's own light palette becomes the page's, and the dark one its inverse */
+html[data-theme='light'] {
+  --p-bg: #f2f3f7; --p-surface: #ffffff; --p-ink: #14151a; --p-muted: #555867;
+  --p-accent: #c2470c; --p-accent-ink: #ffffff; --p-action: #ff6a1f; --p-action-ink: #1c0a00;
+  --p-inv-bg: #04050b; --p-inv-surface: #10111a; --p-inv-ink: #f4f5f8; --p-inv-muted: #a9adbd;
+  --p-inv-accent: #ff6a1f; --p-inv-accent-ink: #1c0a00; --p-inv-action: #ff6a1f; --p-inv-action-ink: #1c0a00;
+  color-scheme: light;
+}
+.bfc-theme { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; border: 1px solid color-mix(in srgb, currentColor 22%, transparent); background: transparent; color: inherit; cursor: pointer; }
+.bfc-theme:hover { border-color: var(--p-accent); }
 strong { font-weight: 650; }
 
 /* ---------- the name and its flame ---------- */
@@ -58,15 +68,19 @@ strong { font-weight: 650; }
 .hero--globe h1 { font-size: clamp(44px, 6.1vw, 92px); line-height: 0.98; letter-spacing: var(--display-tracking-xl); }
 .hero--globe .hero__lead { font-size: var(--t-lead); line-height: 1.5; max-width: 50ch; color: var(--ink); }
 .hero--globe .bfc-globe { position: absolute; z-index: 0; top: 0; bottom: 0; left: 44%; right: -16%; }
-.hero--globe .bfc-globe::after { content: ''; position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(to right, var(--bg) 0%, transparent 30%), linear-gradient(to top, var(--bg) 0%, transparent 16%); }
-.globe { display: block; width: 100%; height: 100%; max-width: none; }
+/* the planet dissolves into the page through a mask on the canvas (eased, no overlay): leftwards under the words, and at the bottom */
+.globe { display: block; width: 100%; height: 100%; max-width: none; --globe-bleed: 0px; --globe-over: 0px;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, rgba(0, 0, 0, 0.05) 8%, rgba(0, 0, 0, 0.2) 16%, rgba(0, 0, 0, 0.5) 24%, rgba(0, 0, 0, 0.85) 32%, #000 38%), linear-gradient(to top, transparent 0, rgba(0, 0, 0, 0.3) 7%, rgba(0, 0, 0, 0.8) 14%, #000 20%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent 0, rgba(0, 0, 0, 0.05) 8%, rgba(0, 0, 0, 0.2) 16%, rgba(0, 0, 0, 0.5) 24%, rgba(0, 0, 0, 0.85) 32%, #000 38%), linear-gradient(to top, transparent 0, rgba(0, 0, 0, 0.3) 7%, rgba(0, 0, 0, 0.8) 14%, #000 20%);
+  mask-composite: intersect; }
 .bfc-hero-facts { margin-top: auto; }
 @media (max-width: 1023px) {
   /* the globe takes the band above the words, as a photograph would (the kit's --photo) */
   .hero--globe { --photo: min(46svh, 360px); }
   .hero--globe .bfc-globe { top: calc(var(--nav) - 40px); bottom: auto; left: 0; right: 0; height: calc(var(--photo) + 80px); }
-  .hero--globe .bfc-globe::after { background: linear-gradient(to top, var(--bg) 0%, transparent 42%); }
+  .globe { -webkit-mask-image: linear-gradient(to top, transparent 0, rgba(0, 0, 0, 0.08) 10%, rgba(0, 0, 0, 0.3) 22%, rgba(0, 0, 0, 0.65) 34%, #000 48%);
+    mask-image: linear-gradient(to top, transparent 0, rgba(0, 0, 0, 0.08) 10%, rgba(0, 0, 0, 0.3) 22%, rgba(0, 0, 0, 0.65) 34%, #000 48%); }
 }
 @media (max-width: 639px) { .hero--globe { --photo: min(40svh, 300px); } }
 

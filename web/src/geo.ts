@@ -8,6 +8,8 @@ export interface Area {
   center: [number, number]; // [lon, lat]
   radiusDeg: number; // angular size, used to zoom the globe
   presetId?: string;
+  /** the chosen point of a point + radius area: marked with a pin */
+  pin?: [number, number];
 }
 
 const RAD = Math.PI / 180;
@@ -79,6 +81,7 @@ export function circleArea(lon: number, lat: number, radiusKm: number, label?: s
     polygon: circlePolygon(lon, lat, radiusKm),
     center: [lon, lat],
     radiusDeg: (radiusKm / EARTH_KM) / RAD,
+    pin: [lon, lat],
   };
 }
 

@@ -11,6 +11,7 @@ import MonthDetail, { type MapState } from '../components/MonthDetail';
 import DateControls, { FIRST_YEAR } from '../components/Controls';
 import { KeyCards, Reliability, SourcesDialog } from '../components/Panels';
 import { Flame } from '../components/Brand';
+import ThemeToggle from '../components/ThemeToggle';
 import type { DrawMode } from '../components/MapView';
 import { FRP_STOPS } from '../colors';
 import { MON, MONTHS, dateShort, dateTime, num, todayIso } from '../format';
@@ -205,9 +206,10 @@ export default function Tool() {
     return BRAZIL_CENTER;
   }, [area, picked]);
   const globeZoom = !area ? 1.5 : points.length ? zoomForRadius(area.radiusDeg) : zoomForRadius(area.radiusDeg, 1.5, 3);
-  const globePoints = useMemo<[number, number][]>(
-    () => (area ? points : picked && isFinite(picked.lon) && isFinite(picked.lat) ? [[picked.lon, picked.lat]] : []),
-    [area, points, picked],
+  // the pin: the point of a "point + radius" area, or the point being chosen
+  const pin = useMemo<[number, number] | null>(
+    () => (area ? area.pin ?? null : picked && isFinite(picked.lon) && isFinite(picked.lat) ? [picked.lon, picked.lat] : null),
+    [area, picked],
   );
 
   const data = load.kind === 'ok' ? load.data : null;
@@ -222,6 +224,7 @@ export default function Tool() {
         </a>
         <div className="topbar-actions">
           <button className="toplink" onClick={() => setShowSources(true)}>Data sources</button>
+          <ThemeToggle />
           {area && (
             <button className="pill" onClick={() => chooseArea(null)} title="Change location">
               <PinIcon /> <span className="pill-text">{area.label}</span> <span className="pill-action">Change</span>
@@ -236,7 +239,8 @@ export default function Tool() {
             center={globeCenter}
             zoom={globeZoom}
             area={area?.polygon ?? null}
-            points={globePoints}
+            points={points}
+            pin={pin}
             onPick={area ? undefined : (lon, lat) => setPicked({ lon, lat })}
             originY={selected && wide ? 0.3 : 0.5}
             label={area ? `Globe centred on ${area.label}, Brazil highlighted` : 'Globe with Brazil highlighted. Click to choose a point.'}
@@ -247,6 +251,7 @@ export default function Tool() {
                 <MapView
                   area={area?.polygon ?? presets.find((p) => p.id === 'brazil')?.area ?? null}
                   hotspots={hotspots}
+                  pin={pin}
                   drawMode={drawMode}
                   onDrawDone={drawDone}
                   onDrawCancel={() => startDraw('none')}

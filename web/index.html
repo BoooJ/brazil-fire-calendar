@@ -10,8 +10,14 @@
     <meta property="og:description" content="MODIS and VIIRS hotspots on one scale, as a calendar of every month for any area in Brazil." />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <title>Brazil Fire Calendar</title>
-    <!-- the page colour before any stylesheet arrives (both pages are dark) -->
-    <style>html, body { margin: 0; background: #04050b; color: #f4f5f8; }</style>
+    <!-- the theme (dark unless the visitor chose light) and the page colour, before any stylesheet arrives -->
+    <script>
+      try { if (localStorage.getItem('bfc.theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}
+    </script>
+    <style>
+      html, body { margin: 0; background: #04050b; color: #f4f5f8; }
+      html[data-theme='light'], html[data-theme='light'] body { background: #f2f3f7; color: #14151a; }
+    </style>
   </head>
   <body>
     <div id="root"></div>

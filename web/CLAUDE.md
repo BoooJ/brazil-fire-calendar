@@ -46,7 +46,7 @@ npm run preview    # serve the build
 
 - `.env` is read from the **repo root** (`envDir: '..'`). Leave `VITE_API_BASE_URL` empty to use the mocks.
 - **The two pages never share a document.** Each is a lazy chunk with its own stylesheet, and `App.tsx` reloads the page when the route changes, so the landing page's kit and the tool's CSS cannot leak into each other. Shared code: `api.ts`, `types.ts`, `format.ts`, `geo.ts`, `colors.ts`, `components/Globe.tsx`, `components/Brand.tsx`.
-- **The tool** uses plain CSS (`src/styles.css`, design tokens at the top). The globe is a canvas drawn with `d3-geo`; the quick calendar is plain HTML buttons. Two heavy parts load on demand: the map (MapLibre GL 5; basemap NASA GIBS Blue Marble, imagery only) and the detailed view's charts (Apache ECharts 5, tree-shaken in `components/EChart.tsx`).
+- **The tool** uses plain CSS (`src/styles.css`, design tokens at the top). The globe is a canvas: NASA Blue Marble imagery painted pixel by pixel (Brazil in colour, the rest grey), outlines and the pin drawn with `d3-geo`; the quick calendar is plain HTML buttons. Two heavy parts load on demand: the map (MapLibre GL 5; basemap NASA GIBS Blue Marble, imagery only) and the detailed view's charts (Apache ECharts 5, tree-shaken in `components/EChart.tsx`).
 - **The landing page** is laid out with the tasteskill design kit (MIT, licence beside it) in `public/assets/`. **Never edit the kit's files**: `src/landing/kit.ts` loads them at run time as they are, `src/landing/landing.css` sets the kit's palette and fonts to ours.
   - The kit makes every `main > section` one screen tall with its `h2` first. After changing words or sections, look at 1440×900, 1366×768, 820×1180 and 390×844.
   - The kit's scripts change the page's DOM (they split the `h1`, add canvases). Keep the landing page's markup static: only `landing/visuals.tsx` re-renders, when its data arrives.
@@ -59,13 +59,19 @@ npm run preview    # serve the build
 | `src/geo.ts` | Circle, rectangle, drawn polygon → GeoJSON; preset areas |
 | `src/pages/Tool.tsx` | The tool: location step, the one message, dates, the sheet, the globe/map stage |
 | `src/components/LocationGate.tsx` | "Where should we look?": location, region, point + radius, or draw on the map |
-| `src/components/Globe.tsx` | Globe: Brazil lit, area outline, hotspot points |
+| `src/components/Globe.tsx` | Globe: the planet (Blue Marble, `public/textures/`), Brazil in colour, area outline, pin, hotspot points |
+| `src/states.ts` | The 27 states as **plain boxes we define** (not official borders; the page says so) |
+| `src/theme.ts`, `src/components/ThemeToggle.tsx` | Light / dark theme: `<html data-theme>`, kept in `localStorage`, dark by default |
 | `src/components/MapView.tsx` | The map: hotspots by fire strength, popups, drawing a rectangle or polygon (no draw plugin) |
 | `src/components/FireCalendar.tsx` | Quick view calendar (filled = happened, dotted = typical, hatched = provisional) |
 | `src/components/Detailed.tsx` | Detailed view: `BurningCalendar.tsx` (heatmap), `Charts.tsx` (typical year, year by year), PNG downloads |
 | `src/components/Controls.tsx`, `Panels.tsx`, `MonthDetail.tsx` | Dates and view switch · key numbers, reliability, data sources · one month's details |
 | `src/pages/Landing.tsx`, `src/landing/` | The landing page: markup, the kit loader, its stylesheet, the product UI drawn from the data |
 
-**Display only, never for numbers:** country outlines on the globe (Natural Earth, `world-atlas` npm package) and the map's imagery (NASA GIBS). Never use them to select, clip or count data. Both are credited on the landing page and in the data sources dialog.
+**Themes.** Both pages follow `html[data-theme='light']`. In the tool only the page around the sheet changes (tokens `--bg`, `--ink`, `--surface`, `--panel`, `--glass`, `--wash`, `--btn`, `--accent`…); the white sheet, the dark chart panels and the map keep their colours. On the landing page the kit's `--p-*` palette is swapped in `landing.css`. New colours go through a token, never a fixed dark value.
+
+**The globe's fade** is a CSS mask on the canvas (`.globe`), not an overlay. On a wide screen the canvas reaches under the text column (`--globe-bleed`), and `Globe.tsx` reads that variable to keep the planet centred in its own column.
+
+**Display only, never for numbers:** country outlines on the globe (Natural Earth, `world-atlas` npm package), the globe's imagery (`public/textures/bluemarble-*.jpg`, NASA Blue Marble downloaded once from the NASA GIBS WMS) and the map's imagery (NASA GIBS). Never use them to select, clip or count data. Both are credited on the landing page and in the data sources dialog.
 
 Waiting for the API: "Update now" shows the API's own answer (`/api/update` is still a stub).

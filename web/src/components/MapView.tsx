@@ -15,6 +15,8 @@ export type DrawMode = 'none' | 'rect' | 'polygon';
 interface Props {
   area: AreaGeometry | null;
   hotspots: Hotspots | null;
+  /** a chosen point, marked with a pin */
+  pin?: [number, number] | null;
   drawMode: DrawMode;
   onDrawDone: (p: Polygon) => void;
   onDrawCancel: () => void;
@@ -48,7 +50,7 @@ const STYLE: maplibregl.StyleSpecification = {
 const EMPTY: FeatureCollection = { type: 'FeatureCollection', features: [] };
 const esc = (s: unknown) => String(s ?? '').replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
-export default function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCancel, onUnavailable }: Props) {
+export default function MapView({ area, hotspots, pin, drawMode, onDrawDone, onDrawCancel, onUnavailable }: Props) {
   const el = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const ready = useRef(false);
@@ -273,6 +275,21 @@ export default function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCa
     apply(area, hotspots);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [area, hotspots]);
+
+  // ---------- the pin ----------
+  useEffect(() => {
+    const m = map.current;
+    if (!m || !pin || !isFinite(pin[0]) || !isFinite(pin[1])) return;
+    const node = document.createElement('div');
+    node.className = 'map-pin';
+    node.innerHTML =
+      '<svg width="22" height="30" viewBox="0 0 22 30" aria-hidden="true"><path d="M11 29C11 29 2 18.5 2 11a9 9 0 0 1 18 0c0 7.5-9 18-9 18z" fill="#e8402a" stroke="#fff" stroke-width="1.5"/><circle cx="11" cy="11" r="3.3" fill="#fff"/></svg>';
+    const marker = new maplibregl.Marker({ element: node, anchor: 'bottom' }).setLngLat(pin).addTo(m);
+    return () => {
+      marker.remove();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pin?.[0], pin?.[1]]);
 
   return <div ref={el} className="map" aria-label="Map of fire hotspots for the selected month" role="region" />;
 }

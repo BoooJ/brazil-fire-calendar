@@ -7,6 +7,7 @@ import { getShowcase, type Showcase } from '../api';
 import { applyKitAttributes, groundsMayMove, loadKitCss, startKit } from '../landing/kit';
 import { AppFrame, HeroWindow, RawVsCorrected, StepConvert, StepGrid, StepProvisional, Timeline, heroWindowLabel } from '../landing/visuals';
 import Globe from '../components/Globe';
+import ThemeToggle from '../components/ThemeToggle';
 import { Flame } from '../components/Brand';
 
 applyKitAttributes(); // before the first paint: the kit's CSS reads these from <html>
@@ -89,6 +90,7 @@ export default function Landing() {
             <div className="nav__item"><a className="nav__link" href="#team">Team</a></div>
           </nav>
           <div className="nav__actions">
+            <ThemeToggle className="bfc-theme" />
             <a className="btn btn--primary" href={TOOL}>Open the tool</a>
           </div>
           <button className="nav__toggle" type="button" aria-expanded="false" aria-label="Menu">

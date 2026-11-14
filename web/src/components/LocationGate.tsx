@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { Preset } from '../types';
 import { circleArea, insideBox, presetArea, type Area } from '../geo';
 import type { DrawMode } from './MapView';
+import { STATES, stateArea } from '../states';
 
 const RADII = [25, 50, 100, 250];
 
@@ -75,6 +76,18 @@ export default function LocationGate({ presets, picked, onPickedChange, onDone, 
           </button>
         ))}
       </div>
+
+      <label className="field">
+        Or a state of Brazil
+        <select value="" onChange={(e) => {
+          const a = stateArea(e.target.value);
+          if (a) onDone(a);
+        }}>
+          <option value="" disabled>Choose a state…</option>
+          {STATES.map((st) => <option key={st.code} value={st.code}>{st.name} ({st.code})</option>)}
+        </select>
+      </label>
+      <p className="fineprint field-hint">A state is a simple box around it, so it also covers a little of its neighbours.</p>
 
       <div className="gate-or"><span>or a point and a radius</span></div>
       <div className="coords">
