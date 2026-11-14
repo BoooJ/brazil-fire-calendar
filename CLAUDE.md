@@ -117,7 +117,7 @@ cd web && npm run build                # type-check + production build
 - [x] Website on mocks → on real API (set `VITE_API_BASE_URL=https://fire-api.37-187-37-74.sslip.io`)
 - [ ] Daily update from the FIRMS API
 - [x] API deployed online: https://fire-api.37-187-37-74.sslip.io (OVH VPS, Docker + Caddy; see `infra/deploy/README.md`)
-- [ ] Website deployed online
+- [x] Website deployed online: https://fire.37-187-37-74.sslip.io (static build served by the VPS's Caddy; redeploy steps in `infra/deploy/README.md`)
 
 ## Maintaining this file
 
