@@ -6,10 +6,13 @@ Interactive docs: http://localhost:8000/docs
 """
 from __future__ import annotations
 
+import json
 import math
 import os
 import sys
+import threading
 import time
+from collections import OrderedDict
 from contextlib import asynccontextmanager
 from datetime import date
 from pathlib import Path
@@ -33,6 +36,37 @@ from store import Store  # noqa: E402
 
 CONTRACT_VERSION = "0.1"
 MAX_POINTS = 1000
+MIN_AREA_KM2 = 4.0    # the data is on a ~1.1 km grid: smaller areas may contain no grid cell at all
+CACHE_SIZE = 256      # analysis answers kept in memory (presets and recently viewed areas)
+_cache: OrderedDict[str, dict] = OrderedDict()
+_cache_lock = threading.Lock()
+
+
+def _cache_get(key: str) -> dict | None:
+    with _cache_lock:
+        if key in _cache:
+            _cache.move_to_end(key)
+            return _cache[key]
+    return None
+
+
+def _cache_put(key: str, value: dict) -> None:
+    with _cache_lock:
+        _cache[key] = value
+        _cache.move_to_end(key)
+        while len(_cache) > CACHE_SIZE:
+            _cache.popitem(last=False)
+
+
+def _warm_cache() -> None:
+    """Compute the preset areas once at startup, so they answer instantly (even all of Brazil)."""
+    started = time.monotonic()
+    for preset in PRESETS:
+        try:
+            run_analysis(AreaRequest(area=preset["area"]))
+        except Exception as exc:  # warming must never break the API
+            print(f"cache warm-up failed for {preset['id']}: {exc}", flush=True)
+    print(f"Presets pre-computed in {time.monotonic() - started:.0f} s", flush=True)
 BRAZIL = shape(box(-74.0, -33.8, -34.8, 5.3))
 STORE: Store | None = None
 
@@ -48,6 +82,7 @@ async def lifespan(_app: FastAPI):
     started = time.monotonic()
     STORE = Store(data_dir())
     print(f"Data loaded in {time.monotonic() - started:.0f} s (last day: {STORE.last_day})", flush=True)
+    threading.Thread(target=_warm_cache, daemon=True).start()
     yield
 
 
@@ -130,6 +165,17 @@ def area_km2(geom) -> float:
 def run_analysis(req: AreaRequest) -> dict:
     geom = parse_area(req.area)
     start, end, ref = resolve_dates(req.start, req.end, req.ref_date)
+    key = json.dumps({"area": req.area, "start": start.isoformat(), "end": end.isoformat(),
+                      "ref": ref.isoformat(), "data": STORE.data_updated}, sort_keys=True)
+    cached = _cache_get(key)
+    if cached is not None:
+        return cached
+    result = _compute_analysis(geom, start, end, ref)
+    _cache_put(key, result)
+    return result
+
+
+def _compute_analysis(geom, start: date, end: date, ref: date) -> dict:
     harm = STORE.harm
     ref_partial = (ref.year, ref.month) == (end.year, end.month) and ref.day < days_in_month(ref.year, ref.month)
     cur = STORE.con.cursor()
@@ -150,9 +196,16 @@ def run_analysis(req: AreaRequest) -> dict:
         "note": "v0 harmonization: Brazil-wide factors, tested on Brazil totals for 2018-2019. "
                 "Small areas have larger errors.",
     }
-    warning = None if geom.intersects(BRAZIL) else "This area is outside the region we cover (Brazil)."
+    km2 = area_km2(geom)
+    if not geom.intersects(BRAZIL):
+        warning = "This area is outside the region we cover (Brazil)."
+    elif km2 < MIN_AREA_KM2:
+        warning = (f"This area is very small ({km2:.1f} km²). The data is on a ~1 km grid, "
+                   "so draw an area at least ~2 km across to see fires.")
+    else:
+        warning = None
     return build_analysis(monthly=monthly, same_days=same, estimated_fires=estimated, harm=harm,
-                          start=start, end=end, ref=ref, area_km2=area_km2(geom),
+                          start=start, end=end, ref=ref, area_km2=km2,
                           data_updated=STORE.data_updated, reliability=reliability, warning=warning)
 
 
