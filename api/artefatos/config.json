@@ -1,0 +1,11 @@
+{
+  "horizonte_semanas": 1,
+  "ano_alvo": 2026,
+  "arquivo_modelos": "modelos_h1.joblib",
+  "prep_log": false,
+  "limiar_log_baixa_media": 0.9111324548721313,
+  "limiar_log_media_alta": 1.8933427333831787,
+  "limiar_frp_baixa_media": 1.487137510157935,
+  "limiar_frp_media_alta": 5.641532488921065,
+  "sklearn": "1.7.2"
+}
