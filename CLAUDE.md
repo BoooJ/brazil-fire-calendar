@@ -57,7 +57,9 @@ FIRMS yearly country zips + archive request + FIRMS API (latest days)
 
 - Final data (SP) replaces near-real-time data (NRT) about 5 months later. **NRT has no `type` column.**
 - Area API: `/api/area/csv/{MAP_KEY}/{SOURCE}/{west,south,east,north}/{DAY_RANGE 1..5}/{YYYY-MM-DD}`. Sources include `MODIS_NRT`, `MODIS_SP`, `VIIRS_NOAA20_NRT`, `VIIRS_NOAA20_SP`, `VIIRS_SNPP_SP`. Limit: 5,000 transactions per 10 minutes.
-- **Column names have not been checked against a downloaded file yet.** Check before relying on them, then update this section.
+- **Yearly zip layout (checked 2026-11-14):** `modis/YYYY/modis_YYYY_<Country>.csv`, one CSV per country (e.g. `modis/2000/modis_2000_Brazil.csv`). Downloaded by `infra/pipeline/01_download.py` from `https://firms.modaps.eosdis.nasa.gov/data/country/zips/`.
+- **MODIS columns (checked):** `latitude, longitude, brightness, scan, track, acq_date (YYYY-MM-DD), acq_time (HHMM text, UTC, zero-padded), satellite (Terra/Aqua), instrument, confidence (0–100), version, bright_t31, frp, daynight (D/N), type`. Values of `type` seen: `0` vegetation fire, `2` other static land source, `3` offshore. The files say `version` = `6.2`, while the FIRMS page says C6.1: keep the value as given.
+- **VIIRS columns: not checked yet.** Open a `viirs-jpss1_*` zip, then update this section.
 
 ## Vocabulary (use these exact names in code)
 
