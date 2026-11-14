@@ -44,6 +44,8 @@ Who decides:
 
 ## 5. GitHub workflow
 
+Step-by-step commands: [GIT_GUIDE.md](GIT_GUIDE.md).
+
 1. **`main` always works.** Never push broken code to `main`.
 2. **One branch per task:** `infra/...`, `web/...`, `science/...` (e.g. `web/calendar`).
 3. `git pull` on `main` before starting new work.

@@ -73,3 +73,4 @@ data/               local data, never committed
 2. Infrastructure: see [`infra/README.md`](infra/README.md).
 3. Website: see [`web/README.md`](web/README.md). Until the API is ready, build against [`web/mocks/`](web/mocks/).
 4. Regenerate the mocks after a contract change: `python infra/tools/make_mocks.py`.
+5. Working together with Git (branches, pull requests, conflicts): [`docs/GIT_GUIDE.md`](docs/GIT_GUIDE.md).

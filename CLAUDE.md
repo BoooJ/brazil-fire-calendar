@@ -27,6 +27,7 @@ CLAUDE.md                this file
 README.md                human overview + the 17 MVP features
 docs/api-contract.md     contract between infra/api and web (source of truth)
 docs/TEAM_RULES.md       team rules (EN) · docs/REGRAS_DA_EQUIPE.md (PT)
+docs/GIT_GUIDE.md        how the team uses branches, pull requests, conflicts
 infra/                   Python: data pipeline + FastAPI/DuckDB API   → infra/CLAUDE.md
   tools/make_mocks.py    generates web/mocks/ from the contract shapes
 web/                     the website                                   → web/CLAUDE.md

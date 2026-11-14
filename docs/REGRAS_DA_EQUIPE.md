@@ -44,6 +44,8 @@ Quem decide:
 
 ## 5. Fluxo no GitHub
 
+Comandos passo a passo (em inglês): [GIT_GUIDE.md](GIT_GUIDE.md).
+
 1. **A `main` sempre funciona.** Nunca enviem código quebrado para a `main`.
 2. **Uma branch por tarefa:** `infra/...`, `web/...`, `science/...` (ex.: `web/calendar`).
 3. Façam `git pull` na `main` antes de começar uma nova tarefa.
