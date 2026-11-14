@@ -18,6 +18,20 @@ data/*
 .env.*
 !.env.example
 
+# Safety net: files that usually hold keys or passwords (any folder, any case)
+*[Aa][Pp][Ii]*[Kk][Ee][Yy]*
+*[Mm][Aa][Pp]*[Kk][Ee][Yy]*
+*[Ss][Ee][Cc][Rr][Ee][Tt]*
+*[Cc][Rr][Ee][Dd][Ee][Nn][Tt][Ii][Aa][Ll]*
+*[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]*
+*[Tt][Oo][Kk][Ee][Nn]*.txt
+*.pem
+*.key
+*.p12
+*.pfx
+.netrc
+_netrc
+
 # ---------- Python ----------
 __pycache__/
 *.py[cod]
