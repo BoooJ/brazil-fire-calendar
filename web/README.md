@@ -2,6 +2,16 @@
 
 Owner: **UI/UX**. Read [`docs/api-contract.md`](../docs/api-contract.md) first.
 
+## Run it
+
+```bash
+cd web
+npm install
+npm run dev      # landing page: http://localhost:5173 · the calendar: http://localhost:5173/app.html
+```
+
+Needs Node.js 20+. With `VITE_API_BASE_URL` empty in `.env` (or no `.env`), the site shows the mocks and a "Mock data" badge.
+
 ## Start now, without the API
 
 The real API is not ready yet. Build every screen against the fake files in [`mocks/`](mocks/). **All numbers in them are invented.**
@@ -18,9 +28,9 @@ The real API is not ready yet. Build every screen against the fake files in [`mo
 - Regenerate them with `python infra/tools/make_mocks.py`.
 - Switch to the real API by setting `VITE_API_BASE_URL` in `.env`.
 
-## Suggested stack (your call)
+## Stack
 
-React + Vite · MapLibre GL or Leaflet (with a draw plugin) · Apache ECharts (heatmap and PNG export built in). If nobody knows React: Streamlit (Python).
+React + TypeScript + Vite · MapLibre GL (NASA GIBS basemap) · Apache ECharts. Details and commands in [`CLAUDE.md`](CLAUDE.md).
 
 ## Features to build
 
