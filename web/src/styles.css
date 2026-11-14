@@ -110,12 +110,17 @@ strong { font-weight: 650; }
 /* ---------- top bar ---------- */
 .topbar { position: relative; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; max-width: 1500px; margin: 0 auto; }
 .topbar-actions { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.toplink { display: none; border: 0; background: none; min-height: 44px; padding: 0 10px; font-size: 14px; font-weight: 600; color: var(--ink-2); }
-.toplink:hover { color: var(--ink); }
+/* the top bar lies over the globe and the map, so every item carries its own backing */
+.toplink { display: none; border: 1px solid var(--line); background: var(--glass); backdrop-filter: blur(8px); border-radius: 999px; min-height: 44px; padding: 0 14px; font-size: 14px; font-weight: 600; color: var(--ink); }
+.toplink:hover { border-color: var(--accent); }
 .brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; text-decoration: none; letter-spacing: -0.01em; white-space: nowrap; }
+@media (max-width: 899px) {
+  .brand { min-height: 44px; padding: 0 10px 0 8px; margin-left: -8px; border-radius: 999px; background: var(--glass); backdrop-filter: blur(8px); }
+}
 .pill { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--glass); backdrop-filter: blur(8px); font-size: 14px; font-weight: 600; min-width: 0; }
 .theme-toggle { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: var(--glass); backdrop-filter: blur(8px); color: var(--ink); }
 .theme-toggle:hover { border-color: var(--accent); }
+.pill svg { flex: none; }
 .pill-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 34vw; }
 .pill-action { color: var(--accent); display: none; }
 
@@ -139,9 +144,9 @@ strong { font-weight: 650; }
 .map-legend > span:first-child { color: var(--ink); font-weight: 650; }
 .map-legend-item { display: inline-flex; align-items: center; gap: 5px; }
 .map-legend i { width: 9px; height: 9px; border-radius: 50%; }
-.stage-switch { position: absolute; z-index: 3; right: 16px; bottom: 104px; background: var(--glass); backdrop-filter: blur(8px); border: 1px solid var(--line); }
+.stage-switch { position: absolute; z-index: 3; right: 16px; bottom: 152px; background: var(--glass); backdrop-filter: blur(8px); border: 1px solid var(--line); }
 .stage-switch button { min-height: 34px; padding: 0 12px; font-size: 13px; }
-.maplibregl-popup.hs-popup .maplibregl-popup-content { background: rgba(16, 19, 27, 0.97); color: var(--ink); border: 1px solid #3a4152; border-radius: 12px; font: 12.5px/1.5 inherit; padding: 8px 11px; }
+.maplibregl-popup.hs-popup .maplibregl-popup-content { background: rgba(16, 19, 27, 0.97); color: #ece9e2; border: 1px solid #3a4152; border-radius: 12px; font: 12.5px/1.5 inherit; padding: 8px 11px; }
 .maplibregl-popup.hs-popup .maplibregl-popup-tip { display: none; }
 /* the imagery credit must stay readable on the dark map (MapLibre's own sheet draws it black on white) */
 .stage-map .maplibregl-ctrl-attrib.maplibregl-compact { background-color: rgba(12, 13, 20, 0.82); color: #d5d8e2; }
@@ -277,6 +282,7 @@ button.day:hover { transform: scale(1.08); }
 .coords input { width: 100%; min-height: 48px; padding: 0 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); font-size: 16px; color: var(--ink); }
 .field { display: grid; gap: 6px; margin-top: 14px; font-size: 13px; font-weight: 600; color: var(--ink-2); }
 .field select { width: 100%; min-height: 48px; padding: 0 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); font-size: 16px; color: var(--ink); }
+.field-go { margin-top: 8px; }
 .field-hint { margin-top: 6px; }
 .radius { margin: 14px 0 18px; }
 .radius legend { margin-bottom: 6px; }
@@ -378,6 +384,8 @@ button.day:hover { transform: scale(1.08); }
   .map-legend { left: 24px; top: 148px; max-width: calc(100% - 48px); }
   .stage-switch, .tool--map .stage-switch { right: 24px; top: 92px; bottom: auto; }
   .toplink { display: inline-flex; align-items: center; }
+  /* a very wide screen: the map reaches the screen edge as the globe does, and its left edge is soft */
+  .stage-map { right: calc(-1 * max(0px, (100vw - 1500px) / 2)); -webkit-mask-image: linear-gradient(to right, transparent 0, #000 56px); mask-image: linear-gradient(to right, transparent 0, #000 56px); }
   .col { grid-column: 1; grid-row: 1; padding: 24px 32px 0; pointer-events: auto; }
   .hero { padding-top: 24px; }
   .sheet { border-radius: 28px; margin: 0 0 32px; padding: 32px 28px; }

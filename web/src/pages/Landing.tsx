@@ -319,7 +319,7 @@ export default function Landing() {
                   375 m active fire products. We acknowledge the use of data from NASA FIRMS, part of NASA Earth Science
                   Data and Information System (ESDIS).
                 </p>
-                <p>Map imagery: NASA GIBS. Country outlines on the globe: Natural Earth, public domain. Both are used for display only, never for the numbers.</p>
+                <p>Globe and map imagery: NASA Blue Marble, via NASA GIBS. Country outlines on the globe: Natural Earth, public domain. All are used for display only, never for the numbers.</p>
                 <p>Built for the NASA Space Apps Challenge 2026. Not an official NASA product.</p>
               </div>
             </div>

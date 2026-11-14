@@ -20,6 +20,7 @@ export default function LocationGate({ presets, picked, onPickedChange, onDone, 
   const [radius, setRadius] = useState(100);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [stateCode, setStateCode] = useState('');
   const brazil = presets.find((p) => p.id === 'brazil');
 
   const lat = picked ? String(Math.round(picked.lat * 1000) / 1000) : '';
@@ -79,14 +80,18 @@ export default function LocationGate({ presets, picked, onPickedChange, onDone, 
 
       <label className="field">
         Or a state of Brazil
-        <select value="" onChange={(e) => {
-          const a = stateArea(e.target.value);
-          if (a) onDone(a);
-        }}>
+        <select value={stateCode} onChange={(e) => setStateCode(e.target.value)}>
           <option value="" disabled>Choose a state…</option>
           {STATES.map((st) => <option key={st.code} value={st.code}>{st.name} ({st.code})</option>)}
         </select>
       </label>
+      <button className="btn btn-quiet btn-wide field-go" disabled={!stateCode}
+        onClick={() => {
+          const a = stateArea(stateCode);
+          if (a) onDone(a);
+        }}>
+        Show this state
+      </button>
       <p className="fineprint field-hint">A state is a simple box around it, so it also covers a little of its neighbours.</p>
 
       <div className="gate-or"><span>or a point and a radius</span></div>

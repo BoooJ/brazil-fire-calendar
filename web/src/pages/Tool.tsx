@@ -109,6 +109,7 @@ export default function Tool() {
     setPicked(null);
     setDrawMode('none');
     clearMap();
+    window.scrollTo({ top: 0 }); // the whole column is swapped: start at the message and the globe
     try {
       if (a) localStorage.setItem(STORE, JSON.stringify(a));
       else localStorage.removeItem(STORE);

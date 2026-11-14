@@ -12,7 +12,12 @@
     <title>Brazil Fire Calendar</title>
     <!-- the theme (dark unless the visitor chose light) and the page colour, before any stylesheet arrives -->
     <script>
-      try { if (localStorage.getItem('bfc.theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}
+      try {
+        if (localStorage.getItem('bfc.theme') === 'light') {
+          document.documentElement.dataset.theme = 'light';
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f2f3f7');
+        }
+      } catch (e) {}
     </script>
     <style>
       html, body { margin: 0; background: #04050b; color: #f4f5f8; }

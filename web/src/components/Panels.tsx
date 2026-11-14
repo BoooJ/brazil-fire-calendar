@@ -111,7 +111,7 @@ export function SourcesDialog({ status, onClose }: { status: Status | null; onCl
         <ul className="points">
           <li>Final (science-quality) data until <strong>{status?.final_until ? dateShort(status.final_until) : '–'}</strong>. Later days are near-real-time and marked provisional.</li>
           <li>Areas are plain boxes, circles or shapes you draw. No outside border data is used.</li>
-          <li>For display only, never for the numbers: map imagery from NASA GIBS (Blue Marble), country outlines on the globe from Natural Earth (public domain).</li>
+          <li>For display only, never for the numbers: globe and map imagery from NASA Blue Marble (via NASA GIBS), country outlines on the globe from Natural Earth (public domain).</li>
         </ul>
         <p className="modal-links">
           <a href="https://firms.modaps.eosdis.nasa.gov/" target="_blank" rel="noreferrer">NASA FIRMS</a>

@@ -72,6 +72,6 @@ npm run preview    # serve the build
 
 **The globe's fade** is a CSS mask on the canvas (`.globe`), not an overlay. On a wide screen the canvas reaches under the text column (`--globe-bleed`), and `Globe.tsx` reads that variable to keep the planet centred in its own column.
 
-**Display only, never for numbers:** country outlines on the globe (Natural Earth, `world-atlas` npm package), the globe's imagery (`public/textures/bluemarble-*.jpg`, NASA Blue Marble downloaded once from the NASA GIBS WMS) and the map's imagery (NASA GIBS). Never use them to select, clip or count data. Both are credited on the landing page and in the data sources dialog.
+**Display only, never for numbers:** country outlines on the globe (Natural Earth, `world-atlas` npm package), the globe's imagery (`public/textures/bluemarble-*.jpg`, NASA Blue Marble downloaded once from the NASA GIBS WMS) and the map's imagery (NASA GIBS). Never use them to select, clip or count data. All three are credited on the landing page and in the data sources dialog.
 
 Waiting for the API: "Update now" shows the API's own answer (`/api/update` is still a stub).

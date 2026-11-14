@@ -98,17 +98,37 @@ function paintPlanet(
       if (lon < -180) lon += 360;
       else if (lon >= 180) lon -= 360;
 
-      let r: number, g: number, b: number;
+      // How far inside the detailed image this pixel is: 1 well inside, 0 outside, a 2° ramp between
+      // (so the sharper image blends into the coarse one instead of ending on a line).
+      let inDetail = 0;
       if (detail && lon > detail.west && lon < detail.east && lat > detail.south && lat < detail.north) {
+        inDetail = Math.min(1, Math.min(lon - detail.west, detail.east - lon, lat - detail.south, detail.north - lat) / 2);
+      }
+      let r = 0, g = 0, b = 0;
+      if (inDetail < 1) {
+        // the coarse world image, smoothed between its pixels (bilinear), wrapping around the date line
+        const fu = (lon + 180) * wSpanX - 0.5;
+        const fv = Math.max(0, Math.min(world.h - 1, (90 - lat) * wSpanY - 0.5));
+        const u0 = Math.floor(fu), v0 = Math.floor(fv);
+        const tu = fu - u0, tv = fv - v0;
+        const ua = ((u0 % world.w) + world.w) % world.w, ub = (ua + 1) % world.w;
+        const va = v0, vb = Math.min(world.h - 1, v0 + 1);
+        const d = world.data;
+        const i00 = (va * world.w + ua) << 2, i10 = (va * world.w + ub) << 2;
+        const i01 = (vb * world.w + ua) << 2, i11 = (vb * world.w + ub) << 2;
+        const w00 = (1 - tu) * (1 - tv), w10 = tu * (1 - tv), w01 = (1 - tu) * tv, w11 = tu * tv;
+        r = d[i00] * w00 + d[i10] * w10 + d[i01] * w01 + d[i11] * w11;
+        g = d[i00 + 1] * w00 + d[i10 + 1] * w10 + d[i01 + 1] * w01 + d[i11 + 1] * w11;
+        b = d[i00 + 2] * w00 + d[i10 + 2] * w10 + d[i01 + 2] * w01 + d[i11 + 2] * w11;
+      }
+      if (inDetail > 0 && detail) {
         const u = Math.min(detail.w - 1, ((lon - detail.west) * dSpanX) | 0);
         const v = Math.min(detail.h - 1, ((detail.north - lat) * dSpanY) | 0);
         const i = (v * detail.w + u) << 2;
-        r = detail.data[i]; g = detail.data[i + 1]; b = detail.data[i + 2];
-      } else {
-        const u = Math.min(world.w - 1, ((lon + 180) * wSpanX) | 0);
-        const v = Math.min(world.h - 1, ((90 - lat) * wSpanY) | 0);
-        const i = (v * world.w + u) << 2;
-        r = world.data[i]; g = world.data[i + 1]; b = world.data[i + 2];
+        const k = 1 - inDetail;
+        r = r * k + detail.data[i] * inDetail;
+        g = g * k + detail.data[i + 1] * inDetail;
+        b = b * k + detail.data[i + 2] * inDetail;
       }
 
       const j = (py * W + px) << 2;
@@ -183,6 +203,26 @@ export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, points
   const extras = useRef({ area, points, pin, originY });
   extras.current = { area, points, pin, originY };
   const raf = useRef(0);
+  const imageData = useRef<ImageData | null>(null);
+  const pending = useRef(0);
+  const settle = useRef(0);
+  const gliding = useRef(false);
+
+  /** One redraw per frame at most, however many things ask for it. */
+  const schedule = () => {
+    cancelAnimationFrame(pending.current);
+    pending.current = requestAnimationFrame(draw);
+  };
+  /** While the box is being resized: coarse frames, then one sharp frame when it stops. */
+  const resized = () => {
+    moving.current = true;
+    schedule();
+    window.clearTimeout(settle.current);
+    settle.current = window.setTimeout(() => {
+      moving.current = gliding.current;
+      schedule();
+    }, 150);
+  };
 
   const draw = () => {
     const canvas = canvasRef.current;
@@ -201,9 +241,13 @@ export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, points
     const light = getTheme() === 'light';
 
     // The canvas may reach further left than the globe's own box (CSS --globe-bleed), so the planet can
-    // run under the page's text and fade there instead of ending at a column edge.
-    const bleed = Math.max(0, Math.min(w * 0.6, parseFloat(getComputedStyle(canvas).getPropertyValue('--globe-bleed')) || 0));
-    const over = Math.max(0, Math.min(w * 0.4, parseFloat(getComputedStyle(canvas).getPropertyValue('--globe-over')) || 0));
+    // run under the page's text and fade there instead of ending at a column edge (and past the page's
+    // right edge on a very wide screen).
+    // Measured, not parsed from the CSS: how far the canvas sticks out of its parent on each side.
+    const cr = canvas.getBoundingClientRect();
+    const pr = canvas.parentElement?.getBoundingClientRect() ?? cr;
+    const bleed = Math.max(0, Math.min(w * 0.6, pr.left - cr.left));
+    const over = Math.max(0, Math.min(w * 0.4, cr.right - pr.right));
     const { center: c, zoom: z } = view.current;
     const R = (Math.min(w - bleed - over, h) / 2) * z;
     const cx = bleed + (w - bleed - over) / 2;
@@ -235,7 +279,7 @@ export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, points
     const t = tex.current;
     if (t?.world) {
       // the imagery, painted at a size the device can afford (coarser while the globe is gliding)
-      const budget = moving.current ? 260_000 : 1_500_000;
+      const budget = moving.current ? 120_000 : 1_500_000;
       const s = Math.max(1, Math.sqrt((w * dpr * h * dpr) / budget));
       const bw = Math.max(2, Math.ceil((w * dpr) / s));
       const bh = Math.max(2, Math.ceil((h * dpr) / s));
@@ -262,7 +306,9 @@ export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, points
         mctx.fill();
         mask = mctx.getImageData(0, 0, bw, bh).data;
       }
-      const img = rctx.createImageData(bw, bh);
+      let img = imageData.current;
+      if (!img || img.width !== bw || img.height !== bh) img = imageData.current = rctx.createImageData(bw, bh);
+      else img.data.fill(0);
       paintPlanet(img, mask, cx * k, cy * k, R * k, c[0], c[1], light, t.world, t.detail);
       rctx.putImageData(img, 0, 0);
       ctx.save();
@@ -285,11 +331,14 @@ export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, points
     }
 
     if (world.current) {
-      ctx.beginPath();
-      path(world.current.others);
-      ctx.lineWidth = 0.6;
-      ctx.strokeStyle = light ? 'rgba(20, 25, 40, 0.16)' : 'rgba(255, 255, 255, 0.13)';
-      ctx.stroke();
+      if (!moving.current) {
+        // the neighbours' faint borders: skipped while gliding, they cost more than they show
+        ctx.beginPath();
+        path(world.current.others);
+        ctx.lineWidth = 0.6;
+        ctx.strokeStyle = light ? 'rgba(20, 25, 40, 0.16)' : 'rgba(255, 255, 255, 0.13)';
+        ctx.stroke();
+      }
       ctx.beginPath();
       path(world.current.brazil);
       ctx.lineWidth = 1.2;
@@ -351,15 +400,17 @@ export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, points
       tex.current = t;
       draw();
     });
-    const ro = new ResizeObserver(draw);
+    const ro = new ResizeObserver(resized);
     if (canvasRef.current) ro.observe(canvasRef.current);
-    const mo = new MutationObserver(draw);
+    const mo = new MutationObserver(schedule);
     mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     return () => {
       alive = false;
       ro.disconnect();
       mo.disconnect();
       cancelAnimationFrame(raf.current);
+      cancelAnimationFrame(pending.current);
+      window.clearTimeout(settle.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -371,6 +422,7 @@ export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, points
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const same = from.center[0] === center[0] && from.center[1] === center[1] && from.zoom === zoom;
     if (reduce || same) {
+      gliding.current = false;
       moving.current = false;
       view.current = { center, zoom };
       draw();
@@ -386,19 +438,19 @@ export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, points
         center: ic(e) as [number, number],
         zoom: Math.exp(Math.log(from.zoom) + (Math.log(zoom) - Math.log(from.zoom)) * e),
       };
-      moving.current = t < 1;
+      gliding.current = moving.current = t < 1;
       draw();
       if (t < 1) raf.current = requestAnimationFrame(step);
     };
-    moving.current = true;
+    gliding.current = moving.current = true;
     raf.current = requestAnimationFrame(step);
     return () => {
-      moving.current = false;
+      gliding.current = moving.current = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [center[0], center[1], zoom]);
 
-  useEffect(draw, [area, points, pin?.[0], pin?.[1], originY]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(schedule, [area, points, pin?.[0], pin?.[1], originY]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const click = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!onPick || !proj.current) return;

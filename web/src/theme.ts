@@ -12,6 +12,9 @@ export function getTheme(): Theme {
 export function setTheme(t: Theme) {
   document.documentElement.dataset.theme = t;
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', t === 'light' ? '#f2f3f7' : '#04050b');
+  // The landing page's design kit reads the palette once when it starts: tell it the ground changed.
+  if (document.documentElement.dataset.tone) document.documentElement.dataset.tone = t;
+  (window as unknown as { tasteBackgrounds?: { detect?: () => void } }).tasteBackgrounds?.detect?.();
   try {
     localStorage.setItem(KEY, t);
   } catch {
