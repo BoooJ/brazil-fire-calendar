@@ -134,11 +134,13 @@ def run_analysis(req: AreaRequest) -> dict:
     ref_partial = (ref.year, ref.month) == (end.year, end.month) and ref.day < days_in_month(ref.year, ref.month)
     cur = STORE.con.cursor()
     try:
-        cur.register("sel", STORE.select_cells(geom))
-        monthly = STORE.monthly(cur, end)
-        same = STORE.same_days(cur, ref.month, ref.day, ref.year) if ref_partial else {}
+        sel = STORE.select_cells(geom)
+        box = STORE.bounds(sel)
+        cur.register("sel", sel)
+        monthly = STORE.monthly(cur, end, box)
+        same = STORE.same_days(cur, ref.month, ref.day, ref.year, box) if ref_partial else {}
         estimated = STORE.estimated_fires(cur, harm.source(ref.year, ref.month), ref.year, ref.month,
-                                          ref.day if ref_partial else 31)
+                                          ref.day if ref_partial else 31, box)
     finally:
         cur.close()
     validation = STORE.harm_spec.get("validation", {})

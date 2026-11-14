@@ -114,9 +114,10 @@ cd web && npm run build                # type-check + production build
 - [x] Pipeline steps 4–5: fire-days + **v0** harmonization (Brazil-wide factors; hold-out 2018–2019 median error 6.6 % on Brazil totals)
 - [ ] Harmonization method validated and refined (science/: per-block factors)
 - [x] API serving real data: every contract endpoint works (`/api/update` is still a stub)
-- [~] Website on mocks → on real API (on mocks: done; real API: pending, the API must be reachable first)
+- [x] Website on mocks → on real API (set `VITE_API_BASE_URL=https://fire-api.37-187-37-74.sslip.io`)
 - [ ] Daily update from the FIRMS API
-- [ ] Deployed online
+- [x] API deployed online: https://fire-api.37-187-37-74.sslip.io (OVH VPS, Docker + Caddy; see `infra/deploy/README.md`)
+- [ ] Website deployed online
 
 ## Maintaining this file
 

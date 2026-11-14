@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -27,16 +28,22 @@ class Store:
             if not needed.exists():
                 raise SystemExit(f"Missing {needed}. Run the pipeline (steps 1-5) first.")
 
-        self.con = duckdb.connect()
+        # Optional low-memory mode for small servers: tables live in a DuckDB file on disk.
+        self.con = duckdb.connect(os.environ.get("API_DB_PATH") or ":memory:")
+        if os.environ.get("API_MEMORY_LIMIT"):
+            self.con.execute(f"SET memory_limit = '{os.environ['API_MEMORY_LIMIT']}'")
+        if os.environ.get("API_THREADS"):
+            self.con.execute(f"SET threads = {int(os.environ['API_THREADS'])}")
         self.con.execute(f"""
-            CREATE TABLE fire_days AS
+            CREATE OR REPLACE TABLE fire_days AS
             SELECT cy, cx, acq_date, satellite, CAST(year AS INTEGER) AS year, CAST(month AS INTEGER) AS month,
                    n_hotspots, provisional
             FROM read_parquet('{fd}', hive_partitioning = true)
+            ORDER BY cy, cx, acq_date  -- sorted by place: an area query only reads its slice of the map
         """)
-        self.con.execute(f"CREATE TABLE static_cells AS SELECT * FROM read_parquet('{st}')")
+        self.con.execute(f"CREATE OR REPLACE TABLE static_cells AS SELECT * FROM read_parquet('{st}')")
         self.con.execute(f"""
-            CREATE VIEW hotspots AS
+            CREATE OR REPLACE VIEW hotspots AS
             SELECT h.* FROM read_parquet('{hs}', hive_partitioning = true) h
             LEFT JOIN static_cells s
               ON s.cy = CAST(floor(h.latitude / {CELL_DEG}) AS INTEGER)
@@ -56,8 +63,12 @@ class Store:
         ).fetchall())
         self.harm_spec = json.loads(harm_file.read_text(encoding="utf-8"))
         self.harm = Harmonizer(self.harm_spec)
-        built = (root / "derived" / "fire_days").stat().st_mtime
-        self.data_updated = datetime.fromtimestamp(built, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        build_info = root / "derived" / "build_info.json"  # written by infra/deploy/deploy_hf.py
+        if build_info.exists():
+            self.data_updated = json.loads(build_info.read_text(encoding="utf-8"))["data_updated"]
+        else:
+            built = (root / "derived" / "fire_days").stat().st_mtime
+            self.data_updated = datetime.fromtimestamp(built, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     # ------------------------------------------------------------------ area selection
     def select_cells(self, geom) -> pd.DataFrame:
@@ -70,40 +81,56 @@ class Store:
         return pd.DataFrame({"cy": self.cell_cy[idx], "cx": self.cell_cx[idx]})
 
     # ------------------------------------------------------------------ queries (cursor has table "sel")
+    # `box` = (cy_min, cy_max, cx_min, cx_max) of the selected cells: lets DuckDB skip the rest of the map.
+    BOX = "f.cy BETWEEN ? AND ? AND f.cx BETWEEN ? AND ?"
+
     @staticmethod
-    def monthly(cur, end: date) -> dict:
-        rows = cur.execute("""
+    def bounds(sel: pd.DataFrame) -> tuple[int, int, int, int] | None:
+        if sel.empty:
+            return None
+        return int(sel.cy.min()), int(sel.cy.max()), int(sel.cx.min()), int(sel.cx.max())
+
+    @staticmethod
+    def monthly(cur, end: date, box) -> dict:
+        if box is None:
+            return {}
+        rows = cur.execute(f"""
             SELECT f.year, f.month, f.satellite, count(*), sum(f.n_hotspots), bool_or(f.provisional)
             FROM fire_days f JOIN sel USING (cy, cx)
-            WHERE f.acq_date <= ?
+            WHERE {Store.BOX} AND f.acq_date <= ?
             GROUP BY ALL
-        """, [end]).fetchall()
+        """, [*box, end]).fetchall()
         out: dict = {}
         for year, month, sat, fire_days, hotspots, provisional in rows:
             out.setdefault((year, month), {})[sat] = (fire_days, int(hotspots), bool(provisional))
         return out
 
     @staticmethod
-    def same_days(cur, month: int, day: int, until_year: int) -> dict:
-        rows = cur.execute("""
+    def same_days(cur, month: int, day: int, until_year: int, box) -> dict:
+        if box is None:
+            return {}
+        rows = cur.execute(f"""
             SELECT f.year, f.satellite, count(*)
             FROM fire_days f JOIN sel USING (cy, cx)
-            WHERE f.month = ? AND day(f.acq_date) <= ? AND f.year <= ?
+            WHERE {Store.BOX} AND f.month = ? AND day(f.acq_date) <= ? AND f.year <= ?
             GROUP BY ALL
-        """, [month, day, until_year]).fetchall()
+        """, [*box, month, day, until_year]).fetchall()
         out: dict = {}
         for year, sat, fire_days in rows:
             out.setdefault(year, {})[sat] = fire_days
         return out
 
     @staticmethod
-    def estimated_fires(cur, satellite: str, year: int, month: int, max_day: int, cap: int = 300_000) -> int | None:
+    def estimated_fires(cur, satellite: str, year: int, month: int, max_day: int, box,
+                        cap: int = 300_000) -> int | None:
         """Burning cells touching each other (8 neighbours) on the same or the next day = one fire."""
-        pts = cur.execute("""
+        if box is None:
+            return 0
+        pts = cur.execute(f"""
             SELECT f.cy, f.cx, f.acq_date
             FROM fire_days f JOIN sel USING (cy, cx)
-            WHERE f.satellite = ? AND f.year = ? AND f.month = ? AND day(f.acq_date) <= ?
-        """, [satellite, year, month, max_day]).fetchall()
+            WHERE {Store.BOX} AND f.satellite = ? AND f.year = ? AND f.month = ? AND day(f.acq_date) <= ?
+        """, [*box, satellite, year, month, max_day]).fetchall()
         if len(pts) > cap:
             return None
         index = {(cy, cx, d.toordinal()): i for i, (cy, cx, d) in enumerate(pts)}
