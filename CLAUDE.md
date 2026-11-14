@@ -76,9 +76,13 @@ FIRMS yearly country zips + archive request + FIRMS API (latest days)
 python -m venv .venv          # then activate it
 pip install -r infra/requirements.txt
 python infra/tools/make_mocks.py   # regenerate web/mocks/
+
+cd web && npm install
+npm run dev                        # website on http://localhost:5173 (mocks if VITE_API_BASE_URL is empty)
+npm run build                      # type-check + build into web/dist/
 ```
 
-Pipeline, API and website commands do not exist yet. **Add them here when they do.**
+Website stack: React + Vite + TypeScript (details in `web/CLAUDE.md`). Pipeline and API commands do not exist yet. **Add them here when they do.**
 
 ## Conventions
 
@@ -94,7 +98,7 @@ Pipeline, API and website commands do not exist yet. **Add them here when they d
 - [ ] Pipeline (clean → Parquet → fire-days)
 - [ ] Harmonization method validated (science/)
 - [ ] API serving real data
-- [ ] Website on mocks → on real API
+- [ ] Website on mocks (landing page, location step, globe, burning calendar: done; charts, downloads, area drawing: not yet) → on real API
 - [ ] Daily update from the FIRMS API
 - [ ] Deployed online
 

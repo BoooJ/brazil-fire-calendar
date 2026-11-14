@@ -30,6 +30,33 @@ Scope: everything the user sees. `../docs/api-contract.md` is the source of trut
 - Never rely on colour alone: numbers on hover, ▲/▼ arrows, legends with values.
 - Check with Chrome DevTools → Rendering → *Emulate vision deficiencies*. Works at 375 px width.
 
-## Stack
+## Stack (chosen)
 
-Not decided yet. Suggested: React + Vite, MapLibre GL or Leaflet + a draw plugin, Apache ECharts (heatmap and PNG export). **Write the chosen stack and its commands here and in the root `CLAUDE.md` once picked.**
+React 19 + Vite + TypeScript. No UI framework: plain CSS in `src/styles.css` (design tokens at the top).
+The globe is a canvas drawn with `d3-geo` (orthographic); the calendar is plain HTML buttons.
+
+```bash
+cd web
+npm install
+npm run dev        # http://localhost:5173 — uses web/mocks/ while VITE_API_BASE_URL is empty
+npm run build      # type-check + production build into web/dist/
+npm run preview    # serve the build
+```
+
+- `.env` is read from the **repo root** (`envDir: '..'`). Leave `VITE_API_BASE_URL` empty to use the mocks.
+- Routes are hash-based: `#/` landing page, `#/app` the tool.
+
+| File | What |
+|---|---|
+| `src/api.ts` | The only data access (mocks or real API) |
+| `src/types.ts` | Contract shapes (keep in sync with `docs/api-contract.md`) |
+| `src/geo.ts` | Circle → 64-point polygon, preset areas |
+| `src/pages/Landing.tsx`, `src/pages/Tool.tsx` | The two pages |
+| `src/components/Globe.tsx` | Globe: Brazil lit, area outline, hotspot points |
+| `src/components/LocationGate.tsx` | "Where should we look?" step, shown before anything else |
+| `src/components/FireCalendar.tsx` | Burning calendar (filled = happened, dotted = typical, hatched = provisional) |
+| `src/components/MonthDetail.tsx` | Month details + "show on the map" |
+
+**Country outlines** on the globe come from Natural Earth (`world-atlas` npm package). They are decoration only, like a basemap: never use them to select, clip or count data. Credit them on the landing page.
+
+Not built yet: area drawing (rectangle/polygon), date range, typical-year and year-by-year charts, downloads, Quick/Detailed view, data sources page, "Update now".
