@@ -1,6 +1,21 @@
-# infra/deploy — putting the API online
+# infra/deploy — putting the API and the website online
 
-**Live API:** https://fire-api.37-187-37-74.sslip.io (docs: `/docs`) — running on the team's OVH VPS.
+**Live website:** https://fire.37-187-37-74.sslip.io (calendar: `/app.html`)
+**Live API:** https://fire-api.37-187-37-74.sslip.io (docs: `/docs`)
+Both run on the team's OVH VPS behind its Caddy (automatic HTTPS).
+
+## Update the website (about 1 minute)
+
+From the repo root, on `main` with the latest changes, with `VITE_API_BASE_URL=https://fire-api.37-187-37-74.sslip.io` in `.env`:
+
+```bash
+cd web && npm install && npm run build && cd ..
+ssh ubuntu@vps-c33c493b.vps.ovh.net 'rm -rf ~/brazil-fire-site-new && mkdir -p ~/brazil-fire-site-new'
+scp -r web/dist/. ubuntu@vps-c33c493b.vps.ovh.net:brazil-fire-site-new/
+ssh ubuntu@vps-c33c493b.vps.ovh.net 'sudo rsync -a --delete ~/brazil-fire-site-new/ /var/www/brazil-fire-site/ && sudo chmod -R a+rX /var/www/brazil-fire-site'
+```
+
+Caddy serves `/var/www/brazil-fire-site` as static files (block `fire.37-187-37-74.sslip.io` in `/etc/caddy/Caddyfile`, backup `Caddyfile.before-fire-site-*`). No container, no restart needed.
 
 ## How it is set up
 
