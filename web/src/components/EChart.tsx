@@ -7,8 +7,12 @@ import { CanvasRenderer } from 'echarts/renderers';
 
 echarts.use([HeatmapChart, LineChart, BarChart, GridComponent, TooltipComponent, LegendComponent, VisualMapComponent, AriaComponent, CanvasRenderer]);
 
+/** The charts are dark panels on the white sheet: one background, one text face. */
+export const CHART_BG = '#0d1017';
+export const CHART_FONT = "'Inter Variable', Inter, system-ui, sans-serif";
+
 export interface EChartHandle {
-  /** PNG of the chart on the page background, for the download buttons. */
+  /** PNG of the chart on its dark background, for the download buttons. */
   toPng: () => string | undefined;
 }
 
@@ -31,6 +35,8 @@ export const EChart = forwardRef<EChartHandle, Props>(function EChart({ option, 
     chart.current = c;
     const ro = new ResizeObserver(() => c.resize());
     ro.observe(el.current);
+    // canvas text is drawn once: draw it again when the web font has arrived
+    document.fonts?.ready.then(() => !c.isDisposed() && c.resize());
     return () => {
       ro.disconnect();
       c.dispose();
@@ -38,10 +44,11 @@ export const EChart = forwardRef<EChartHandle, Props>(function EChart({ option, 
     };
   }, []);
 
+  const eventNames = onEvents ? Object.keys(onEvents).join() : '';
   useEffect(() => {
     const c = chart.current;
     if (!c) return;
-    const names = Object.keys(onEvents ?? {});
+    const names = eventNames ? eventNames.split(',') : [];
     for (const name of names) {
       c.off(name);
       c.on(name, (p: any) => events.current?.[name]?.(p));
@@ -49,15 +56,25 @@ export const EChart = forwardRef<EChartHandle, Props>(function EChart({ option, 
     return () => {
       if (!c.isDisposed()) names.forEach((n) => c.off(n));
     };
-  }, [onEvents ? Object.keys(onEvents).join() : '']);
+  }, [eventNames]);
 
   useEffect(() => {
     chart.current?.setOption(option, { notMerge: true });
   }, [option]);
 
   useImperativeHandle(ref, () => ({
-    toPng: () => chart.current?.getDataURL({ type: 'png', pixelRatio: 2, backgroundColor: '#0d1017' }),
+    toPng: () => chart.current?.getDataURL({ type: 'png', pixelRatio: 2, backgroundColor: CHART_BG }),
   }));
 
   return <div ref={el} role="img" aria-label={ariaLabel} style={{ width: '100%', height }} />;
 });
+
+/** Saves a chart as a PNG file. */
+export function savePng(handle: EChartHandle | null, name: string) {
+  const url = handle?.toPng();
+  if (!url) return;
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name;
+  a.click();
+}

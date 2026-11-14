@@ -1,53 +1,52 @@
 // Shapes from docs/api-contract.md (v0.1). Keep in sync with the contract.
+// Missing values are null, never 0 (e.g. a satellite that was not in orbit yet).
+import type { Polygon, MultiPolygon } from 'geojson';
 
+export type AreaGeometry = Polygon | MultiPolygon;
 export type SatelliteKey = 'modis_terra' | 'modis_aqua' | 'viirs_snpp' | 'viirs_noaa20';
 export const SATELLITES: SatelliteKey[] = ['modis_terra', 'modis_aqua', 'viirs_snpp', 'viirs_noaa20'];
-export const SATELLITE_LABEL: Record<SatelliteKey, string> = {
+export const SAT_NAMES: Record<SatelliteKey, string> = {
   modis_terra: 'MODIS Terra',
   modis_aqua: 'MODIS Aqua',
   viirs_snpp: 'VIIRS S-NPP',
   viirs_noaa20: 'VIIRS NOAA-20',
 };
-
 export type Detected = Record<SatelliteKey, number | null>;
-
-export interface Polygon {
-  type: 'Polygon';
-  coordinates: [number, number][][];
-}
-export interface MultiPolygon {
-  type: 'MultiPolygon';
-  coordinates: [number, number][][][];
-}
-export type Area = Polygon | MultiPolygon;
 
 export interface Preset {
   id: string;
   name: string;
-  area: Area;
+  area: Polygon;
 }
 
 export interface Coverage {
   satellite: SatelliteKey;
   from: string;
-  to: string | null;
+  to: string | null; // null = still active
 }
 
 export interface Status {
   data_updated: string;
   contract_version: string;
   calendar_from: string;
-  final_until: string;
+  final_until: string | null;
   coverage: Coverage[];
 }
 
-export interface CalendarCell {
+export interface AnalysisRequest {
+  area: AreaGeometry;
+  start?: string;
+  end?: string;
+  ref_date?: string;
+}
+
+export interface CalendarItem {
   year: number;
   month: number;
-  count: number;
+  count: number | null;
   vs_avg_pct: number | null;
-  rank: number;
-  of_years: number;
+  rank: number | null;
+  of_years: number | null;
   detected: Detected;
   provisional: boolean;
   uncertain: boolean;
@@ -55,18 +54,22 @@ export interface CalendarCell {
   days_covered: number;
 }
 
-export interface MonthStats {
+export interface MonthAverage {
   month: number;
-  mean: number;
-  median: number;
-  p10: number;
-  p90: number;
-  years: number;
+  mean: number | null;
+  median: number | null;
+  p10: number | null;
+  p90: number | null;
+  years?: number;
 }
 
-export interface YearlyRow {
+export interface NextMonth extends MonthAverage {
   year: number;
-  count: number;
+}
+
+export interface YearItem {
+  year: number;
+  count: number | null;
   detected: Detected;
   provisional: boolean;
   complete: boolean;
@@ -75,76 +78,63 @@ export interface YearlyRow {
 export interface Cards {
   ref_year: number;
   ref_month: number;
-  count: number;
+  count: number | null;
   detected: Detected;
-  estimated_fires: number;
+  estimated_fires: number | null;
   vs_avg_pct: number | null;
-  rank: number;
-  of_years: number;
+  rank: number | null;
+  of_years: number | null;
   partial: boolean;
   days_covered: number;
-  peak_month: number;
-  worst_year: number;
-}
-
-export interface NextMonth {
-  year: number;
-  month: number;
-  mean: number;
-  median: number;
-  p10: number;
-  p90: number;
+  peak_month: number | null;
+  worst_year: number | null;
 }
 
 export interface Analysis {
+  _mock?: string;
+  warning?: string;
   query: { start: string; end: string; ref_date: string; area_km2: number };
   data_updated: string;
   unit: { main: string; raw: string };
-  calendar: CalendarCell[];
-  average_by_month: MonthStats[];
-  average_period: { from: number; to: number };
-  yearly: YearlyRow[];
+  calendar: CalendarItem[];
+  average_by_month: MonthAverage[];
+  /** null when the reference year has no complete year before it */
+  average_period: { from: number; to: number } | null;
+  yearly: YearItem[];
   cards: Cards;
   next_months: NextMonth[];
   next_months_label: string;
   briefing: string;
-  reliability: { median_error_pct: number; validated_years: number[]; note: string };
-  warning?: string;
-  _mock?: string;
+  reliability: { median_error_pct: number | null; validated_years: number[]; note: string };
 }
 
 export interface HotspotProps {
   date: string;
   time_utc: string;
-  satellite: SatelliteKey;
-  confidence: 'low' | 'nominal' | 'high';
+  satellite: string;
+  confidence: string;
   confidence_raw: string;
-  frp: number;
-  daynight: 'D' | 'N';
+  frp: number | null;
+  daynight: string;
   provisional: boolean;
 }
 
 export interface Hotspots {
+  _mock?: string;
   type: 'FeatureCollection';
   total: number;
   returned: number;
   truncated: boolean;
-  features: { type: 'Feature'; geometry: { type: 'Point'; coordinates: [number, number] }; properties: HotspotProps }[];
-  _mock?: string;
-}
-
-export interface Query {
-  area: Area;
-  start: string;
-  end: string;
-  ref_date: string;
+  features: {
+    type: 'Feature';
+    geometry: { type: 'Point'; coordinates: [number, number] };
+    properties: HotspotProps;
+  }[];
 }
 
 export interface UpdateResult {
   status: 'updated' | 'too_soon' | 'failed';
   data_updated: string;
   new_hotspots: number;
+  message?: string;
 }
-
-export const MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-export const MONTHS_LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
