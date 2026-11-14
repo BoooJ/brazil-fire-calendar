@@ -156,7 +156,7 @@ export default function App() {
   return (
     <div className="app">
       <header className="top">
-        <div className="brand">
+        <a className="brand" href="./" aria-label="Brazil Fire Calendar: about the project">
           <div className="logo" aria-hidden>
             <span />
           </div>
@@ -164,7 +164,7 @@ export default function App() {
             <h1>Brazil Fire Calendar</h1>
             <p className="tagline">20+ years of NASA fire hotspots, one consistent scale — MODIS and VIIRS harmonized.</p>
           </div>
-        </div>
+        </a>
         <div className="top-actions">
           {USING_MOCKS && <span className="badge badge-mock" title="VITE_API_BASE_URL is empty, so the site reads web/mocks/. All numbers are invented.">Mock data</span>}
           <div className="updated">

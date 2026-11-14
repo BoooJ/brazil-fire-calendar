@@ -7,7 +7,7 @@ Owner: **UI/UX**. Read [`docs/api-contract.md`](../docs/api-contract.md) first.
 ```bash
 cd web
 npm install
-npm run dev      # open http://localhost:5173
+npm run dev      # landing page: http://localhost:5173 · the calendar: http://localhost:5173/app.html
 ```
 
 Needs Node.js 20+. With `VITE_API_BASE_URL` empty in `.env` (or no `.env`), the site shows the mocks and a "Mock data" badge.

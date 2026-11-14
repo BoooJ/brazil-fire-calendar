@@ -43,4 +43,6 @@ npm run build      # type-check + production build into web/dist/
 
 - Vite reads the **repo-root** `.env` (`envDir: '..'`). Leave `VITE_API_BASE_URL` empty to use the mocks.
 - Layout: `src/api.ts` (all data access) · `src/types.ts` (contract shapes) · `src/geo.ts` (rectangle/circle → Polygon) · `src/colors.ts` (scales) · `src/components/` (BurningCalendar, MapView, Charts, Panels, Controls).
+- **Two pages.** `app.html` is the fire calendar (React, built by Vite). `public/index.html` is the landing page: plain HTML, copied to `dist/` as is.
+- **The landing page** was designed with the `design-taste-frontend` skill (tasteskill, MIT, kit files in `public/assets/`, only the ones it uses). Edit `landing/index.template.html`, then run `python3 landing/gen.py`: it draws the product UI on the page as live HTML from `mocks/`. Never edit `public/index.html` by hand. The app does **not** use that skill or its kit.
 - Drawing on the map is built in (`MapView.tsx`: rectangle by drag, polygon by clicks), no draw plugin.

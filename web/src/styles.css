@@ -40,7 +40,7 @@ button { font-family: inherit; }
   padding: 18px 28px; border-bottom: 1px solid var(--line);
   background: rgba(13, 16, 23, 0.75); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 20;
 }
-.brand { display: flex; align-items: center; gap: 14px; }
+.brand { display: flex; align-items: center; gap: 14px; color: inherit; text-decoration: none; }
 .brand h1 { font-size: 1.35rem; font-weight: 700; }
 .tagline { margin: 2px 0 0; color: var(--muted); font-size: 0.88rem; }
 .logo {
@@ -110,7 +110,7 @@ button { font-family: inherit; }
 .card-sub { font-size: 0.8rem; color: var(--muted); }
 .card-hero { background: linear-gradient(135deg, rgba(249,142,9,.16), rgba(87,16,110,.18)), var(--panel); border-color: rgba(249,142,9,.35); }
 .card-hero .card-value { font-size: 2.3rem; color: var(--fire-2); }
-.card-anomaly .card-value { font-size: 1.35rem; padding-top: 6px; }
+.card-anomaly .card-value { font-size: 1.35rem; padding-top: 6px; white-space: normal; }
 .card-anomaly.up .card-value { color: #f7a14a; }
 .card-anomaly.down .card-value { color: var(--purple); }
 .card-wide { grid-column: 1 / -1; }
