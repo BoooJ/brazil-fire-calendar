@@ -1,6 +1,6 @@
 # infra/deploy — putting the API and the website online
 
-**Live website:** https://fire.37-187-37-74.sslip.io (calendar: `/app.html`)
+**Live website:** https://fire.37-187-37-74.sslip.io (landing page at `#/`, the tool at `#/app`)
 **Live API:** https://fire-api.37-187-37-74.sslip.io (docs: `/docs`)
 Both run on the team's OVH VPS behind its Caddy (automatic HTTPS).
 
