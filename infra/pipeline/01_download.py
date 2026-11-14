@@ -7,7 +7,11 @@ Source: https://firms.modaps.eosdis.nasa.gov/country/ (no account needed).
 VIIRS S-NPP (2012-2026) and everything from 2026 are NOT here: they come from
 the FIRMS archive request (emailed link).
 
-Re-runnable: complete files are skipped, interrupted ones are downloaded again.
+Safe to re-run:
+  - complete files are skipped,
+  - interrupted files resume where they stopped (.part files),
+  - every new zip is integrity-checked; a corrupt one is downloaded again,
+  - only one copy can run at a time (lock file), so two runs can't collide.
 
 Usage:
     python infra/pipeline/01_download.py
@@ -19,6 +23,7 @@ import argparse
 import os
 import sys
 import time
+import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
@@ -31,6 +36,9 @@ PRODUCTS = {  # key -> (file prefix on FIRMS, years available)
 }
 HEADERS = {"User-Agent": "brazil-fire-calendar-pipeline/0.1"}
 CHUNK_BYTES = 1024 * 1024
+CONNECT_TIMEOUT_S = 30
+STALL_TIMEOUT_S = 60  # no data for this long = frozen connection -> retry
+RETRIES = 5
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -57,35 +65,74 @@ def data_dir() -> Path:
     return path
 
 
-def download(url: str, dest: Path, retries: int = 3) -> str:
-    """Download one file to dest (via a .part file). Returns a one-line status."""
+def acquire_lock(folder: Path):
+    """Hold an OS-level lock on folder/.download.lock. Exit if another copy holds it.
+
+    The OS releases the lock automatically if the process dies, so a crash never leaves a stale lock.
+    """
+    handle = open(folder / ".download.lock", "a+")
+    try:
+        if os.name == "nt":
+            import msvcrt
+            handle.seek(0)
+            msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+        else:
+            import fcntl
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        sys.exit("Another download is already running on this folder. Stop it first (Ctrl+C), or wait for it.")
+    return handle  # keep a reference: the lock lives as long as this file handle
+
+
+def zip_is_valid(path: Path) -> bool:
+    try:
+        with zipfile.ZipFile(path) as zf:
+            return zf.testzip() is None
+    except zipfile.BadZipFile:
+        return False
+
+
+def download(url: str, dest: Path) -> str:
+    """Download one file to dest via dest.part, resuming if possible. Returns a one-line status."""
+    tmp = dest.with_name(dest.name + ".part")
     with requests.Session() as session:
         session.headers.update(HEADERS)
-        for attempt in range(1, retries + 1):
-            tmp = dest.with_name(dest.name + ".part")
+        for attempt in range(1, RETRIES + 1):
             try:
-                head = session.head(url, timeout=60, allow_redirects=True)
+                head = session.head(url, timeout=CONNECT_TIMEOUT_S, allow_redirects=True)
                 head.raise_for_status()
                 expected = int(head.headers["Content-Length"]) if "Content-Length" in head.headers else None
                 if dest.exists() and expected is not None and dest.stat().st_size == expected:
                     return f"skip    {dest.name} (already complete)"
 
+                have = tmp.stat().st_size if tmp.exists() else 0
+                if expected is not None and have > expected:
+                    tmp.unlink()
+                    have = 0
+                headers = {"Range": f"bytes={have}-"} if have else {}
                 start = time.monotonic()
-                with session.get(url, stream=True, timeout=(30, 300)) as response:
+                with session.get(url, headers=headers, stream=True,
+                                 timeout=(CONNECT_TIMEOUT_S, STALL_TIMEOUT_S)) as response:
                     response.raise_for_status()
-                    with open(tmp, "wb") as f:
+                    resumed = have > 0 and response.status_code == 206
+                    with open(tmp, "ab" if resumed else "wb") as f:
                         for chunk in response.iter_content(CHUNK_BYTES):
                             f.write(chunk)
+
                 size = tmp.stat().st_size
                 if expected is not None and size != expected:
                     raise OSError(f"incomplete: {size:,} of {expected:,} bytes")
+                if not zip_is_valid(tmp):
+                    tmp.unlink()
+                    raise OSError("corrupt zip, downloading it again from scratch")
                 tmp.replace(dest)
-                return f"ok      {dest.name} ({size / 1e6:,.0f} MB in {time.monotonic() - start:,.0f} s)"
+                note = " (resumed)" if resumed else ""
+                return f"ok      {dest.name} ({size / 1e6:,.0f} MB in {time.monotonic() - start:,.0f} s){note}"
             except (requests.RequestException, OSError) as exc:
-                tmp.unlink(missing_ok=True)
-                if attempt == retries:
+                if attempt == RETRIES:
                     return f"FAILED  {dest.name}: {exc}"
-                time.sleep(10 * attempt)
+                print(f"        retry {attempt}/{RETRIES - 1} {dest.name}: {exc}", flush=True)
+                time.sleep(5 * attempt)
     return f"FAILED  {dest.name}"
 
 
@@ -98,6 +145,7 @@ def main() -> None:
 
     raw = data_dir() / "raw" / "firms_country_yearly"
     raw.mkdir(parents=True, exist_ok=True)
+    lock = acquire_lock(raw)
 
     jobs = []
     for key, (prefix, years) in PRODUCTS.items():
@@ -118,6 +166,7 @@ def main() -> None:
             failures += status.startswith("FAILED")
             print(f"[{done:2d}/{len(jobs)}] {status}", flush=True)
 
+    lock.close()
     if failures:
         sys.exit(f"{failures} file(s) failed. Run the same command again to retry only those.")
     print("All files downloaded.", flush=True)
