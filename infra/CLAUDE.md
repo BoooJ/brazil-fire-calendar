@@ -9,8 +9,8 @@ Scope: everything between NASA FIRMS and the API. Read `../docs/api-contract.md`
 | 1 (done) | `pipeline/01_download.py` | `raw/`: yearly country zips (MODIS 2000–2025, `viirs-jpss1` 2018–2025) + archive-request CSVs (S-NPP 2012-01-20 → 2026-11-02, all of 2026) |
 | 2 (done) | `pipeline/02_extract_brazil.py` | `brazil_csv/<product>/<final or provisional>/*.csv`: Brazil's CSV copied out of each yearly zip, plus the archive-request files |
 | 3 (done) | `pipeline/03_clean.py` | `clean/hotspots/satellite=…/year=…/*.parquet`: one table, every row kept and flagged |
-| 4 | `pipeline/04_fire_days.py` | Fire-days per ≈1 km cell × UTC date × satellite |
-| 5 | `pipeline/05_harmonize.py` | Corrected monthly table, using the factors from `science/` |
+| 4 (done) | `pipeline/04_fire_days.py` | `derived/fire_days/`: one row per 0.01° cell × UTC day × satellite; NRT hotspots in static cells dropped; `derived/static_cells.parquet` |
+| 5 (done, v0) | `pipeline/05_harmonize.py` | `derived/harmonization_v0.json`: NOAA-20 from 2018-04; S-NPP × 1.015 for 2012-02..2018-03; MODIS Aqua × monthly factor (3.4–5.0) before. Replace with the `science/` method |
 | — | `pipeline/update_recent.py` | Last 5 days from the FIRMS API (`MODIS_NRT`, `VIIRS_NOAA20_NRT`) |
 
 Make each step re-runnable: skip work whose output already exists, and never re-download what is already in `raw/`.
@@ -32,6 +32,8 @@ First real run (MODIS 2000–2013): 5.69 M rows in 14 s, ~6 % flagged invalid. P
 
 ## API (`api/`)
 
+- **Status:** implemented in `main.py` (endpoints, errors), `store.py` (DuckDB + shapely area selection), `analysis.py` (calendar, averages, ranks, cards, briefing), `presets.py`. `/api/update` returns `status: failed` until the daily update exists.
+- Areas are matched by **cell centre** (0.01°) inside the polygon. A partial reference month is compared with the **same days** of other years. `estimated_fires` = connected burning cells (8 neighbours, same or next day) for the reference month.
 - FastAPI + DuckDB reading the Parquet in `DATA_DIR`. Settings come from `.env`: `DATA_DIR`, `API_PORT`, `CORS_ORIGINS`, `FIRMS_MAP_KEY`.
 - Implement **exactly** the endpoints, fields and error format of `docs/api-contract.md`. Response shapes must match `web/mocks/` (minus `_mock`).
 - An area with no fires returns 200 with zeros, never an error.

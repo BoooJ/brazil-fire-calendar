@@ -86,9 +86,14 @@ python infra/tools/make_mocks.py   # regenerate web/mocks/
 python infra/pipeline/01_download.py        # FIRMS yearly zips -> DATA_DIR/raw (one copy at a time)
 python infra/pipeline/02_extract_brazil.py  # Brazil CSVs -> DATA_DIR/brazil_csv
 python infra/pipeline/03_clean.py           # one flagged table -> DATA_DIR/clean/hotspots (Parquet)
+python infra/pipeline/04_fire_days.py       # fire-days on a 0.01 deg grid -> DATA_DIR/derived/fire_days
+python infra/pipeline/05_harmonize.py       # v0 conversion factors -> DATA_DIR/derived/harmonization_v0.json
+
+# API (loads in ~1 s; interactive docs at http://localhost:8000/docs)
+python -m uvicorn main:app --app-dir infra/api --port 8000
 ```
 
-API and website commands do not exist yet. **Add them here when they do.**
+Website commands do not exist yet. **Add them here when they do.**
 
 ## Conventions
 
@@ -100,11 +105,11 @@ API and website commands do not exist yet. **Add them here when they do.**
 ## Status — update when it changes
 
 - [x] Repo skeleton, API contract v0.1, mocks, team rules
-- [ ] FIRMS data downloaded: MODIS 2000–2026, S-NPP 2012–2026, NOAA-20 2018–2021 + 2026 are in (36 M rows). Still missing: NOAA-20 2022–2025 (archive requests 849174, 849175, 849182, 849183 pending at NASA)
+- [x] FIRMS data downloaded and cleaned: MODIS 2000–2026, S-NPP 2012-01-20 → 2026-11-02, NOAA-20 2018-04 → today (41.6 M rows). Final data until 2026-07-31 (VIIRS) / 2026-08-31 (MODIS), NRT after
 - [x] Pipeline steps 1–3: download → Brazil extraction → clean Parquet
-- [ ] Pipeline step 4–5: fire-days → harmonized monthly table
-- [ ] Harmonization method validated (science/)
-- [ ] API serving real data
+- [x] Pipeline steps 4–5: fire-days + **v0** harmonization (Brazil-wide factors; hold-out 2018–2019 median error 6.6 % on Brazil totals)
+- [ ] Harmonization method validated and refined (science/: per-block factors)
+- [x] API serving real data: every contract endpoint works (`/api/update` is still a stub)
 - [ ] Website on mocks → on real API
 - [ ] Daily update from the FIRMS API
 - [ ] Deployed online
