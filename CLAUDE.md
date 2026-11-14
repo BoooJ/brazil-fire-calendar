@@ -92,7 +92,7 @@ python infra/pipeline/05_harmonize.py       # v0 conversion factors -> DATA_DIR/
 # API (loads in ~1 s; interactive docs at http://localhost:8000/docs)
 python -m uvicorn main:app --app-dir infra/api --port 8000
 
-# website (React + Vite + MapLibre + ECharts)
+# website (React + Vite + MapLibre + ECharts): landing page at #/, the tool at #/app
 cd web && npm install && npm run dev   # http://localhost:5173 (mocks while VITE_API_BASE_URL is empty)
 cd web && npm run build                # type-check + production build
 ```
