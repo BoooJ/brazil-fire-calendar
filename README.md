@@ -54,6 +54,7 @@ NASA FIRMS files + API
 ## Repository layout
 
 ```
+CLAUDE.md           instructions for AI coding agents (also one in infra/, web/, science/)
 infra/              data pipeline + API          (owner: infrastructure)
   tools/make_mocks.py   generates the fake files in web/mocks/
 web/                the website                   (owner: UI/UX)

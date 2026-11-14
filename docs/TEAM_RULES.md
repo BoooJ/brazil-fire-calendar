@@ -52,6 +52,7 @@ Who decides:
 6. Someone takes a 2-minute look. Nobody available within 15 minutes? Merge it yourself if it runs.
 7. **One GitHub Issue per feature.** Assign yourself, close it when done.
 8. Clear commit messages: "Add calendar hover tooltip", not "fix".
+9. **AI agents** (Claude Code) read `CLAUDE.md` (at the root and in each folder). Update it in a pull request when a fact changes. Every `CLAUDE.md` change gets a quick human look.
 
 ## 6. The API contract
 

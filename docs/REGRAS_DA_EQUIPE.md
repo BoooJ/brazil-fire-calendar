@@ -52,6 +52,7 @@ Quem decide:
 6. Alguém dá uma olhada de 2 minutos. Ninguém disponível em 15 minutos? Façam o merge vocês mesmos, se estiver funcionando.
 7. **Uma Issue no GitHub por funcionalidade.** Atribuam a si mesmos e fechem quando terminar.
 8. Mensagens de commit claras: "Add calendar hover tooltip", e não "fix".
+9. **Agentes de IA** (Claude Code) leem o `CLAUDE.md` (na raiz e em cada pasta). Atualizem o arquivo em um pull request quando algum fato mudar. Toda mudança em um `CLAUDE.md` passa por uma olhada humana rápida.
 
 ## 6. O contrato da API
 
