@@ -57,7 +57,12 @@ FIRMS yearly country zips + archive request + FIRMS API (latest days)
 
 - Final data (SP) replaces near-real-time data (NRT) about 5 months later. **NRT has no `type` column.**
 - Area API: `/api/area/csv/{MAP_KEY}/{SOURCE}/{west,south,east,north}/{DAY_RANGE 1..5}/{YYYY-MM-DD}`. Sources include `MODIS_NRT`, `MODIS_SP`, `VIIRS_NOAA20_NRT`, `VIIRS_NOAA20_SP`, `VIIRS_SNPP_SP`. Limit: 5,000 transactions per 10 minutes.
-- **Column names have not been checked against a downloaded file yet.** Check before relying on them, then update this section.
+- **Yearly zip layout (checked 2026-11-14):** `modis/YYYY/modis_YYYY_<Country>.csv`, one CSV per country (e.g. `modis/2000/modis_2000_Brazil.csv`). Downloaded by `infra/pipeline/01_download.py` from `https://firms.modaps.eosdis.nasa.gov/data/country/zips/`.
+- **MODIS columns (checked):** `latitude, longitude, brightness, scan, track, acq_date (YYYY-MM-DD), acq_time (HHMM text, UTC, zero-padded), satellite (Terra/Aqua), instrument, confidence (0–100), version, bright_t31, frp, daynight (D/N), type`. Values of `type` seen: `0` vegetation fire, `2` other static land source, `3` offshore. The files say `version` = `6.2`, while the FIRMS page says C6.1: keep the value as given.
+- **Archive-request zips (checked):** `DL_FIRE_<SRC>_<id>.zip` with SRC `M-C61` (MODIS), `SV-C2` (S-NPP), `J1V-C2` (NOAA-20). Inside: `fire_archive_<SRC>_<id>.csv` (final), `fire_nrt_<SRC>_<id>.csv` (near-real-time), `Readme.txt`. Download with `infra/pipeline/01b_download_archive.py`; files stay on NASA's server 45 days. One account can have at most **20 pending requests**, each covering at most **1 year**.
+- **VIIRS columns in archive files (checked):** same names as MODIS (`brightness`, `bright_t31`, …); `confidence` is `l`/`n`/`h`; `satellite` is `SNPP` or `N20`. NRT files have no `type` column. The `viirs-jpss1_*` yearly zips are **not checked yet**: they may use `bright_ti4`/`bright_ti5`.
+- **2026 final vs NRT split (checked):** VIIRS final until 2026-07-31, MODIS final until 2026-08-31; NRT after that.
+- **Open question for science/:** MODIS yearly zips (2000–2025) say `version` `6.2`; the 2026 archive says `61.03` (final) and `6.1NRT`. Check whether the collections differ before harmonizing.
 
 ## Vocabulary (use these exact names in code)
 
@@ -77,11 +82,22 @@ python -m venv .venv          # then activate it
 pip install -r infra/requirements.txt
 python infra/tools/make_mocks.py   # regenerate web/mocks/
 
-cd web && npm install && npm run dev   # website on http://localhost:5173 (React + Vite + MapLibre + ECharts)
+# data pipeline (re-runnable; DATA_DIR comes from .env)
+python infra/pipeline/01_download.py        # FIRMS yearly zips -> DATA_DIR/raw (one copy at a time)
+python infra/pipeline/02_extract_brazil.py  # Brazil CSVs -> DATA_DIR/brazil_csv
+python infra/pipeline/03_clean.py           # one flagged table -> DATA_DIR/clean/hotspots (Parquet)
+python infra/pipeline/04_fire_days.py       # fire-days on a 0.01 deg grid -> DATA_DIR/derived/fire_days
+python infra/pipeline/05_harmonize.py       # v0 conversion factors -> DATA_DIR/derived/harmonization_v0.json
+
+# API (loads in ~1 s; interactive docs at http://localhost:8000/docs)
+python -m uvicorn main:app --app-dir infra/api --port 8000
+
+# website (React + Vite + MapLibre + ECharts)
+cd web && npm install && npm run dev   # http://localhost:5173 (mocks while VITE_API_BASE_URL is empty)
 cd web && npm run build                # type-check + production build
 ```
 
-Pipeline and API commands do not exist yet. **Add them here when they do.**
+**Add new commands here when you create them.**
 
 ## Conventions
 
@@ -93,11 +109,12 @@ Pipeline and API commands do not exist yet. **Add them here when they do.**
 ## Status — update when it changes
 
 - [x] Repo skeleton, API contract v0.1, mocks, team rules
-- [ ] FIRMS data downloaded and Brazil extracted
-- [ ] Pipeline (clean → Parquet → fire-days)
-- [ ] Harmonization method validated (science/)
-- [ ] API serving real data
-- [~] Website on mocks → on real API (on mocks: done; real API: pending)
+- [x] FIRMS data downloaded and cleaned: MODIS 2000–2026, S-NPP 2012-01-20 → 2026-11-02, NOAA-20 2018-04 → today (41.6 M rows). Final data until 2026-07-31 (VIIRS) / 2026-08-31 (MODIS), NRT after
+- [x] Pipeline steps 1–3: download → Brazil extraction → clean Parquet
+- [x] Pipeline steps 4–5: fire-days + **v0** harmonization (Brazil-wide factors; hold-out 2018–2019 median error 6.6 % on Brazil totals)
+- [ ] Harmonization method validated and refined (science/: per-block factors)
+- [x] API serving real data: every contract endpoint works (`/api/update` is still a stub)
+- [~] Website on mocks → on real API (on mocks: done; real API: pending, the API must be reachable first)
 - [ ] Daily update from the FIRMS API
 - [ ] Deployed online
 
