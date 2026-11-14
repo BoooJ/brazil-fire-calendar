@@ -1,0 +1,4225 @@
+{
+  "_mock": "FAKE DATA - for website development only. Shapes follow docs/api-contract.md; every number is invented.",
+  "query": {
+    "start": "2003-01-01",
+    "end": "2020-09-14",
+    "ref_date": "2020-09-14",
+    "area_km2": 266218
+  },
+  "data_updated": "2026-11-14T15:20:00Z",
+  "unit": {
+    "main": "corrected fire-days (NOAA-20 equivalent)",
+    "raw": "hotspots detected"
+  },
+  "calendar": [
+    {
+      "year": 2003,
+      "month": 1,
+      "count": 36,
+      "vs_avg_pct": -27.4,
+      "rank": 14,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 11,
+        "modis_aqua": 13,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2003,
+      "month": 2,
+      "count": 35,
+      "vs_avg_pct": -39.1,
+      "rank": 15,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 10,
+        "modis_aqua": 11,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 28
+    },
+    {
+      "year": 2003,
+      "month": 3,
+      "count": 32,
+      "vs_avg_pct": -45.3,
+      "rank": 14,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 10,
+        "modis_aqua": 10,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2003,
+      "month": 4,
+      "count": 95,
+      "vs_avg_pct": 30.0,
+      "rank": 4,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 28,
+        "modis_aqua": 36,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2003,
+      "month": 5,
+      "count": 183,
+      "vs_avg_pct": 25.5,
+      "rank": 6,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 62,
+        "modis_aqua": 63,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2003,
+      "month": 6,
+      "count": 255,
+      "vs_avg_pct": 35.3,
+      "rank": 4,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 84,
+        "modis_aqua": 94,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2003,
+      "month": 7,
+      "count": 280,
+      "vs_avg_pct": -22.2,
+      "rank": 12,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 85,
+        "modis_aqua": 86,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2003,
+      "month": 8,
+      "count": 460,
+      "vs_avg_pct": -31.9,
+      "rank": 13,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 142,
+        "modis_aqua": 152,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2003,
+      "month": 9,
+      "count": 632,
+      "vs_avg_pct": 11.8,
+      "rank": 6,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 214,
+        "modis_aqua": 198,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2003,
+      "month": 10,
+      "count": 321,
+      "vs_avg_pct": 14.6,
+      "rank": 6,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 107,
+        "modis_aqua": 118,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2003,
+      "month": 11,
+      "count": 70,
+      "vs_avg_pct": -37.4,
+      "rank": 12,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 21,
+        "modis_aqua": 22,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2003,
+      "month": 12,
+      "count": 38,
+      "vs_avg_pct": -18.3,
+      "rank": 11,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 12,
+        "modis_aqua": 14,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2004,
+      "month": 1,
+      "count": 39,
+      "vs_avg_pct": -21.4,
+      "rank": 11,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 13,
+        "modis_aqua": 15,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2004,
+      "month": 2,
+      "count": 20,
+      "vs_avg_pct": -65.2,
+      "rank": 18,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 7,
+        "modis_aqua": 7,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 29
+    },
+    {
+      "year": 2004,
+      "month": 3,
+      "count": 47,
+      "vs_avg_pct": -19.7,
+      "rank": 11,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 14,
+        "modis_aqua": 17,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2004,
+      "month": 4,
+      "count": 31,
+      "vs_avg_pct": -57.6,
+      "rank": 18,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 11,
+        "modis_aqua": 10,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2004,
+      "month": 5,
+      "count": 67,
+      "vs_avg_pct": -54.0,
+      "rank": 16,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 22,
+        "modis_aqua": 21,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2004,
+      "month": 6,
+      "count": 213,
+      "vs_avg_pct": 13.0,
+      "rank": 9,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 60,
+        "modis_aqua": 69,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2004,
+      "month": 7,
+      "count": 248,
+      "vs_avg_pct": -31.1,
+      "rank": 14,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 87,
+        "modis_aqua": 93,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2004,
+      "month": 8,
+      "count": 561,
+      "vs_avg_pct": -16.9,
+      "rank": 12,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 178,
+        "modis_aqua": 193,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2004,
+      "month": 9,
+      "count": 388,
+      "vs_avg_pct": -31.3,
+      "rank": 13,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 125,
+        "modis_aqua": 139,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2004,
+      "month": 10,
+      "count": 173,
+      "vs_avg_pct": -38.2,
+      "rank": 13,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 50,
+        "modis_aqua": 55,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2004,
+      "month": 11,
+      "count": 61,
+      "vs_avg_pct": -45.5,
+      "rank": 15,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 17,
+        "modis_aqua": 21,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2004,
+      "month": 12,
+      "count": 23,
+      "vs_avg_pct": -50.5,
+      "rank": 16,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 7,
+        "modis_aqua": 7,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2005,
+      "month": 1,
+      "count": 113,
+      "vs_avg_pct": 127.8,
+      "rank": 2,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 33,
+        "modis_aqua": 35,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2005,
+      "month": 2,
+      "count": 43,
+      "vs_avg_pct": -25.2,
+      "rank": 10,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 14,
+        "modis_aqua": 16,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 28
+    },
+    {
+      "year": 2005,
+      "month": 3,
+      "count": 23,
+      "vs_avg_pct": -60.7,
+      "rank": 18,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 7,
+        "modis_aqua": 7,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2005,
+      "month": 4,
+      "count": 58,
+      "vs_avg_pct": -20.7,
+      "rank": 13,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 21,
+        "modis_aqua": 19,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2005,
+      "month": 5,
+      "count": 79,
+      "vs_avg_pct": -45.8,
+      "rank": 14,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 23,
+        "modis_aqua": 26,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2005,
+      "month": 6,
+      "count": 254,
+      "vs_avg_pct": 34.7,
+      "rank": 6,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 80,
+        "modis_aqua": 96,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2005,
+      "month": 7,
+      "count": 406,
+      "vs_avg_pct": 12.8,
+      "rank": 5,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 123,
+        "modis_aqua": 153,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2005,
+      "month": 8,
+      "count": 679,
+      "vs_avg_pct": 0.6,
+      "rank": 7,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 222,
+        "modis_aqua": 231,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2005,
+      "month": 9,
+      "count": 320,
+      "vs_avg_pct": -43.4,
+      "rank": 16,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 107,
+        "modis_aqua": 102,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2005,
+      "month": 10,
+      "count": 159,
+      "vs_avg_pct": -43.2,
+      "rank": 14,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 52,
+        "modis_aqua": 53,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2005,
+      "month": 11,
+      "count": 129,
+      "vs_avg_pct": 15.3,
+      "rank": 6,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 44,
+        "modis_aqua": 41,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2005,
+      "month": 12,
+      "count": 39,
+      "vs_avg_pct": -16.1,
+      "rank": 10,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 13,
+        "modis_aqua": 12,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2006,
+      "month": 1,
+      "count": 49,
+      "vs_avg_pct": -1.2,
+      "rank": 9,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 15,
+        "modis_aqua": 18,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2006,
+      "month": 2,
+      "count": 61,
+      "vs_avg_pct": 6.1,
+      "rank": 6,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 21,
+        "modis_aqua": 22,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 28
+    },
+    {
+      "year": 2006,
+      "month": 3,
+      "count": 88,
+      "vs_avg_pct": 50.4,
+      "rank": 5,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 29,
+        "modis_aqua": 33,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2006,
+      "month": 4,
+      "count": 60,
+      "vs_avg_pct": -17.9,
+      "rank": 12,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 18,
+        "modis_aqua": 21,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2006,
+      "month": 5,
+      "count": 188,
+      "vs_avg_pct": 28.9,
+      "rank": 5,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 60,
+        "modis_aqua": 70,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2006,
+      "month": 6,
+      "count": 253,
+      "vs_avg_pct": 34.2,
+      "rank": 7,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 71,
+        "modis_aqua": 92,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2006,
+      "month": 7,
+      "count": 698,
+      "vs_avg_pct": 93.9,
+      "rank": 3,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 219,
+        "modis_aqua": 210,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2006,
+      "month": 8,
+      "count": 1436,
+      "vs_avg_pct": 112.7,
+      "rank": 3,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 498,
+        "modis_aqua": 498,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2006,
+      "month": 9,
+      "count": 1003,
+      "vs_avg_pct": 77.5,
+      "rank": 3,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 301,
+        "modis_aqua": 309,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2006,
+      "month": 10,
+      "count": 290,
+      "vs_avg_pct": 3.6,
+      "rank": 7,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 85,
+        "modis_aqua": 109,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2006,
+      "month": 11,
+      "count": 174,
+      "vs_avg_pct": 55.5,
+      "rank": 3,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 60,
+        "modis_aqua": 54,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2006,
+      "month": 12,
+      "count": 27,
+      "vs_avg_pct": -41.9,
+      "rank": 14,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 9,
+        "modis_aqua": 9,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2007,
+      "month": 1,
+      "count": 22,
+      "vs_avg_pct": -55.6,
+      "rank": 17,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 8,
+        "modis_aqua": 8,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2007,
+      "month": 2,
+      "count": 41,
+      "vs_avg_pct": -28.7,
+      "rank": 11,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 12,
+        "modis_aqua": 15,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 28
+    },
+    {
+      "year": 2007,
+      "month": 3,
+      "count": 24,
+      "vs_avg_pct": -59.0,
+      "rank": 17,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 8,
+        "modis_aqua": 9,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2007,
+      "month": 4,
+      "count": 43,
+      "vs_avg_pct": -41.2,
+      "rank": 16,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 14,
+        "modis_aqua": 14,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2007,
+      "month": 5,
+      "count": 124,
+      "vs_avg_pct": -15.0,
+      "rank": 10,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 42,
+        "modis_aqua": 45,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2007,
+      "month": 6,
+      "count": 98,
+      "vs_avg_pct": -48.0,
+      "rank": 17,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 34,
+        "modis_aqua": 35,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2007,
+      "month": 7,
+      "count": 195,
+      "vs_avg_pct": -45.8,
+      "rank": 16,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 59,
+        "modis_aqua": 60,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2007,
+      "month": 8,
+      "count": 393,
+      "vs_avg_pct": -41.8,
+      "rank": 17,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 127,
+        "modis_aqua": 118,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2007,
+      "month": 9,
+      "count": 360,
+      "vs_avg_pct": -36.3,
+      "rank": 15,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 114,
+        "modis_aqua": 121,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2007,
+      "month": 10,
+      "count": 146,
+      "vs_avg_pct": -47.9,
+      "rank": 15,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 45,
+        "modis_aqua": 53,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2007,
+      "month": 11,
+      "count": 46,
+      "vs_avg_pct": -58.9,
+      "rank": 17,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 13,
+        "modis_aqua": 15,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2007,
+      "month": 12,
+      "count": 18,
+      "vs_avg_pct": -61.3,
+      "rank": 17,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 6,
+        "modis_aqua": 6,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2008,
+      "month": 1,
+      "count": 72,
+      "vs_avg_pct": 45.2,
+      "rank": 4,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 21,
+        "modis_aqua": 24,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2008,
+      "month": 2,
+      "count": 38,
+      "vs_avg_pct": -33.9,
+      "rank": 13,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 11,
+        "modis_aqua": 14,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 29
+    },
+    {
+      "year": 2008,
+      "month": 3,
+      "count": 117,
+      "vs_avg_pct": 100.0,
+      "rank": 3,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 41,
+        "modis_aqua": 41,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2008,
+      "month": 4,
+      "count": 87,
+      "vs_avg_pct": 19.0,
+      "rank": 6,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 31,
+        "modis_aqua": 31,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2008,
+      "month": 5,
+      "count": 61,
+      "vs_avg_pct": -58.2,
+      "rank": 17,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 21,
+        "modis_aqua": 21,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2008,
+      "month": 6,
+      "count": 104,
+      "vs_avg_pct": -44.8,
+      "rank": 16,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 31,
+        "modis_aqua": 34,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2008,
+      "month": 7,
+      "count": 165,
+      "vs_avg_pct": -54.2,
+      "rank": 18,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 56,
+        "modis_aqua": 50,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2008,
+      "month": 8,
+      "count": 437,
+      "vs_avg_pct": -35.3,
+      "rank": 16,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 137,
+        "modis_aqua": 163,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2008,
+      "month": 9,
+      "count": 286,
+      "vs_avg_pct": -49.4,
+      "rank": 17,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 100,
+        "modis_aqua": 108,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2008,
+      "month": 10,
+      "count": 200,
+      "vs_avg_pct": -28.6,
+      "rank": 10,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 60,
+        "modis_aqua": 64,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2008,
+      "month": 11,
+      "count": 55,
+      "vs_avg_pct": -50.8,
+      "rank": 16,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 17,
+        "modis_aqua": 17,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2008,
+      "month": 12,
+      "count": 40,
+      "vs_avg_pct": -14.0,
+      "rank": 9,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 12,
+        "modis_aqua": 14,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2009,
+      "month": 1,
+      "count": 32,
+      "vs_avg_pct": -35.5,
+      "rank": 16,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 10,
+        "modis_aqua": 10,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2009,
+      "month": 2,
+      "count": 25,
+      "vs_avg_pct": -56.5,
+      "rank": 17,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 9,
+        "modis_aqua": 8,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 28
+    },
+    {
+      "year": 2009,
+      "month": 3,
+      "count": 25,
+      "vs_avg_pct": -57.3,
+      "rank": 15,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 9,
+        "modis_aqua": 9,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2009,
+      "month": 4,
+      "count": 39,
+      "vs_avg_pct": -46.6,
+      "rank": 17,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 13,
+        "modis_aqua": 13,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2009,
+      "month": 5,
+      "count": 100,
+      "vs_avg_pct": -31.4,
+      "rank": 12,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 33,
+        "modis_aqua": 36,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2009,
+      "month": 6,
+      "count": 87,
+      "vs_avg_pct": -53.8,
+      "rank": 18,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 29,
+        "modis_aqua": 33,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2009,
+      "month": 7,
+      "count": 269,
+      "vs_avg_pct": -25.3,
+      "rank": 13,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 92,
+        "modis_aqua": 99,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2009,
+      "month": 8,
+      "count": 351,
+      "vs_avg_pct": -48.0,
+      "rank": 18,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 109,
+        "modis_aqua": 120,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2009,
+      "month": 9,
+      "count": 450,
+      "vs_avg_pct": -20.4,
+      "rank": 11,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 161,
+        "modis_aqua": 158,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2009,
+      "month": 10,
+      "count": 142,
+      "vs_avg_pct": -49.3,
+      "rank": 16,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 51,
+        "modis_aqua": 46,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2009,
+      "month": 11,
+      "count": 65,
+      "vs_avg_pct": -41.9,
+      "rank": 14,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 22,
+        "modis_aqua": 21,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2009,
+      "month": 12,
+      "count": 25,
+      "vs_avg_pct": -46.2,
+      "rank": 15,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 8,
+        "modis_aqua": 8,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2010,
+      "month": 1,
+      "count": 15,
+      "vs_avg_pct": -69.8,
+      "rank": 18,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 5,
+        "modis_aqua": 6,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2010,
+      "month": 2,
+      "count": 34,
+      "vs_avg_pct": -40.9,
+      "rank": 16,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 11,
+        "modis_aqua": 12,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 28
+    },
+    {
+      "year": 2010,
+      "month": 3,
+      "count": 25,
+      "vs_avg_pct": -57.3,
+      "rank": 15,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 8,
+        "modis_aqua": 8,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2010,
+      "month": 4,
+      "count": 54,
+      "vs_avg_pct": -26.1,
+      "rank": 14,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 18,
+        "modis_aqua": 18,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2010,
+      "month": 5,
+      "count": 73,
+      "vs_avg_pct": -49.9,
+      "rank": 15,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 22,
+        "modis_aqua": 23,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2010,
+      "month": 6,
+      "count": 109,
+      "vs_avg_pct": -42.2,
+      "rank": 15,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 35,
+        "modis_aqua": 39,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2010,
+      "month": 7,
+      "count": 226,
+      "vs_avg_pct": -37.2,
+      "rank": 15,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 67,
+        "modis_aqua": 72,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2010,
+      "month": 8,
+      "count": 447,
+      "vs_avg_pct": -33.8,
+      "rank": 14,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 160,
+        "modis_aqua": 154,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2010,
+      "month": 9,
+      "count": 591,
+      "vs_avg_pct": 4.6,
+      "rank": 7,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 207,
+        "modis_aqua": 204,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2010,
+      "month": 10,
+      "count": 289,
+      "vs_avg_pct": 3.2,
+      "rank": 8,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 100,
+        "modis_aqua": 96,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2010,
+      "month": 11,
+      "count": 73,
+      "vs_avg_pct": -34.8,
+      "rank": 11,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 26,
+        "modis_aqua": 23,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2010,
+      "month": 12,
+      "count": 44,
+      "vs_avg_pct": -5.4,
+      "rank": 8,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 14,
+        "modis_aqua": 15,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2011,
+      "month": 1,
+      "count": 49,
+      "vs_avg_pct": -1.2,
+      "rank": 9,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 16,
+        "modis_aqua": 18,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2011,
+      "month": 2,
+      "count": 40,
+      "vs_avg_pct": -30.4,
+      "rank": 12,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 12,
+        "modis_aqua": 13,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 28
+    },
+    {
+      "year": 2011,
+      "month": 3,
+      "count": 62,
+      "vs_avg_pct": 6.0,
+      "rank": 8,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 19,
+        "modis_aqua": 20,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2011,
+      "month": 4,
+      "count": 92,
+      "vs_avg_pct": 25.9,
+      "rank": 5,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 33,
+        "modis_aqua": 33,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2011,
+      "month": 5,
+      "count": 264,
+      "vs_avg_pct": 81.1,
+      "rank": 3,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 85,
+        "modis_aqua": 93,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2011,
+      "month": 6,
+      "count": 169,
+      "vs_avg_pct": -10.3,
+      "rank": 10,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 55,
+        "modis_aqua": 55,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2011,
+      "month": 7,
+      "count": 504,
+      "vs_avg_pct": 40.0,
+      "rank": 4,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 144,
+        "modis_aqua": 153,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2011,
+      "month": 8,
+      "count": 711,
+      "vs_avg_pct": 5.3,
+      "rank": 6,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 254,
+        "modis_aqua": 261,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2011,
+      "month": 9,
+      "count": 987,
+      "vs_avg_pct": 74.7,
+      "rank": 4,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 328,
+        "modis_aqua": 368,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2011,
+      "month": 10,
+      "count": 393,
+      "vs_avg_pct": 40.4,
+      "rank": 4,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 113,
+        "modis_aqua": 129,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2011,
+      "month": 11,
+      "count": 185,
+      "vs_avg_pct": 65.3,
+      "rank": 2,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 62,
+        "modis_aqua": 60,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2011,
+      "month": 12,
+      "count": 71,
+      "vs_avg_pct": 52.7,
+      "rank": 4,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 22,
+        "modis_aqua": 23,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2012,
+      "month": 1,
+      "count": 50,
+      "vs_avg_pct": 0.8,
+      "rank": 8,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 15,
+        "modis_aqua": 16,
+        "viirs_snpp": 63,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2012,
+      "month": 2,
+      "count": 58,
+      "vs_avg_pct": 0.9,
+      "rank": 7,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 19,
+        "modis_aqua": 22,
+        "viirs_snpp": 178,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 29
+    },
+    {
+      "year": 2012,
+      "month": 3,
+      "count": 52,
+      "vs_avg_pct": -11.1,
+      "rank": 9,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 15,
+        "modis_aqua": 18,
+        "viirs_snpp": 163,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2012,
+      "month": 4,
+      "count": 70,
+      "vs_avg_pct": -4.2,
+      "rank": 7,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 24,
+        "modis_aqua": 24,
+        "viirs_snpp": 226,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2012,
+      "month": 5,
+      "count": 53,
+      "vs_avg_pct": -63.6,
+      "rank": 18,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 19,
+        "modis_aqua": 17,
+        "viirs_snpp": 166,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2012,
+      "month": 6,
+      "count": 322,
+      "vs_avg_pct": 70.8,
+      "rank": 2,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 113,
+        "modis_aqua": 119,
+        "viirs_snpp": 955,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2012,
+      "month": 7,
+      "count": 166,
+      "vs_avg_pct": -53.9,
+      "rank": 17,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 53,
+        "modis_aqua": 61,
+        "viirs_snpp": 493,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2012,
+      "month": 8,
+      "count": 597,
+      "vs_avg_pct": -11.6,
+      "rank": 11,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 193,
+        "modis_aqua": 196,
+        "viirs_snpp": 1869,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2012,
+      "month": 9,
+      "count": 508,
+      "vs_avg_pct": -10.1,
+      "rank": 9,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 150,
+        "modis_aqua": 181,
+        "viirs_snpp": 1597,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2012,
+      "month": 10,
+      "count": 396,
+      "vs_avg_pct": 41.4,
+      "rank": 3,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 137,
+        "modis_aqua": 131,
+        "viirs_snpp": 1266,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2012,
+      "month": 11,
+      "count": 170,
+      "vs_avg_pct": 51.9,
+      "rank": 5,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 48,
+        "modis_aqua": 58,
+        "viirs_snpp": 536,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2012,
+      "month": 12,
+      "count": 72,
+      "vs_avg_pct": 54.8,
+      "rank": 2,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 23,
+        "modis_aqua": 24,
+        "viirs_snpp": 233,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2013,
+      "month": 1,
+      "count": 36,
+      "vs_avg_pct": -27.4,
+      "rank": 14,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 13,
+        "modis_aqua": 12,
+        "viirs_snpp": 116,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2013,
+      "month": 2,
+      "count": 76,
+      "vs_avg_pct": 32.2,
+      "rank": 5,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 23,
+        "modis_aqua": 27,
+        "viirs_snpp": 247,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 28
+    },
+    {
+      "year": 2013,
+      "month": 3,
+      "count": 145,
+      "vs_avg_pct": 147.9,
+      "rank": 2,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 52,
+        "modis_aqua": 52,
+        "viirs_snpp": 444,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2013,
+      "month": 4,
+      "count": 151,
+      "vs_avg_pct": 106.6,
+      "rank": 2,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 48,
+        "modis_aqua": 54,
+        "viirs_snpp": 505,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2013,
+      "month": 5,
+      "count": 173,
+      "vs_avg_pct": 18.7,
+      "rank": 7,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 54,
+        "modis_aqua": 54,
+        "viirs_snpp": 540,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2013,
+      "month": 6,
+      "count": 265,
+      "vs_avg_pct": 40.6,
+      "rank": 3,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 76,
+        "modis_aqua": 98,
+        "viirs_snpp": 841,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2013,
+      "month": 7,
+      "count": 390,
+      "vs_avg_pct": 8.4,
+      "rank": 9,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 117,
+        "modis_aqua": 117,
+        "viirs_snpp": 1280,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2013,
+      "month": 8,
+      "count": 762,
+      "vs_avg_pct": 12.9,
+      "rank": 5,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 240,
+        "modis_aqua": 250,
+        "viirs_snpp": 2402,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2013,
+      "month": 9,
+      "count": 556,
+      "vs_avg_pct": -1.6,
+      "rank": 8,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 193,
+        "modis_aqua": 176,
+        "viirs_snpp": 1685,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2013,
+      "month": 10,
+      "count": 186,
+      "vs_avg_pct": -33.6,
+      "rank": 11,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 61,
+        "modis_aqua": 71,
+        "viirs_snpp": 554,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2013,
+      "month": 11,
+      "count": 122,
+      "vs_avg_pct": 9.0,
+      "rank": 7,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 40,
+        "modis_aqua": 43,
+        "viirs_snpp": 396,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2013,
+      "month": 12,
+      "count": 61,
+      "vs_avg_pct": 31.2,
+      "rank": 6,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 21,
+        "modis_aqua": 20,
+        "viirs_snpp": 200,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2014,
+      "month": 1,
+      "count": 52,
+      "vs_avg_pct": 4.8,
+      "rank": 7,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 17,
+        "modis_aqua": 19,
+        "viirs_snpp": 166,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2014,
+      "month": 2,
+      "count": 92,
+      "vs_avg_pct": 60.0,
+      "rank": 3,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 31,
+        "modis_aqua": 30,
+        "viirs_snpp": 282,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 28
+    },
+    {
+      "year": 2014,
+      "month": 3,
+      "count": 48,
+      "vs_avg_pct": -17.9,
+      "rank": 10,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 15,
+        "modis_aqua": 17,
+        "viirs_snpp": 139,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2014,
+      "month": 4,
+      "count": 143,
+      "vs_avg_pct": 95.6,
+      "rank": 3,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 46,
+        "modis_aqua": 53,
+        "viirs_snpp": 472,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2014,
+      "month": 5,
+      "count": 151,
+      "vs_avg_pct": 3.6,
+      "rank": 9,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 52,
+        "modis_aqua": 54,
+        "viirs_snpp": 453,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2014,
+      "month": 6,
+      "count": 113,
+      "vs_avg_pct": -40.1,
+      "rank": 14,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 32,
+        "modis_aqua": 39,
+        "viirs_snpp": 347,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2014,
+      "month": 7,
+      "count": 400,
+      "vs_avg_pct": 11.1,
+      "rank": 6,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 138,
+        "modis_aqua": 150,
+        "viirs_snpp": 1146,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2014,
+      "month": 8,
+      "count": 803,
+      "vs_avg_pct": 18.9,
+      "rank": 4,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 239,
+        "modis_aqua": 245,
+        "viirs_snpp": 2645,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2014,
+      "month": 9,
+      "count": 374,
+      "vs_avg_pct": -33.8,
+      "rank": 14,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 109,
+        "modis_aqua": 141,
+        "viirs_snpp": 1115,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2014,
+      "month": 10,
+      "count": 139,
+      "vs_avg_pct": -50.4,
+      "rank": 17,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 46,
+        "modis_aqua": 50,
+        "viirs_snpp": 468,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2014,
+      "month": 11,
+      "count": 99,
+      "vs_avg_pct": -11.5,
+      "rank": 10,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 31,
+        "modis_aqua": 30,
+        "viirs_snpp": 306,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2014,
+      "month": 12,
+      "count": 36,
+      "vs_avg_pct": -22.6,
+      "rank": 12,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 13,
+        "modis_aqua": 13,
+        "viirs_snpp": 103,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2015,
+      "month": 1,
+      "count": 77,
+      "vs_avg_pct": 55.2,
+      "rank": 3,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 24,
+        "modis_aqua": 24,
+        "viirs_snpp": 221,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2015,
+      "month": 2,
+      "count": 45,
+      "vs_avg_pct": -21.7,
+      "rank": 9,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 15,
+        "modis_aqua": 16,
+        "viirs_snpp": 127,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 28
+    },
+    {
+      "year": 2015,
+      "month": 3,
+      "count": 41,
+      "vs_avg_pct": -29.9,
+      "rank": 13,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 13,
+        "modis_aqua": 13,
+        "viirs_snpp": 134,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2015,
+      "month": 4,
+      "count": 66,
+      "vs_avg_pct": -9.7,
+      "rank": 11,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 23,
+        "modis_aqua": 20,
+        "viirs_snpp": 219,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2015,
+      "month": 5,
+      "count": 92,
+      "vs_avg_pct": -36.9,
+      "rank": 13,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 27,
+        "modis_aqua": 32,
+        "viirs_snpp": 259,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2015,
+      "month": 6,
+      "count": 248,
+      "vs_avg_pct": 31.6,
+      "rank": 8,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 76,
+        "modis_aqua": 78,
+        "viirs_snpp": 702,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2015,
+      "month": 7,
+      "count": 393,
+      "vs_avg_pct": 9.2,
+      "rank": 8,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 125,
+        "modis_aqua": 142,
+        "viirs_snpp": 1221,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2015,
+      "month": 8,
+      "count": 643,
+      "vs_avg_pct": -4.8,
+      "rank": 8,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 182,
+        "modis_aqua": 233,
+        "viirs_snpp": 2135,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2015,
+      "month": 9,
+      "count": 269,
+      "vs_avg_pct": -52.4,
+      "rank": 18,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 77,
+        "modis_aqua": 91,
+        "viirs_snpp": 818,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2015,
+      "month": 10,
+      "count": 231,
+      "vs_avg_pct": -17.5,
+      "rank": 9,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 66,
+        "modis_aqua": 71,
+        "viirs_snpp": 731,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2015,
+      "month": 11,
+      "count": 68,
+      "vs_avg_pct": -39.2,
+      "rank": 13,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 22,
+        "modis_aqua": 22,
+        "viirs_snpp": 231,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2015,
+      "month": 12,
+      "count": 46,
+      "vs_avg_pct": -1.1,
+      "rank": 7,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 13,
+        "modis_aqua": 16,
+        "viirs_snpp": 152,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2016,
+      "month": 1,
+      "count": 69,
+      "vs_avg_pct": 39.1,
+      "rank": 5,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 22,
+        "modis_aqua": 22,
+        "viirs_snpp": 207,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2016,
+      "month": 2,
+      "count": 55,
+      "vs_avg_pct": -4.3,
+      "rank": 8,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 17,
+        "modis_aqua": 19,
+        "viirs_snpp": 166,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 29
+    },
+    {
+      "year": 2016,
+      "month": 3,
+      "count": 89,
+      "vs_avg_pct": 52.1,
+      "rank": 4,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 29,
+        "modis_aqua": 31,
+        "viirs_snpp": 267,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2016,
+      "month": 4,
+      "count": 67,
+      "vs_avg_pct": -8.3,
+      "rank": 10,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 23,
+        "modis_aqua": 25,
+        "viirs_snpp": 217,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2016,
+      "month": 5,
+      "count": 160,
+      "vs_avg_pct": 9.7,
+      "rank": 8,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 52,
+        "modis_aqua": 51,
+        "viirs_snpp": 511,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2016,
+      "month": 6,
+      "count": 167,
+      "vs_avg_pct": -11.4,
+      "rank": 11,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 54,
+        "modis_aqua": 61,
+        "viirs_snpp": 552,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2016,
+      "month": 7,
+      "count": 717,
+      "vs_avg_pct": 99.2,
+      "rank": 2,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 238,
+        "modis_aqua": 217,
+        "viirs_snpp": 2407,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2016,
+      "month": 8,
+      "count": 614,
+      "vs_avg_pct": -9.1,
+      "rank": 10,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 206,
+        "modis_aqua": 199,
+        "viirs_snpp": 1844,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2016,
+      "month": 9,
+      "count": 1069,
+      "vs_avg_pct": 89.2,
+      "rank": 2,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 334,
+        "modis_aqua": 333,
+        "viirs_snpp": 3399,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2016,
+      "month": 10,
+      "count": 352,
+      "vs_avg_pct": 25.7,
+      "rank": 5,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 110,
+        "modis_aqua": 115,
+        "viirs_snpp": 1064,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2016,
+      "month": 11,
+      "count": 171,
+      "vs_avg_pct": 52.8,
+      "rank": 4,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 49,
+        "modis_aqua": 52,
+        "viirs_snpp": 495,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2016,
+      "month": 12,
+      "count": 67,
+      "vs_avg_pct": 44.1,
+      "rank": 5,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 22,
+        "modis_aqua": 23,
+        "viirs_snpp": 205,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2017,
+      "month": 1,
+      "count": 38,
+      "vs_avg_pct": -23.4,
+      "rank": 12,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 12,
+        "modis_aqua": 13,
+        "viirs_snpp": 117,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2017,
+      "month": 2,
+      "count": 37,
+      "vs_avg_pct": -35.7,
+      "rank": 14,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 12,
+        "modis_aqua": 11,
+        "viirs_snpp": 110,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 28
+    },
+    {
+      "year": 2017,
+      "month": 3,
+      "count": 43,
+      "vs_avg_pct": -26.5,
+      "rank": 12,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 13,
+        "modis_aqua": 13,
+        "viirs_snpp": 140,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2017,
+      "month": 4,
+      "count": 68,
+      "vs_avg_pct": -7.0,
+      "rank": 9,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 22,
+        "modis_aqua": 25,
+        "viirs_snpp": 223,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2017,
+      "month": 5,
+      "count": 241,
+      "vs_avg_pct": 65.3,
+      "rank": 4,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 79,
+        "modis_aqua": 86,
+        "viirs_snpp": 735,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2017,
+      "month": 6,
+      "count": 151,
+      "vs_avg_pct": -19.9,
+      "rank": 12,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 52,
+        "modis_aqua": 53,
+        "viirs_snpp": 498,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2017,
+      "month": 7,
+      "count": 297,
+      "vs_avg_pct": -17.5,
+      "rank": 11,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 96,
+        "modis_aqua": 99,
+        "viirs_snpp": 887,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2017,
+      "month": 8,
+      "count": 639,
+      "vs_avg_pct": -5.3,
+      "rank": 9,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 205,
+        "modis_aqua": 198,
+        "viirs_snpp": 1985,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2017,
+      "month": 9,
+      "count": 455,
+      "vs_avg_pct": -19.5,
+      "rank": 10,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 157,
+        "modis_aqua": 166,
+        "viirs_snpp": 1339,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2017,
+      "month": 10,
+      "count": 183,
+      "vs_avg_pct": -34.6,
+      "rank": 12,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 62,
+        "modis_aqua": 64,
+        "viirs_snpp": 532,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2017,
+      "month": 11,
+      "count": 114,
+      "vs_avg_pct": 1.9,
+      "rank": 8,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 39,
+        "modis_aqua": 38,
+        "viirs_snpp": 382,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2017,
+      "month": 12,
+      "count": 72,
+      "vs_avg_pct": 54.8,
+      "rank": 2,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 25,
+        "modis_aqua": 25,
+        "viirs_snpp": 208,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2018,
+      "month": 1,
+      "count": 38,
+      "vs_avg_pct": -23.4,
+      "rank": 12,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 11,
+        "modis_aqua": 13,
+        "viirs_snpp": 113,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2018,
+      "month": 2,
+      "count": 79,
+      "vs_avg_pct": 37.4,
+      "rank": 4,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 25,
+        "modis_aqua": 27,
+        "viirs_snpp": 247,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 28
+    },
+    {
+      "year": 2018,
+      "month": 3,
+      "count": 70,
+      "vs_avg_pct": 19.7,
+      "rank": 6,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 24,
+        "modis_aqua": 25,
+        "viirs_snpp": 210,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2018,
+      "month": 4,
+      "count": 49,
+      "vs_avg_pct": -33.0,
+      "rank": 15,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 16,
+        "modis_aqua": 15,
+        "viirs_snpp": 144,
+        "viirs_noaa20": 145
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2018,
+      "month": 5,
+      "count": 105,
+      "vs_avg_pct": -28.0,
+      "rank": 11,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 31,
+        "modis_aqua": 35,
+        "viirs_snpp": 312,
+        "viirs_noaa20": 309
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2018,
+      "month": 6,
+      "count": 142,
+      "vs_avg_pct": -24.7,
+      "rank": 13,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 49,
+        "modis_aqua": 50,
+        "viirs_snpp": 403,
+        "viirs_noaa20": 391
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2018,
+      "month": 7,
+      "count": 394,
+      "vs_avg_pct": 9.5,
+      "rank": 7,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 133,
+        "modis_aqua": 139,
+        "viirs_snpp": 1317,
+        "viirs_noaa20": 1270
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2018,
+      "month": 8,
+      "count": 444,
+      "vs_avg_pct": -34.2,
+      "rank": 15,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 129,
+        "modis_aqua": 146,
+        "viirs_snpp": 1501,
+        "viirs_noaa20": 1385
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2018,
+      "month": 9,
+      "count": 423,
+      "vs_avg_pct": -25.1,
+      "rank": 12,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 150,
+        "modis_aqua": 137,
+        "viirs_snpp": 1280,
+        "viirs_noaa20": 1343
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2018,
+      "month": 10,
+      "count": 400,
+      "vs_avg_pct": 42.9,
+      "rank": 2,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 139,
+        "modis_aqua": 144,
+        "viirs_snpp": 1284,
+        "viirs_noaa20": 1206
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2018,
+      "month": 11,
+      "count": 105,
+      "vs_avg_pct": -6.2,
+      "rank": 9,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 32,
+        "modis_aqua": 35,
+        "viirs_snpp": 305,
+        "viirs_noaa20": 297
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2018,
+      "month": 12,
+      "count": 76,
+      "vs_avg_pct": 63.4,
+      "rank": 1,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 23,
+        "modis_aqua": 24,
+        "viirs_snpp": 216,
+        "viirs_noaa20": 244
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2019,
+      "month": 1,
+      "count": 56,
+      "vs_avg_pct": 12.9,
+      "rank": 6,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 16,
+        "modis_aqua": 18,
+        "viirs_snpp": 162,
+        "viirs_noaa20": 179
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2019,
+      "month": 2,
+      "count": 199,
+      "vs_avg_pct": 246.1,
+      "rank": 2,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 58,
+        "modis_aqua": 67,
+        "viirs_snpp": 606,
+        "viirs_noaa20": 618
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 28
+    },
+    {
+      "year": 2019,
+      "month": 3,
+      "count": 64,
+      "vs_avg_pct": 9.4,
+      "rank": 7,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 19,
+        "modis_aqua": 23,
+        "viirs_snpp": 196,
+        "viirs_noaa20": 193
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2019,
+      "month": 4,
+      "count": 70,
+      "vs_avg_pct": -4.2,
+      "rank": 7,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 22,
+        "modis_aqua": 26,
+        "viirs_snpp": 211,
+        "viirs_noaa20": 229
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2019,
+      "month": 5,
+      "count": 365,
+      "vs_avg_pct": 150.3,
+      "rank": 2,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 110,
+        "modis_aqua": 121,
+        "viirs_snpp": 1138,
+        "viirs_noaa20": 1197
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2019,
+      "month": 6,
+      "count": 255,
+      "vs_avg_pct": 35.3,
+      "rank": 4,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 84,
+        "modis_aqua": 94,
+        "viirs_snpp": 799,
+        "viirs_noaa20": 704
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2019,
+      "month": 7,
+      "count": 370,
+      "vs_avg_pct": 2.8,
+      "rank": 10,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 112,
+        "modis_aqua": 138,
+        "viirs_snpp": 1069,
+        "viirs_noaa20": 1096
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2019,
+      "month": 8,
+      "count": 1500,
+      "vs_avg_pct": 122.2,
+      "rank": 2,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 474,
+        "modis_aqua": 492,
+        "viirs_snpp": 4224,
+        "viirs_noaa20": 4098
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2019,
+      "month": 9,
+      "count": 936,
+      "vs_avg_pct": 65.6,
+      "rank": 5,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 337,
+        "modis_aqua": 309,
+        "viirs_snpp": 2637,
+        "viirs_noaa20": 3050
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2019,
+      "month": 10,
+      "count": 760,
+      "vs_avg_pct": 171.4,
+      "rank": 1,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 261,
+        "modis_aqua": 236,
+        "viirs_snpp": 2259,
+        "viirs_noaa20": 2430
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2019,
+      "month": 11,
+      "count": 195,
+      "vs_avg_pct": 74.3,
+      "rank": 1,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 66,
+        "modis_aqua": 65,
+        "viirs_snpp": 547,
+        "viirs_noaa20": 536
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2019,
+      "month": 12,
+      "count": 35,
+      "vs_avg_pct": -24.7,
+      "rank": 13,
+      "of_years": 17,
+      "detected": {
+        "modis_terra": 11,
+        "modis_aqua": 13,
+        "viirs_snpp": 109,
+        "viirs_noaa20": 97
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2020,
+      "month": 1,
+      "count": 185,
+      "vs_avg_pct": 273.0,
+      "rank": 1,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 58,
+        "modis_aqua": 67,
+        "viirs_snpp": 569,
+        "viirs_noaa20": 512
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2020,
+      "month": 2,
+      "count": 384,
+      "vs_avg_pct": 567.8,
+      "rank": 1,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 108,
+        "modis_aqua": 131,
+        "viirs_snpp": 1131,
+        "viirs_noaa20": 1070
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 29
+    },
+    {
+      "year": 2020,
+      "month": 3,
+      "count": 188,
+      "vs_avg_pct": 221.4,
+      "rank": 1,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 56,
+        "modis_aqua": 63,
+        "viirs_snpp": 601,
+        "viirs_noaa20": 517
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2020,
+      "month": 4,
+      "count": 325,
+      "vs_avg_pct": 344.6,
+      "rank": 1,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 117,
+        "modis_aqua": 112,
+        "viirs_snpp": 986,
+        "viirs_noaa20": 969
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2020,
+      "month": 5,
+      "count": 684,
+      "vs_avg_pct": 369.1,
+      "rank": 1,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 232,
+        "modis_aqua": 240,
+        "viirs_snpp": 2232,
+        "viirs_noaa20": 2149
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2020,
+      "month": 6,
+      "count": 756,
+      "vs_avg_pct": 301.1,
+      "rank": 1,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 245,
+        "modis_aqua": 276,
+        "viirs_snpp": 2196,
+        "viirs_noaa20": 2395
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 30
+    },
+    {
+      "year": 2020,
+      "month": 7,
+      "count": 1469,
+      "vs_avg_pct": 308.2,
+      "rank": 1,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 486,
+        "modis_aqua": 536,
+        "viirs_snpp": 4169,
+        "viirs_noaa20": 4650
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2020,
+      "month": 8,
+      "count": 2532,
+      "vs_avg_pct": 275.1,
+      "rank": 1,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 718,
+        "modis_aqua": 800,
+        "viirs_snpp": 7153,
+        "viirs_noaa20": 8254
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": false,
+      "days_covered": 31
+    },
+    {
+      "year": 2020,
+      "month": 9,
+      "count": 2520,
+      "vs_avg_pct": 855.6,
+      "rank": 1,
+      "of_years": 18,
+      "detected": {
+        "modis_terra": 815,
+        "modis_aqua": 807,
+        "viirs_snpp": 8195,
+        "viirs_noaa20": 7093
+      },
+      "provisional": false,
+      "uncertain": false,
+      "partial": true,
+      "days_covered": 14
+    }
+  ],
+  "average_by_month": [
+    {
+      "month": 1,
+      "mean": 49.6,
+      "median": 49,
+      "p10": 28.0,
+      "p90": 74.0,
+      "years": 17
+    },
+    {
+      "month": 2,
+      "mean": 57.5,
+      "median": 43,
+      "p10": 30.4,
+      "p90": 84.2,
+      "years": 17
+    },
+    {
+      "month": 3,
+      "mean": 58.5,
+      "median": 48,
+      "p10": 24.6,
+      "p90": 100.2,
+      "years": 17
+    },
+    {
+      "month": 4,
+      "mean": 73.1,
+      "median": 67,
+      "p10": 41.4,
+      "p90": 114.2,
+      "years": 17
+    },
+    {
+      "month": 5,
+      "mean": 145.8,
+      "median": 124,
+      "p10": 64.6,
+      "p90": 250.2,
+      "years": 17
+    },
+    {
+      "month": 6,
+      "mean": 188.5,
+      "median": 169,
+      "p10": 101.6,
+      "p90": 259.0,
+      "years": 17
+    },
+    {
+      "month": 7,
+      "mean": 359.9,
+      "median": 370,
+      "p10": 183.4,
+      "p90": 581.6,
+      "years": 17
+    },
+    {
+      "month": 8,
+      "mean": 675.1,
+      "median": 614,
+      "p10": 419.4,
+      "p90": 1056.2,
+      "years": 17
+    },
+    {
+      "month": 9,
+      "mean": 565.1,
+      "median": 455,
+      "p10": 306.4,
+      "p90": 993.4,
+      "years": 17
+    },
+    {
+      "month": 10,
+      "mean": 280.0,
+      "median": 231,
+      "p10": 144.4,
+      "p90": 397.6,
+      "years": 17
+    },
+    {
+      "month": 11,
+      "mean": 111.9,
+      "median": 105,
+      "p10": 58.6,
+      "p90": 178.4,
+      "years": 17
+    },
+    {
+      "month": 12,
+      "mean": 46.5,
+      "median": 40,
+      "p10": 24.2,
+      "p90": 72.0,
+      "years": 17
+    }
+  ],
+  "average_period": {
+    "from": 2003,
+    "to": 2019
+  },
+  "yearly": [
+    {
+      "year": 2003,
+      "count": 2437,
+      "detected": {
+        "modis_terra": 786,
+        "modis_aqua": 817,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "complete": true
+    },
+    {
+      "year": 2004,
+      "count": 1871,
+      "detected": {
+        "modis_terra": 591,
+        "modis_aqua": 647,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "complete": true
+    },
+    {
+      "year": 2005,
+      "count": 2302,
+      "detected": {
+        "modis_terra": 739,
+        "modis_aqua": 791,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "complete": true
+    },
+    {
+      "year": 2006,
+      "count": 4327,
+      "detected": {
+        "modis_terra": 1386,
+        "modis_aqua": 1445,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "complete": true
+    },
+    {
+      "year": 2007,
+      "count": 1510,
+      "detected": {
+        "modis_terra": 482,
+        "modis_aqua": 499,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "complete": true
+    },
+    {
+      "year": 2008,
+      "count": 1662,
+      "detected": {
+        "modis_terra": 538,
+        "modis_aqua": 581,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "complete": true
+    },
+    {
+      "year": 2009,
+      "count": 1610,
+      "detected": {
+        "modis_terra": 546,
+        "modis_aqua": 561,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "complete": true
+    },
+    {
+      "year": 2010,
+      "count": 1980,
+      "detected": {
+        "modis_terra": 673,
+        "modis_aqua": 670,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "complete": true
+    },
+    {
+      "year": 2011,
+      "count": 3527,
+      "detected": {
+        "modis_terra": 1143,
+        "modis_aqua": 1226,
+        "viirs_snpp": null,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "complete": true
+    },
+    {
+      "year": 2012,
+      "count": 2514,
+      "detected": {
+        "modis_terra": 809,
+        "modis_aqua": 867,
+        "viirs_snpp": 7745,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "complete": true
+    },
+    {
+      "year": 2013,
+      "count": 2923,
+      "detected": {
+        "modis_terra": 938,
+        "modis_aqua": 974,
+        "viirs_snpp": 9210,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "complete": true
+    },
+    {
+      "year": 2014,
+      "count": 2450,
+      "detected": {
+        "modis_terra": 769,
+        "modis_aqua": 841,
+        "viirs_snpp": 7642,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "complete": true
+    },
+    {
+      "year": 2015,
+      "count": 2219,
+      "detected": {
+        "modis_terra": 663,
+        "modis_aqua": 758,
+        "viirs_snpp": 6950,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "complete": true
+    },
+    {
+      "year": 2016,
+      "count": 3597,
+      "detected": {
+        "modis_terra": 1156,
+        "modis_aqua": 1148,
+        "viirs_snpp": 11334,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "complete": true
+    },
+    {
+      "year": 2017,
+      "count": 2338,
+      "detected": {
+        "modis_terra": 774,
+        "modis_aqua": 791,
+        "viirs_snpp": 7156,
+        "viirs_noaa20": null
+      },
+      "provisional": false,
+      "complete": true
+    },
+    {
+      "year": 2018,
+      "count": 2325,
+      "detected": {
+        "modis_terra": 762,
+        "modis_aqua": 790,
+        "viirs_snpp": 7332,
+        "viirs_noaa20": 6590
+      },
+      "provisional": false,
+      "complete": true
+    },
+    {
+      "year": 2019,
+      "count": 4805,
+      "detected": {
+        "modis_terra": 1570,
+        "modis_aqua": 1602,
+        "viirs_snpp": 13957,
+        "viirs_noaa20": 14427
+      },
+      "provisional": false,
+      "complete": true
+    },
+    {
+      "year": 2020,
+      "count": 9043,
+      "detected": {
+        "modis_terra": 2835,
+        "modis_aqua": 3032,
+        "viirs_snpp": 27232,
+        "viirs_noaa20": 27609
+      },
+      "provisional": false,
+      "complete": false
+    }
+  ],
+  "cards": {
+    "ref_year": 2020,
+    "ref_month": 9,
+    "count": 2520,
+    "detected": {
+      "modis_terra": 815,
+      "modis_aqua": 807,
+      "viirs_snpp": 8195,
+      "viirs_noaa20": 7093
+    },
+    "estimated_fires": 302,
+    "vs_avg_pct": 855.6,
+    "rank": 1,
+    "of_years": 18,
+    "partial": true,
+    "days_covered": 14,
+    "peak_month": 8,
+    "worst_year": 2019
+  },
+  "next_months": [
+    {
+      "year": 2020,
+      "month": 10,
+      "mean": 280.0,
+      "median": 231,
+      "p10": 144.4,
+      "p90": 397.6
+    },
+    {
+      "year": 2020,
+      "month": 11,
+      "mean": 111.9,
+      "median": 105,
+      "p10": 58.6,
+      "p90": 178.4
+    },
+    {
+      "year": 2020,
+      "month": 12,
+      "mean": 46.5,
+      "median": 40,
+      "p10": 24.2,
+      "p90": 72.0
+    }
+  ],
+  "next_months_label": "Based on history (2003-2019), not a forecast",
+  "briefing": "In this area, fire activity usually peaks in August, and the main fire season runs from July to October. The most active year since 2003 was 2019 (1.8x an average year). So far in September 2020, activity is 856% above the average for the same days (rank 1 of 18 years). Of the next three months, October is historically the most active (average 280 fire-days). This is what is normal, not a forecast. Source: NASA FIRMS (MODIS + VIIRS), harmonized.",
+  "reliability": {
+    "median_error_pct": 12.0,
+    "validated_years": [
+      2016,
+      2019
+    ],
+    "note": "FAKE. The real value comes from the validation in science/."
+  }
+}

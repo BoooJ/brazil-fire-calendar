@@ -1,0 +1,29 @@
+{
+  "_mock": "FAKE DATA - for website development only. Shapes follow docs/api-contract.md; every number is invented.",
+  "data_updated": "2026-11-14T15:20:00Z",
+  "contract_version": "0.1",
+  "calendar_from": "2003-01",
+  "final_until": "2026-05-31",
+  "coverage": [
+    {
+      "satellite": "modis_terra",
+      "from": "2000-11-01",
+      "to": null
+    },
+    {
+      "satellite": "modis_aqua",
+      "from": "2002-07-04",
+      "to": null
+    },
+    {
+      "satellite": "viirs_snpp",
+      "from": "2012-01-20",
+      "to": "2026-11-02"
+    },
+    {
+      "satellite": "viirs_noaa20",
+      "from": "2018-04-01",
+      "to": null
+    }
+  ]
+}

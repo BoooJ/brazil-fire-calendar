@@ -1,0 +1,10 @@
+# Infrastructure (pipeline + API). Pin versions once the stack is working.
+fastapi
+uvicorn[standard]
+duckdb
+pandas
+pyarrow
+numpy
+requests
+python-dotenv
+shapely

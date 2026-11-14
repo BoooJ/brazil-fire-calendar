@@ -1,0 +1,38 @@
+# ---------- Data: never commit (several GB). Rebuild with the scripts in infra/ ----------
+data/*
+!data/.gitkeep
+*.zip
+*.parquet
+*.csv
+*.shp
+*.dbf
+*.shx
+*.prj
+*.duckdb
+*.duckdb.wal
+# ...except the small fake files the website is built against
+!web/mocks/*.csv
+
+# ---------- Secrets: never commit ----------
+.env
+.env.*
+!.env.example
+
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+.pytest_cache/
+
+# ---------- Node / website build ----------
+node_modules/
+dist/
+.vite/
+
+# ---------- OS / editors ----------
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
