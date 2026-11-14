@@ -4,45 +4,68 @@ Scope: everything the user sees. `../docs/api-contract.md` is the source of trut
 
 ## How to get data
 
-- Put all data access in **one module** (e.g. `src/api.ts`). If `VITE_API_BASE_URL` is empty, it reads `web/mocks/`; otherwise it calls the real API. Nothing else in the app should know which one it is.
+- Put all data access in **one module**: `src/api.ts`. If `VITE_API_BASE_URL` is empty, it reads `web/mocks/`; otherwise it calls the real API. Nothing else in the app should know which one it is.
 - Mocks to use:
 
 | Mock | For |
 |---|---|
 | `mocks/analysis.pantanal.json` | The main page (reference date 2026-11-14: partial and provisional months) |
-| `mocks/analysis.pantanal.ref-2020-09-14.json` | The 2020 crisis replay (huge anomaly) |
-| `mocks/hotspots.pantanal.2020-09.geojson` | Map points after a calendar click (`truncated: true`) |
-| `mocks/presets.json`, `mocks/status.json` | Preset buttons, "data updated" |
+| `mocks/analysis.pantanal.ref-2020-09-14.json` | The 2020 crisis replay (huge anomaly). Used for every reference date up to 2020 |
+| `mocks/hotspots.pantanal.2020-09.geojson` | Map points after a calendar click (`truncated: true`). The only month with points |
+| `mocks/presets.json`, `mocks/status.json` | Preset buttons, "data updated", the data sources dialog |
+| `mocks/calendar.pantanal.csv`, `mocks/hotspots.pantanal.2020-09.csv` | What the CSV buttons return |
 
 - **Never edit `mocks/` by hand.** They come from `python infra/tools/make_mocks.py`.
 - **Display, don't recompute:** `vs_avg_pct`, `rank`, `estimated_fires`, `briefing` and the averages come from the API. Don't calculate them in the browser.
+- **A past reference date is sent as `ref_date` and `end`** (the page "as of" that day). With `ref_date` alone the API keeps every later month.
 
 ## Rules for the UI
 
-- **Areas:** convert a rectangle, or lat/lon + radius (a 64-point circle), into a GeoJSON `Polygon` with **`[lon, lat]`** order before sending it.
+- **Areas:** convert a rectangle, or lat/lon + radius (a 64-point circle), into a GeoJSON `Polygon` with **`[lon, lat]`** order before sending it (`src/geo.ts`).
 - **Burning calendar:** years × months grid, with `Counts` / `vs Average` modes, an average row, year totals, hover details, and a click that opens that month on the map.
 - **Every state needs a design:** loading, zero fires, API error, `truncated` hotspots ("showing 300 of N"), and `provisional` / `uncertain` / `partial` cells (hatched or faded, explained in the legend).
 - **"Coming months"** always shows `next_months_label` ("not a forecast").
 
 ## Accessibility (part of "done")
 
-- Counts use a colour-blind-safe sequential scale (viridis, or yellow → orange → red). vs Average uses a diverging scale **without red/green** (e.g. purple ↔ orange) with a neutral middle.
+- Counts use a colour-blind-safe sequential scale (yellow → orange → red on the white sheet, inferno on the dark panels). vs Average uses a diverging scale **without red/green** (purple ↔ orange) with a neutral middle.
 - Never rely on colour alone: numbers on hover, ▲/▼ arrows, legends with values.
 - Check with Chrome DevTools → Rendering → *Emulate vision deficiencies*. Works at 375 px width.
 
 ## Stack (chosen 2026-11-14)
 
-React 19 + TypeScript + Vite 6 · MapLibre GL 5 (basemap: NASA GIBS Blue Marble, imagery only) · Apache ECharts 5 (tree-shaken, see `src/components/EChart.tsx`).
+React 19 + Vite + TypeScript. One app, hash routes: `#/` the landing page, `#/app` the tool.
 
 ```bash
 cd web
-npm install        # once
-npm run dev        # http://localhost:5173 (reads mocks while VITE_API_BASE_URL is empty)
+npm install
+npm run dev        # http://localhost:5173 — uses web/mocks/ while VITE_API_BASE_URL is empty
 npm run build      # type-check + production build into web/dist/
+npm run preview    # serve the build
 ```
 
-- Vite reads the **repo-root** `.env` (`envDir: '..'`). Leave `VITE_API_BASE_URL` empty to use the mocks.
-- Layout: `src/api.ts` (all data access) · `src/types.ts` (contract shapes) · `src/geo.ts` (rectangle/circle → Polygon) · `src/colors.ts` (scales) · `src/components/` (BurningCalendar, MapView, Charts, Panels, Controls).
-- **Two pages.** `app.html` is the fire calendar (React, built by Vite). `public/index.html` is the landing page: plain HTML, copied to `dist/` as is.
-- **The landing page** was designed with the `design-taste-frontend` skill (tasteskill, MIT, kit files in `public/assets/`, only the ones it uses). Edit `landing/index.template.html`, then run `python3 landing/gen.py`: it draws the product UI on the page as live HTML from `mocks/`. Never edit `public/index.html` by hand. The app does **not** use that skill or its kit.
-- Drawing on the map is built in (`MapView.tsx`: rectangle by drag, polygon by clicks), no draw plugin.
+- `.env` is read from the **repo root** (`envDir: '..'`). Leave `VITE_API_BASE_URL` empty to use the mocks.
+- **The two pages never share a document.** Each is a lazy chunk with its own stylesheet, and `App.tsx` reloads the page when the route changes, so the landing page's kit and the tool's CSS cannot leak into each other. Shared code: `api.ts`, `types.ts`, `format.ts`, `geo.ts`, `colors.ts`, `components/Globe.tsx`, `components/Brand.tsx`.
+- **The tool** uses plain CSS (`src/styles.css`, design tokens at the top). The globe is a canvas drawn with `d3-geo`; the quick calendar is plain HTML buttons. Two heavy parts load on demand: the map (MapLibre GL 5; basemap NASA GIBS Blue Marble, imagery only) and the detailed view's charts (Apache ECharts 5, tree-shaken in `components/EChart.tsx`).
+- **The landing page** is laid out with the tasteskill design kit (MIT, licence beside it) in `public/assets/`. **Never edit the kit's files**: `src/landing/kit.ts` loads them at run time as they are, `src/landing/landing.css` sets the kit's palette and fonts to ours.
+  - The kit makes every `main > section` one screen tall with its `h2` first. After changing words or sections, look at 1440×900, 1366×768, 820×1180 and 390×844.
+  - The kit's scripts change the page's DOM (they split the `h1`, add canvases). Keep the landing page's markup static: only `landing/visuals.tsx` re-renders, when its data arrives.
+  - The kit outlines "apology" wording in red (`placeholder`, `sample`, `are invented`, text in `[brackets]`). On the landing page the demo label is just "Demo data".
+
+| File | What |
+|---|---|
+| `src/api.ts` | The only data access (mocks or real API), CSV downloads, the landing page's `getShowcase()` |
+| `src/types.ts` | Contract shapes (keep in sync with `docs/api-contract.md`) |
+| `src/geo.ts` | Circle, rectangle, drawn polygon → GeoJSON; preset areas |
+| `src/pages/Tool.tsx` | The tool: location step, the one message, dates, the sheet, the globe/map stage |
+| `src/components/LocationGate.tsx` | "Where should we look?": location, region, point + radius, or draw on the map |
+| `src/components/Globe.tsx` | Globe: Brazil lit, area outline, hotspot points |
+| `src/components/MapView.tsx` | The map: hotspots by fire strength, popups, drawing a rectangle or polygon (no draw plugin) |
+| `src/components/FireCalendar.tsx` | Quick view calendar (filled = happened, dotted = typical, hatched = provisional) |
+| `src/components/Detailed.tsx` | Detailed view: `BurningCalendar.tsx` (heatmap), `Charts.tsx` (typical year, year by year), PNG downloads |
+| `src/components/Controls.tsx`, `Panels.tsx`, `MonthDetail.tsx` | Dates and view switch · key numbers, reliability, data sources · one month's details |
+| `src/pages/Landing.tsx`, `src/landing/` | The landing page: markup, the kit loader, its stylesheet, the product UI drawn from the data |
+
+**Display only, never for numbers:** country outlines on the globe (Natural Earth, `world-atlas` npm package) and the map's imagery (NASA GIBS). Never use them to select, clip or count data. Both are credited on the landing page and in the data sources dialog.
+
+Waiting for the API: "Update now" shows the API's own answer (`/api/update` is still a stub).

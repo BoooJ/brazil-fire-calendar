@@ -1,23 +1,28 @@
+// The fire map: hotspots of one month on NASA imagery, and the tool to draw an area (rectangle or polygon).
+// It sits in the same place as the globe and takes over when there are points to show or an area to draw.
 import { useEffect, useRef } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import type { Area, Hotspots, Polygon } from '../types';
-import { SATELLITE_LABEL } from '../types';
+import type { FeatureCollection, Point, Polygon } from 'geojson';
+import type { AreaGeometry, Hotspots, SatelliteKey } from '../types';
+import { SAT_NAMES } from '../types';
 import { FRP_STOPS } from '../colors';
-import { areaBbox, closeRing, rectToPolygon } from '../geo';
-import { fmtTimeUtc } from '../format';
+import { areaBbox, closeRing, rectPolygon } from '../geo';
+import { timeUtc } from '../format';
 
 export type DrawMode = 'none' | 'rect' | 'polygon';
 
 interface Props {
-  area: Area | null;
+  area: AreaGeometry | null;
   hotspots: Hotspots | null;
   drawMode: DrawMode;
   onDrawDone: (p: Polygon) => void;
   onDrawCancel: () => void;
+  /** the browser cannot draw the map (no WebGL): the caller falls back to the globe */
+  onUnavailable?: () => void;
 }
 
-// Basemap: NASA GIBS (Blue Marble shaded relief) — imagery only, no data used in numbers.
+// Basemap: NASA GIBS (Blue Marble shaded relief) — imagery only, never used for the numbers.
 const GIBS = 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best';
 const STYLE: maplibregl.StyleSpecification = {
   version: 8,
@@ -35,44 +40,54 @@ const STYLE: maplibregl.StyleSpecification = {
     },
   },
   layers: [
-    { id: 'bg', type: 'background', paint: { 'background-color': '#0b0e14' } },
+    { id: 'bg', type: 'background', paint: { 'background-color': '#04050b' } },
     { id: 'bluemarble', type: 'raster', source: 'bluemarble', paint: { 'raster-brightness-max': 0.55, 'raster-saturation': -0.45, 'raster-contrast': 0.1 } },
   ],
 };
 
-const EMPTY: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] };
+const EMPTY: FeatureCollection = { type: 'FeatureCollection', features: [] };
+const esc = (s: unknown) => String(s ?? '').replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
-export function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCancel }: Props) {
+export default function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCancel, onUnavailable }: Props) {
   const el = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const ready = useRef(false);
-  const pending = useRef<{ area: Area | null; hotspots: Hotspots | null }>({ area, hotspots });
+  const pending = useRef<{ area: AreaGeometry | null; hotspots: Hotspots | null }>({ area, hotspots });
   const draw = useRef({ mode: drawMode, start: null as maplibregl.LngLat | null, pts: [] as [number, number][] });
-  const cb = useRef({ onDrawDone, onDrawCancel });
-  cb.current = { onDrawDone, onDrawCancel };
+  const cb = useRef({ onDrawDone, onDrawCancel, onUnavailable });
+  cb.current = { onDrawDone, onDrawCancel, onUnavailable };
 
   // ---------- init ----------
   useEffect(() => {
     if (!el.current) return;
-    const m = new maplibregl.Map({
-      container: el.current,
-      style: STYLE,
-      center: [-54, -14],
-      zoom: 3.3,
-      minZoom: 2,
-      maxZoom: 11,
-      attributionControl: { compact: true },
-      cooperativeGestures: false,
-    });
+    let m: maplibregl.Map;
+    try {
+      m = new maplibregl.Map({
+        container: el.current,
+        style: STYLE,
+        center: [-54, -14],
+        zoom: 3.3,
+        minZoom: 2,
+        maxZoom: 11,
+        attributionControl: false,
+        // on a phone the map lies at the top of a page that scrolls: one finger scrolls the page, two move the map
+        cooperativeGestures: window.matchMedia('(max-width: 899px)').matches,
+      });
+    } catch {
+      cb.current.onUnavailable?.();
+      return;
+    }
     map.current = m;
-    m.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+    // bottom left: the top holds the caption and the legend, the bottom right the month's details
+    m.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-left');
+    m.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-left');
 
     // 'style.load' fires once the style is parsed, without waiting for basemap tiles.
     const init = () => {
       if (ready.current || m.getSource('area')) return;
       m.addSource('area', { type: 'geojson', data: EMPTY });
-      m.addLayer({ id: 'area-fill', type: 'fill', source: 'area', paint: { 'fill-color': '#f98e09', 'fill-opacity': 0.06 } });
-      m.addLayer({ id: 'area-line', type: 'line', source: 'area', paint: { 'line-color': '#f9cb35', 'line-width': 1.6, 'line-dasharray': [3, 2] } });
+      m.addLayer({ id: 'area-fill', type: 'fill', source: 'area', paint: { 'fill-color': '#ff6a1f', 'fill-opacity': 0.06 } });
+      m.addLayer({ id: 'area-line', type: 'line', source: 'area', paint: { 'line-color': '#ff6a1f', 'line-width': 2 } });
 
       m.addSource('hotspots', { type: 'geojson', data: EMPTY });
       m.addLayer({
@@ -86,8 +101,9 @@ export function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCancel }: 
         id: 'hotspots', type: 'circle', source: 'hotspots',
         paint: {
           'circle-radius': ['interpolate', ['linear'], ['zoom'], 3, 2.2, 8, 6],
-          'circle-color': ['interpolate', ['linear'], ['get', 'frp'], ...FRP_STOPS.flat()] as any,
-          'circle-stroke-color': '#0b0e14', 'circle-stroke-width': 0.6,
+          // fire strength (FRP, MW); a hotspot without a value takes the lowest colour
+          'circle-color': ['interpolate', ['linear'], ['coalesce', ['get', 'frp'], 0], ...FRP_STOPS.flat()] as any,
+          'circle-stroke-color': '#04050b', 'circle-stroke-width': 0.6,
           'circle-opacity': ['case', ['get', 'provisional'], 0.65, 0.95],
         },
       });
@@ -98,26 +114,28 @@ export function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCancel }: 
       m.addLayer({ id: 'draft-pts', type: 'circle', source: 'draft', filter: ['==', '$type', 'Point'], paint: { 'circle-radius': 4, 'circle-color': '#fff' } });
 
       const popup = new maplibregl.Popup({ closeButton: false, className: 'hs-popup', offset: 8 });
+      const show = (e: maplibregl.MapLayerMouseEvent) => {
+        if (draw.current.mode !== 'none') return;
+        const f = e.features?.[0];
+        if (!f) return;
+        const p = f.properties as Record<string, unknown>;
+        popup
+          .setLngLat((f.geometry as Point).coordinates as [number, number])
+          .setHTML(
+            `<b>${esc(p.date)}</b> · ${esc(timeUtc(String(p.time_utc ?? '')))} · ${p.daynight === 'D' ? 'day' : 'night'}<br/>` +
+              `${esc(SAT_NAMES[p.satellite as SatelliteKey] ?? p.satellite)}<br/>` +
+              `Fire strength <b>${p.frp == null ? 'not measured' : `${esc(p.frp)} MW`}</b> · confidence ${esc(p.confidence)}` +
+              (p.provisional ? '<br/><i>Provisional</i>' : ''),
+          )
+          .addTo(m);
+      };
       m.on('mouseenter', 'hotspots', () => (m.getCanvas().style.cursor = 'pointer'));
       m.on('mouseleave', 'hotspots', () => {
         m.getCanvas().style.cursor = draw.current.mode === 'none' ? '' : 'crosshair';
         popup.remove();
       });
-      m.on('mousemove', 'hotspots', (e) => {
-        if (draw.current.mode !== 'none') return;
-        const f = e.features?.[0];
-        if (!f) return;
-        const p = f.properties as any;
-        popup
-          .setLngLat((f.geometry as GeoJSON.Point).coordinates as [number, number])
-          .setHTML(
-            `<b>${p.date}</b> · ${fmtTimeUtc(p.time_utc)} · ${p.daynight === 'D' ? 'day' : 'night'}<br/>` +
-              `${SATELLITE_LABEL[p.satellite as keyof typeof SATELLITE_LABEL] ?? p.satellite}<br/>` +
-              `Fire strength <b>${p.frp} MW</b> · confidence ${p.confidence}` +
-              (p.provisional ? '<br/><i>Provisional</i>' : ''),
-          )
-          .addTo(m);
-      });
+      m.on('mousemove', 'hotspots', show);
+      m.on('click', 'hotspots', show); // touch screens have no hover
 
       ready.current = true;
       apply(pending.current.area, pending.current.hotspots, true);
@@ -126,12 +144,12 @@ export function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCancel }: 
     m.once('load', init);
 
     // ---------- drawing ----------
-    const setDraft = (fc: GeoJSON.FeatureCollection) => (m.getSource('draft') as maplibregl.GeoJSONSource | undefined)?.setData(fc);
-    const rectFc = (a: maplibregl.LngLat, b: maplibregl.LngLat): GeoJSON.FeatureCollection => ({
+    const setDraft = (fc: FeatureCollection) => (m.getSource('draft') as maplibregl.GeoJSONSource | undefined)?.setData(fc);
+    const rectFc = (a: maplibregl.LngLat, b: maplibregl.LngLat): FeatureCollection => ({
       type: 'FeatureCollection',
-      features: [{ type: 'Feature', properties: {}, geometry: rectToPolygon(a.lng, a.lat, b.lng, b.lat) }],
+      features: [{ type: 'Feature', properties: {}, geometry: rectPolygon(a.lng, a.lat, b.lng, b.lat) }],
     });
-    const polyFc = (pts: [number, number][], cursor?: [number, number]): GeoJSON.FeatureCollection => {
+    const polyFc = (pts: [number, number][], cursor?: [number, number]): FeatureCollection => {
       const line = cursor ? [...pts, cursor] : pts;
       return {
         type: 'FeatureCollection',
@@ -160,7 +178,13 @@ export function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCancel }: 
       d.start = null;
       setDraft(EMPTY);
       if (Math.abs(a.lng - b.lng) < 0.05 || Math.abs(a.lat - b.lat) < 0.05) return; // a tap, not a box
-      cb.current.onDrawDone(rectToPolygon(a.lng, a.lat, b.lng, b.lat));
+      cb.current.onDrawDone(rectPolygon(a.lng, a.lat, b.lng, b.lat));
+    };
+    const finishPoly = () => {
+      const d = draw.current;
+      if (d.pts.length >= 3) cb.current.onDrawDone(closeRing(d.pts));
+      d.pts = [];
+      setDraft(EMPTY);
     };
     const click = (e: maplibregl.MapMouseEvent) => {
       const d = draw.current;
@@ -168,16 +192,10 @@ export function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCancel }: 
       const pt: [number, number] = [e.lngLat.lng, e.lngLat.lat];
       if (d.pts.length >= 3) {
         const first = m.project(d.pts[0]);
-        if (Math.hypot(first.x - e.point.x, first.y - e.point.y) < 12) return finishPoly();
+        if (Math.hypot(first.x - e.point.x, first.y - e.point.y) < 14) return finishPoly();
       }
       d.pts.push(pt);
       setDraft(polyFc(d.pts));
-    };
-    const finishPoly = () => {
-      const d = draw.current;
-      if (d.pts.length >= 3) cb.current.onDrawDone(closeRing(d.pts));
-      d.pts = [];
-      setDraft(EMPTY);
     };
     const dbl = (e: maplibregl.MapMouseEvent) => {
       if (draw.current.mode !== 'polygon') return;
@@ -222,6 +240,8 @@ export function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCancel }: 
     (m.getSource('draft') as maplibregl.GeoJSONSource | undefined)?.setData(EMPTY);
     const drawing = drawMode !== 'none';
     m.getCanvas().style.cursor = drawing ? 'crosshair' : '';
+    // while a box is dragged, neither the map nor the page may move under the finger
+    m.getCanvasContainer().style.touchAction = drawMode === 'rect' ? 'none' : '';
     if (drawMode === 'rect') m.dragPan.disable();
     else m.dragPan.enable();
     if (drawing) m.doubleClickZoom.disable();
@@ -230,24 +250,28 @@ export function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCancel }: 
 
   // ---------- data ----------
   const lastAreaKey = useRef('');
-  function apply(a: Area | null, h: Hotspots | null, first = false) {
+  function apply(a: AreaGeometry | null, h: Hotspots | null, first = false) {
     const m = map.current;
     if (!m || !ready.current) return;
     (m.getSource('area') as maplibregl.GeoJSONSource).setData(
       a ? { type: 'FeatureCollection', features: [{ type: 'Feature', properties: {}, geometry: a }] } : EMPTY,
     );
-    (m.getSource('hotspots') as maplibregl.GeoJSONSource).setData((h as unknown as GeoJSON.FeatureCollection) ?? EMPTY);
+    (m.getSource('hotspots') as maplibregl.GeoJSONSource).setData((h as unknown as FeatureCollection) ?? EMPTY);
     const key = a ? JSON.stringify(a.coordinates).slice(0, 200) : '';
     if (a && key !== lastAreaKey.current) {
       lastAreaKey.current = key;
       const [w, s, e, n] = areaBbox(a);
-      m.fitBounds([[w, s], [e, n]], { padding: 36, duration: first ? 0 : 900, maxZoom: 8 });
+      // room for the top bar, the caption and the legend above the area
+      const phone = m.getContainer().clientHeight < 520;
+      const padding = phone ? { top: 150, bottom: 28, left: 28, right: 28 } : { top: 200, bottom: 72, left: 72, right: 72 };
+      m.fitBounds([[w, s], [e, n]], { padding, duration: first ? 0 : 900, maxZoom: 8 });
     }
   }
 
   useEffect(() => {
     pending.current = { area, hotspots };
     apply(area, hotspots);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [area, hotspots]);
 
   return <div ref={el} className="map" aria-label="Map of fire hotspots for the selected month" role="region" />;

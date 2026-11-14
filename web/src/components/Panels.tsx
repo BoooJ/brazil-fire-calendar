@@ -1,153 +1,126 @@
-import { useState } from 'react';
+// Small panels of the tool: the key numbers and the reliability note of the detailed view, and the data sources dialog.
+import { useEffect } from 'react';
 import type { Analysis, Status } from '../types';
-import { SATELLITES, SATELLITE_LABEL } from '../types';
-import { fmt, fmtPct, monthName, ordinal } from '../format';
-import { SAT_COLOR } from './Charts';
+import { SAT_NAMES } from '../types';
+import { SAT_COLOR } from '../colors';
+import { MONTHS, dateShort, num, ordinal, pctLong } from '../format';
 
-export function KeyCards({ a, detailed }: { a: Analysis; detailed: boolean }) {
-  const c = a.cards;
-  const period = `${monthName(c.ref_month)} ${c.ref_year}${c.partial ? ` · first ${c.days_covered} days` : ''}`;
-  const pct = c.vs_avg_pct;
-  const tone = pct === null ? '' : pct > 15 ? 'up' : pct < -15 ? 'down' : 'flat';
+/** Every number comes from the API (`cards`); nothing is computed here. */
+export function KeyCards({ data }: { data: Analysis }) {
+  const c = data.cards;
+  const month = MONTHS[c.ref_month - 1];
+  const period = `${month} ${c.ref_year}${c.partial ? `, first ${c.days_covered} days` : ''}`;
+  const p = c.vs_avg_pct;
+  const tone = p == null ? '' : p > 15 ? ' is-up' : p < -15 ? ' is-down' : '';
+  const avg = data.average_period ? `${data.average_period.from}–${data.average_period.to}` : null;
   return (
-    <section className="cards" aria-label={`Key numbers for ${period}`}>
-      <div className="card card-hero">
-        <div className="card-label">Fire-days · {period}</div>
-        <div className="card-value">{fmt(c.count)}</div>
-        <div className="card-sub">{a.unit.main}</div>
-      </div>
-      <div className={`card card-anomaly ${tone}`}>
-        <div className="card-label">vs the {a.average_period.from}–{a.average_period.to} average</div>
-        <div className="card-value">{fmtPct(pct)}</div>
-        <div className="card-sub">{c.partial ? 'compared with the same days in other years' : 'for this month'}</div>
-      </div>
-      <div className="card">
-        <div className="card-label">Rank</div>
-        <div className="card-value">{ordinal(c.rank)}<small> / {c.of_years}</small></div>
-        <div className="card-sub">{c.rank <= 3 ? 'one of the most active' : 'years, 1 = most fires'}</div>
-      </div>
-      <div className="card">
-        <div className="card-label">Estimated fires</div>
-        <div className="card-value">{fmt(c.estimated_fires)}</div>
-        <div className="card-sub">touching burning cells grouped</div>
-      </div>
-      <div className="card">
-        <div className="card-label">Peak month</div>
-        <div className="card-value">{monthName(c.peak_month)}</div>
-        <div className="card-sub">worst year: <b>{c.worst_year}</b></div>
-      </div>
-      {detailed && (
-        <div className="card card-wide">
-          <div className="card-label">Raw hotspots detected, per satellite</div>
-          <ul className="sat-list">
-            {SATELLITES.map((s) => (
-              <li key={s}>
-                <span className="dot" style={{ background: SAT_COLOR[s] }} />
-                <span>{SATELLITE_LABEL[s]}</span>
-                <b>{c.detected[s] === null ? <span className="muted">not in orbit</span> : fmt(c.detected[s])}</b>
-              </li>
-            ))}
-          </ul>
+    <section className="keycards" aria-labelledby="key-title">
+      <h2 id="key-title">Key numbers</h2>
+      <p className="muted">{period}</p>
+      <dl className="kc">
+        <div className="kc-hot">
+          <dt>Fire-days</dt>
+          <dd>{num(c.count)}</dd>
+          <span>{data.unit.main}</span>
         </div>
-      )}
-    </section>
-  );
-}
-
-export function Briefing({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false);
-  return (
-    <section className="briefing">
-      <div className="briefing-head">
-        <h2>Fire briefing</h2>
-        <button
-          className="btn btn-ghost btn-sm"
-          onClick={async () => {
-            await navigator.clipboard?.writeText(text);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 1600);
-          }}
-        >
-          {copied ? 'Copied ✓' : 'Copy'}
-        </button>
-      </div>
-      <p>{text}</p>
-    </section>
-  );
-}
-
-export function NextMonths({ a }: { a: Analysis }) {
-  return (
-    <section className="panel next">
-      <h2>What's normal for the coming months</h2>
-      <p className="not-forecast">{a.next_months_label}</p>
-      <ul className="next-list">
-        {a.next_months.map((n) => (
-          <li key={`${n.year}-${n.month}`}>
-            <div className="next-month">{monthName(n.month)} <span className="muted">{n.year}</span></div>
-            <div className="next-val">{fmt(n.median)}</div>
-            <div className="next-range">usually {fmt(n.p10)}–{fmt(n.p90)}</div>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-export function Reliability({ a, status }: { a: Analysis; status: Status | null }) {
-  const r = a.reliability;
-  return (
-    <section className="panel reliability">
-      <h2>How reliable is this?</h2>
-      <div className="rel-grid">
-        <div>
-          <div className="rel-big">±{fmt(r.median_error_pct)}%</div>
-          <div className="muted">median conversion error</div>
+        <div className={'kc-vs' + tone}>
+          <dt>{avg ? `Against the ${avg} average` : 'Against the average'}</dt>
+          <dd>{pctLong(p)}</dd>
+          <span>{c.partial ? 'the same days in other years' : 'for this month'}</span>
         </div>
         <div>
-          <div className="rel-big">{r.validated_years.join(', ') || '—'}</div>
-          <div className="muted">years checked against overlap data</div>
+          <dt>Rank</dt>
+          <dd>{c.rank == null ? '–' : <>{ordinal(c.rank)}<small> of {c.of_years}</small></>}</dd>
+          <span>1st = the most fire-days</span>
         </div>
-      </div>
-      <p>{r.note}</p>
-      <ul className="rel-points">
-        <li><b>Why correct at all?</b> New satellites see more, smaller fires. VIIRS (2012+) detects many more hotspots than MODIS, so raw counts jump when a satellite is added, even if fires didn't change.</li>
-        <li><b>What we count:</b> fire-days — distinct ≈1 km cells burning on a day — converted to one common scale (NOAA-20 equivalent).</li>
-        {status && <li><b>Provisional:</b> data after {status.final_until} is NASA's near-real-time version and may still change.</li>}
+        <div>
+          <dt>Estimated fires</dt>
+          <dd>{c.estimated_fires == null ? '–' : `≈ ${num(c.estimated_fires)}`}</dd>
+          <span>burning cells that touch count as one</span>
+        </div>
+        <div>
+          <dt>Peak month</dt>
+          <dd>{c.peak_month == null ? '–' : MONTHS[c.peak_month - 1]}</dd>
+          <span>{c.worst_year == null ? 'in a typical year' : <>most active year: <b>{c.worst_year}</b></>}</span>
+        </div>
+      </dl>
+    </section>
+  );
+}
+
+export function Reliability({ data, status }: { data: Analysis; status: Status | null }) {
+  const r = data.reliability;
+  return (
+    <section className="reliability" aria-labelledby="rel-title">
+      <h2 id="rel-title">How reliable is this?</h2>
+      <dl className="kc kc-2">
+        <div>
+          <dt>Typical conversion error</dt>
+          <dd>{r.median_error_pct == null ? '–' : `±${r.median_error_pct}%`}</dd>
+          <span>median, on years held out of the method</span>
+        </div>
+        <div>
+          <dt>Years checked</dt>
+          <dd>{r.validated_years.join(', ') || '–'}</dd>
+          <span>against months seen by two satellites at once</span>
+        </div>
+      </dl>
+      <p className="muted">{r.note}</p>
+      <ul className="points">
+        <li><strong>Why correct at all?</strong> Newer satellites see smaller fires. VIIRS (2012 onwards) records many more hotspots than MODIS for the same burning, so raw counts jump when a satellite is added even if nothing changed on the ground.</li>
+        <li><strong>What we count:</strong> fire-days, the 1 km squares that burned on a given day, converted to one common scale (NOAA-20 equivalent).</li>
+        {status?.final_until && (
+          <li><strong>Provisional:</strong> data after {dateShort(status.final_until)} is NASA's near-real-time version and may still change.</li>
+        )}
       </ul>
     </section>
   );
 }
 
 export function SourcesDialog({ status, onClose }: { status: Status | null; onClose: () => void }) {
+  useEffect(() => {
+    const key = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', key);
+    return () => window.removeEventListener('keydown', key);
+  }, [onClose]);
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" role="dialog" aria-modal="true" aria-labelledby="sources-title" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose} aria-label="Close">×</button>
-        <h2 id="sources-title">Data sources — 100% NASA</h2>
+        <button className="detail-close" onClick={onClose} aria-label="Close" autoFocus>×</button>
+        <p className="eyebrow">Data sources</p>
+        <h2 id="sources-title">Every number comes from NASA FIRMS</h2>
         <p>
-          Every number on this site comes from <b>NASA FIRMS</b> (Fire Information for Resource Management System) active-fire hotspots.
-          The background map is NASA GIBS Blue Marble imagery and is not used in any calculation.
+          Fire data: <strong>NASA FIRMS</strong> (Fire Information for Resource Management System) active-fire hotspots,
+          MODIS Collection 6.1 and VIIRS 375 m. Nothing else goes into the counts.
         </p>
-        <table className="sources-table">
-          <thead><tr><th>Satellite</th><th>Instrument</th><th>From</th><th>To</th></tr></thead>
-          <tbody>
-            {(status?.coverage ?? []).map((c) => (
-              <tr key={c.satellite}>
-                <td><span className="dot" style={{ background: SAT_COLOR[c.satellite] }} /> {SATELLITE_LABEL[c.satellite]}</td>
-                <td>{c.satellite.startsWith('modis') ? 'MODIS C6.1, 1 km' : 'VIIRS, 375 m'}</td>
-                <td>{c.from}</td>
-                <td>{c.to ?? 'active'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <ul>
-          <li>Final (science-quality) data until <b>{status?.final_until ?? '—'}</b>; later days are near-real-time and marked provisional.</li>
-          <li>Areas are plain boxes or shapes you draw — no external borders.</li>
-          <li><a href="https://firms.modaps.eosdis.nasa.gov/" target="_blank" rel="noreferrer">NASA FIRMS</a> · <a href="https://www.earthdata.nasa.gov/engage/open-data-services-software/earthdata-developer-portal/gibs-api" target="_blank" rel="noreferrer">NASA GIBS</a></li>
+        <div className="table-scroll">
+          <table className="sources">
+            <thead><tr><th>Satellite</th><th>Instrument</th><th>From</th><th>To</th></tr></thead>
+            <tbody>
+              {(status?.coverage ?? []).map((c) => (
+                <tr key={c.satellite}>
+                  <td><span className="sat-dot" style={{ background: SAT_COLOR[c.satellite] }} />{SAT_NAMES[c.satellite] ?? c.satellite}</td>
+                  <td>{c.satellite.startsWith('modis') ? 'MODIS C6.1, 1 km' : 'VIIRS, 375 m'}</td>
+                  <td>{dateShort(c.from)}</td>
+                  <td>{c.to ? dateShort(c.to) : 'active'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <ul className="points">
+          <li>Final (science-quality) data until <strong>{status?.final_until ? dateShort(status.final_until) : '–'}</strong>. Later days are near-real-time and marked provisional.</li>
+          <li>Areas are plain boxes, circles or shapes you draw. No outside border data is used.</li>
+          <li>For display only, never for the numbers: map imagery from NASA GIBS (Blue Marble), country outlines on the globe from Natural Earth (public domain).</li>
         </ul>
-        <p className="muted small">Built for the NASA Space Apps Challenge 2026 — "Harmonization of MODIS and VIIRS Hot Spots".</p>
+        <p className="modal-links">
+          <a href="https://firms.modaps.eosdis.nasa.gov/" target="_blank" rel="noreferrer">NASA FIRMS</a>
+          <a href="https://www.earthdata.nasa.gov/engage/open-data-services-software/earthdata-developer-portal/gibs-api" target="_blank" rel="noreferrer">NASA GIBS</a>
+        </p>
+        <p className="fineprint">
+          Built for the NASA Space Apps Challenge 2026, "Harmonization of MODIS and VIIRS Hot Spots". Not an official NASA product.
+          {status && <> API contract v{status.contract_version}.</>}
+        </p>
       </div>
     </div>
   );

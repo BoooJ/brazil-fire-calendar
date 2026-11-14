@@ -1,5 +1,6 @@
-// Colour scales. Both are colour-blind safe (checked against deuteranopia,
-// protanopia and tritanopia) and every value is also shown as a number.
+// Colour scales of the dark panels (heatmap, charts, map). Both scales are colour-blind safe (checked
+// against deuteranopia, protanopia and tritanopia) and every value is also shown as a number.
+// The quick view's marked days take their colours from styles.css (--lv*, --vs*).
 
 // Counts: "inferno" (sequential, perceptually uniform). Darkest stop dropped
 // so low months stay visible on the dark background.
@@ -7,6 +8,14 @@ export const COUNTS_SCALE = ['#2a0b4a', '#57106e', '#8a226a', '#bc3754', '#e45a3
 
 // vs Average: purple (below) <-> neutral <-> orange (above). No red/green.
 export const ANOMALY_SCALE = ['#4b2991', '#7b5cb8', '#b4a4d8', '#d9d4e4', '#f7c58a', '#ec8b2e', '#b35806'];
+
+// Satellites in the charts: Okabe–Ito based, readable with colour-blindness; every series is also named.
+export const SAT_COLOR = {
+  modis_terra: '#56B4E9',
+  modis_aqua: '#0072B2',
+  viirs_snpp: '#CC79A7',
+  viirs_noaa20: '#9b8ce0',
+} as const;
 
 export const NO_FIRE = '#1b1f2a';
 export const NEUTRAL_CELL = '#262b38';
