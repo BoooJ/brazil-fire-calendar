@@ -36,10 +36,16 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
   // typical bricks: coloured by size in Counts; in vs Average they ARE the average, so they stay neutral
   const typLv = (mean: number | null | undefined) => (mode === 'counts' ? levels.level(mean ?? null) : 0);
   // one tooltip for hover and keyboard focus, styled like the detailed view's chart tooltip
-  const [tip, setTip] = useState<{ item: CalendarItem; el: HTMLElement; x: number; y: number } | null>(null);
+  const [tip, setTip] = useState<{ item: CalendarItem | null; typ?: { label: string; mean: number | null }; el: HTMLElement; x: number; y: number } | null>(null);
   const place = (item: CalendarItem, el: HTMLElement) => {
     const r = el.getBoundingClientRect();
     setTip({ item, el, x: r.left + r.width / 2, y: r.top });
+  };
+  // typical (dotted) bricks get the same styled tooltip on mouse hover, instead of the browser's title box
+  const onEnterTyp = (label: string, mean: number | null | undefined) => (e: React.PointerEvent<HTMLElement>) => {
+    if (e.pointerType !== 'mouse') return;
+    const r = e.currentTarget.getBoundingClientRect();
+    setTip({ item: null, typ: { label, mean: mean ?? null }, el: e.currentTarget, x: r.left + r.width / 2, y: r.top });
   };
   // mouse hover, or keyboard focus (not a tap: a tap opens the month card instead)
   const onEnter = (item: CalendarItem) => (e: React.PointerEvent<HTMLElement>) => e.pointerType === 'mouse' && place(item, e.currentTarget);
@@ -47,7 +53,10 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
   const hideTip = () => setTip(null);
   useEffect(() => {
     if (!tip) return;
-    const follow = () => place(tip.item, tip.el);
+    const follow = () => {
+      const r = tip.el.getBoundingClientRect();
+      setTip({ ...tip, x: r.left + r.width / 2, y: r.top });
+    };
     window.addEventListener('scroll', follow, { passive: true });
     return () => window.removeEventListener('scroll', follow);
   }, [tip]);
@@ -190,7 +199,8 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
                       : `${MONTHS[idx]}, typical ${period}: ${num(a?.mean)} (history, not a forecast)`;
                     return (
                       <div className="cell" key={m}>
-                        <span className={`day typical lv${typLv(a?.mean)}`} role="img" aria-label={text} title={text} />
+                        <span className={`day typical lv${typLv(a?.mean)}`} role="img" aria-label={text}
+                          onPointerEnter={onEnterTyp(ahead ? `${MONTHS[idx]} ${next}` : `${MONTHS[idx]}, typical`, a?.mean)} onPointerLeave={hideTip} />
                         <span className="cell-mon" aria-hidden="true">{m}</span>
                       </div>
                     );
@@ -219,7 +229,7 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
                         {future && y === ref_year ? (
                           <span className={`day typical lv${typLv(a?.mean)}`} role="img"
                             aria-label={`${MONTHS[idx]} ${y} is usually around ${num(a?.mean)} (typical ${period}, not a forecast)`}
-                            title={`${MONTHS[idx]} is usually around ${num(a?.mean)} (typical ${period}, not a forecast)`} />
+                            onPointerEnter={onEnterTyp(`${MONTHS[idx]} ${y}`, a?.mean)} onPointerLeave={hideTip} />
                         ) : (
                           <span className="day empty" aria-hidden="true" />
                         )}
@@ -251,16 +261,27 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
       {tip && (
         <div className="cal-tip" role="presentation" aria-hidden="true"
           style={{ left: Math.min(Math.max(tip.x, 120), window.innerWidth - 120), top: tip.y }}>
-          <b>{MONTHS[tip.item.month - 1]} {tip.item.year}</b>
-          <span className="cal-tip-big">{pctLong(tip.item.vs_avg_pct)}</span>
-          <span>Corrected count {num(tip.item.count)}</span>
-          {(tip.item.partial || tip.item.provisional || tip.item.uncertain) && (
-            <span className="cal-tip-flags">
-              {[tip.item.partial && `first ${tip.item.days_covered} days only`, tip.item.provisional && 'provisional', tip.item.uncertain && 'uncertain']
-                .filter(Boolean).join(' · ')}
-            </span>
+          {tip.item ? (
+            <>
+              <b>{MONTHS[tip.item.month - 1]} {tip.item.year}</b>
+              <span className="cal-tip-big">{pctLong(tip.item.vs_avg_pct)}</span>
+              <span>Corrected count {num(tip.item.count)}</span>
+              {(tip.item.partial || tip.item.provisional || tip.item.uncertain) && (
+                <span className="cal-tip-flags">
+                  {[tip.item.partial && `first ${tip.item.days_covered} days only`, tip.item.provisional && 'provisional', tip.item.uncertain && 'uncertain']
+                    .filter(Boolean).join(' · ')}
+                </span>
+              )}
+              <span className="cal-tip-hint">Click for details and the map</span>
+            </>
+          ) : tip.typ && (
+            <>
+              <b>{tip.typ.label}</b>
+              <span className="cal-tip-big">usually ≈ {num(tip.typ.mean)}</span>
+              <span>Typical month, {period} average</span>
+              <span className="cal-tip-hint">History, not a forecast</span>
+            </>
           )}
-          <span className="cal-tip-hint">Click for details and the map</span>
         </div>
       )}
       {years.length > 3 && (

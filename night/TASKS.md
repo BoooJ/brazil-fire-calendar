@@ -188,3 +188,5 @@ Global rules for this block:
   - Axis names align inward (left axis starts at its line, right axis ends at its line); on phones the right one reads "corrected".
 - [x] Landing closing band (footer) used the kit's mid-blue "painting" ground, louder than the rest of the flat light palette
   - The ground tokens are overridden in landing.css to a calm pastel blue (#dfe7f1) with dark ink; axe still clean.
+- [x] Typical (dotted) bricks showed the browser's plain title box while filled bricks have the styled tooltip
+  - Typical bricks use the same styled tooltip on mouse hover ("August 2027 · usually ≈ 794 · Typical month, 2003–2025 average · History, not a forecast"); screen readers keep their aria-label.
