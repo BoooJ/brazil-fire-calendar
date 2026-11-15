@@ -8,7 +8,7 @@ import { CanvasRenderer } from 'echarts/renderers';
 echarts.use([HeatmapChart, LineChart, BarChart, GridComponent, TooltipComponent, LegendComponent, VisualMapComponent, AriaComponent, CanvasRenderer]);
 
 /** The charts are dark panels on the white sheet: one background, one text face. */
-export const CHART_BG = '#0d1017';
+export const CHART_BG = '#0d1017'; // same as --panel in styles.css
 export const CHART_FONT = "'Inter Variable', Inter, system-ui, sans-serif";
 
 export interface EChartHandle {
