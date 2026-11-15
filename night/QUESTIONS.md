@@ -15,6 +15,7 @@
 
 - 2026-11-15 (06:55 run): Built the next-week fire chance panel (README feature 18) on the sheet under "coming months", plus its cells on the map. Root `CLAUDE.md` status still says "Website panel: to do (web/)": I did not edit the root file (outside web/); please tick it when this branch is merged. Mike: placement OK (after the history cards, before the briefing)?
 - 2026-11-15 (06:55 run): The forecast map shows the top `limit` cells (API default 2,000; mock 300) as dots about one 5 km cell wide, coloured with viridis (0–10 / 10–25 / 25–50 / 50%+). The class breaks are a display choice, not from the science team: OK, or should science/ give the breaks?
+- 2026-11-15 (06:55 run): Added a small "Next week: model estimate ↓" link at the end of the hero's "not a forecast" bullet, so the forecast panel is findable from the first screen. Mike: keep it, or is the hero better without it?
 
 ## For Paul (infra/)
 

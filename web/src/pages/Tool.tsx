@@ -147,6 +147,15 @@ export default function Tool() {
       .catch((e) => setMap({ kind: 'error', message: message(e, 'Could not load the hotspots.') }));
   }, [area, selected]);
 
+  // the hero's link down to the next-week panel: scroll there and move focus to its heading
+  const toForecast = useCallback(() => {
+    const h = document.getElementById('fc-title');
+    if (!h) return;
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    h.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'start' });
+    h.focus({ preventScroll: true });
+  }, []);
+
   const showForecastMap = useCallback((f: Forecast) => {
     setSelected(null);
     setMap({ kind: 'idle' });
@@ -366,7 +375,7 @@ export default function Tool() {
                   <ErrorNote size="page" title="We could not load the fire data" message={load.message} onRetry={() => setAttempt((n) => n + 1)} />
                 </section>
               )}
-              {data && <Hero key={`${area.label}|${data.query.ref_date}`} data={data} area={area} status={status} asOf={refDate} updating={updating} onUpdate={updateNow} />}
+              {data && <Hero key={`${area.label}|${data.query.ref_date}`} data={data} area={area} status={status} asOf={refDate} updating={updating} onUpdate={updateNow} onForecast={status?.forecast_available === false ? undefined : toForecast} />}
               <DateControls refDate={refDate} setRefDate={changeRefDate} fromYear={fromYear} setFromYear={setFromYear}
                 detailed={detailed} setDetailed={setDetailed} today={today} />
               {load.kind === 'loading' && (
@@ -416,7 +425,7 @@ export default function Tool() {
 }
 
 /** The one message that matters, first. Wording only: every number comes from the API. */
-function Hero({ data, area, status, asOf, updating, onUpdate }: {
+function Hero({ data, area, status, asOf, updating, onUpdate, onForecast }: {
   data: Analysis;
   area: Area;
   status: Status | null;
@@ -424,6 +433,8 @@ function Hero({ data, area, status, asOf, updating, onUpdate }: {
   asOf: string | null;
   updating: boolean;
   onUpdate: () => void;
+  /** jumps to the next-week panel (the only forecast); absent while the model is unavailable */
+  onForecast?: () => void;
 }) {
   const c = data.cards;
   const month = MONTHS[c.ref_month - 1];
@@ -453,6 +464,7 @@ function Hero({ data, area, status, asOf, updating, onUpdate }: {
             ? <>Compared with {scope} in {data.average_period.from}–{data.average_period.to}.</>
             : <>There is no complete earlier year to compare with.</>}
           {' '}History from satellite detections, not a forecast{provisional ? '; recent days may still change' : ''}.
+          {onForecast && <>{' '}<button className="textlink hero-fc-link" onClick={onForecast}>Next week: model estimate ↓</button></>}
         </li>
         <li>Smoke from fires can lower air quality nearby.</li>
       </ul>

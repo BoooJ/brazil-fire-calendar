@@ -64,7 +64,7 @@ export default function ForecastPanel({ area, refDate, available, refresh = 0, o
   return (
     <section className="fc" aria-labelledby="fc-title" aria-busy={load.kind === 'loading' || undefined}>
       <div className="upcoming-head">
-        <h2 id="fc-title">Chance of fire next week</h2>
+        <h2 id="fc-title" tabIndex={-1}>Chance of fire next week</h2>
         <span className="tag tag-model">{label}</span>
       </div>
 

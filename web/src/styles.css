@@ -217,6 +217,9 @@ strong { font-weight: 650; }
 .hero-context li { position: relative; padding-left: 18px; }
 .hero-context li::before { content: ''; position: absolute; left: 2px; top: 0.6em; width: 6px; height: 6px; border-radius: 50%; background: var(--ink-2); opacity: 0.6; }
 .hero-context b { color: var(--ink); font-weight: 600; }
+.hero-fc-link { font-size: inherit; white-space: nowrap; }
+#fc-title { scroll-margin-top: var(--s-6); }
+#fc-title:focus { outline: none; }
 .hero-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: var(--t-sm); color: var(--ink-2); margin-top: 14px; }
 .hero-meta .tag { margin: 0; }
 .hero-meta-upd { display: inline-flex; align-items: center; gap: 10px; white-space: nowrap; }

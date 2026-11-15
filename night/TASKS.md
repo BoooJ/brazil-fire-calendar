@@ -285,3 +285,5 @@ Global rules for this block:
   - "Copy as text" copies the API's own forecast `briefing` (it ends with the label), with the same status note as the briefing. The "300 of 7,774" note now says it is about the map. axe clean at 375 / 1440.
 - [x] "Update now" (and the page's Try again) reloaded the calendar but not the next-week estimate
   - ForecastPanel takes `refresh` (the page's reload counter) and fetches again with it.
+- [x] The next-week estimate sat ~3 screens down with nothing on the first screen pointing to it
+  - Hero's "not a forecast" bullet ends with a "Next week: model estimate ↓" text link (only while the model is available): smooth scroll (instant with reduced motion) to the panel and focus on its heading. Checked 375 / 1440, axe clean.
