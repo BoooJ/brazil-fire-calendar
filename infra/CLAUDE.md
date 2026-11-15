@@ -11,7 +11,7 @@ Scope: everything between NASA FIRMS and the API. Read `../docs/api-contract.md`
 | 3 (done) | `pipeline/03_clean.py` | `clean/hotspots/satellite=…/year=…/*.parquet`: one table, every row kept and flagged |
 | 4 (done) | `pipeline/04_fire_days.py` | `derived/fire_days/`: one row per 0.01° cell × UTC day × satellite; NRT hotspots in static cells dropped; `derived/static_cells.parquet` |
 | 5 (done, v0) | `pipeline/05_harmonize.py` | `derived/harmonization_v0.json`: NOAA-20 from 2018-04; S-NPP × 1.015 for 2012-02..2018-03; MODIS Aqua × monthly factor (3.4–5.0) before. Replace with the `science/` method |
-| — | `pipeline/update_recent.py` | Last 5 days from the FIRMS API (`MODIS_NRT`, `VIIRS_NOAA20_NRT`) |
+| 1c (done, run by hand) | `pipeline/01c_download_recent.py` | `brazil_csv/{modis,viirs_noaa20}/provisional/fire_nrt_<SRC>_api.csv`: near-real-time hotspots **newer than the last archive file**, from the FIRMS area API (`MODIS_NRT`, `VIIRS_NOAA20_NRT`). FIRMS has no country API any more, so Brazil is kept with a 0.05° mask of cells where NASA's own Brazil files have hotspots (tested on 10–13 Nov 2026: 0.12 % missed, 0.40 % kept from next door, all at the border). Then re-run steps 3–4 |
 
 Make each step re-runnable: skip work whose output already exists, and never re-download what is already in `raw/`.
 
@@ -34,6 +34,7 @@ First real run (MODIS 2000–2013): 5.69 M rows in 14 s, ~6 % flagged invalid. P
 
 - **Status:** implemented in `main.py` (endpoints, errors), `store.py` (DuckDB + shapely area selection), `analysis.py` (calendar, averages, ranks, cards, briefing), `presets.py`. `/api/update` returns `status: failed` until the daily update exists.
 - `forecast.py` serves the science team's next-week model (`science/forecast/previsao_fogo.py`, loaded once at startup in the warm-up thread; if it fails, only `/api/forecast` is off). It feeds the model the last 28 days of valid NOAA-20 hotspots **without** `type` (NRT rows have none), with `ref_date` = the last complete day. The model works on a circle: we use the circle around the area, then keep the 5 km cells whose centre is inside.
+- The API stops at the **last complete day** = newest day in the data − 1 (`Store.last_day`): a download always ends half way through a day, and a half day compared with full days of other years would undercount. Map points stop there too.
 - Areas are matched by **cell centre** (0.01°) inside the polygon. A partial reference month is compared with the **same days** of other years. `estimated_fires` = connected burning cells (8 neighbours, same or next day) for the reference month.
 - FastAPI + DuckDB reading the Parquet in `DATA_DIR`. Settings come from `.env`: `DATA_DIR`, `API_PORT`, `CORS_ORIGINS`, `FIRMS_MAP_KEY`.
 - Implement **exactly** the endpoints, fields and error format of `docs/api-contract.md`. Response shapes must match `web/mocks/` (minus `_mock`).

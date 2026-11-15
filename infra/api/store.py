@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import json
 import os
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import duckdb
@@ -57,7 +57,11 @@ class Store:
         self.cell_lat = (self.cell_cy + 0.5) * CELL_DEG
         self.cell_lon = (self.cell_cx + 0.5) * CELL_DEG
 
-        self.last_day: date = self.con.execute("SELECT max(acq_date) FROM fire_days").fetchone()[0]
+        # The newest day is still being filled in: NASA adds each satellite pass a few hours after it,
+        # so a download always ends half way through a day. Comparing that half day with full days of
+        # other years would undercount it, so the API stops at the day before (the last complete day).
+        self.newest_day: date = self.con.execute("SELECT max(acq_date) FROM fire_days").fetchone()[0]
+        self.last_day: date = self.newest_day - timedelta(days=1)
         self.final_until = dict(self.con.execute(
             "SELECT satellite, max(acq_date) FILTER (WHERE NOT provisional) FROM fire_days GROUP BY satellite"
         ).fetchall())
@@ -163,8 +167,8 @@ class Store:
         where = ["latitude BETWEEN ? AND ?", "longitude BETWEEN ? AND ?"]
         params: list = [s, n, w, e]
         if year is not None:
-            where += ["year = ?", "month = ?"]
-            params += [year, month]
+            where += ["year = ?", "month = ?", "acq_date <= ?"]
+            params += [year, month, self.last_day]
         else:
             where += ["year BETWEEN ? AND ?", "acq_date BETWEEN ? AND ?"]
             params += [start.year, end.year, start, end]

@@ -14,7 +14,7 @@ import threading
 import time
 from collections import OrderedDict
 from contextlib import asynccontextmanager
-from datetime import date, timedelta
+from datetime import date
 from pathlib import Path
 
 import numpy as np
@@ -106,7 +106,8 @@ async def lifespan(_app: FastAPI):
     global STORE
     started = time.monotonic()
     STORE = Store(data_dir())
-    print(f"Data loaded in {time.monotonic() - started:.0f} s (last day: {STORE.last_day})", flush=True)
+    print(f"Data loaded in {time.monotonic() - started:.0f} s (last complete day: {STORE.last_day}, "
+          f"newest data: {STORE.newest_day})", flush=True)
     threading.Thread(target=_warm_cache, daemon=True).start()
     yield
 
@@ -246,7 +247,7 @@ def run_forecast(req: ForecastRequest) -> dict:
                    else "The forecast model is not available on this server.")
         raise ApiError("FORECAST_UNAVAILABLE", message, 503)
     geom = parse_area(req.area)
-    latest = STORE.last_day - timedelta(days=1)  # the last day of data is still incomplete
+    latest = STORE.last_day  # the last complete day (see Store)
     ref = min(req.ref_date or latest, latest)
     if ref < FIRST_REF:
         raise ApiError("INVALID_DATES", f"ref_date must be {FIRST_REF.isoformat()} or later (NOAA-20 data).")
