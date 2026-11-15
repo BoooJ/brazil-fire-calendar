@@ -106,11 +106,11 @@ export default function Landing() {
           <div className="wrap">
             <div className="hero-text hero-split grid">
               <div className="hero-copy span-7">
-                <a className="pill" href="#idea"><span>Space Apps 2026</span><span className="muted">MODIS and VIIRS, harmonized</span></a>
+                <a className="pill" href="#idea"><span>Space Apps 2026</span><span className="muted">MODIS + VIIRS, one record</span></a>
                 <h1 id="hero-h">Brazil Fire Calendar</h1>
                 <p className="hero__lead">
-                  One consistent burning calendar for Brazil, built from more than 20 years of NASA satellite fire detections.
-                  See when fires usually happen where you live, and whether this month is unusual.
+                  Twenty years of NASA fire detections over Brazil, turned into one burning calendar for the place you care about.
+                  See when fires usually come, whether this month is unusual, and which months are critical.
                 </p>
                 <div className="btn-row">
                   <a className="btn btn--primary" href={TOOL}>See the calendar for my area<Arrow /></a>
@@ -132,11 +132,11 @@ export default function Landing() {
             <div className="grid fill">
               <div className="span-5 stack-6">
                 <p className="bfc-eyebrow">The idea</p>
-                <h2 id="idea-h">The satellites changed. The fire record should not jump because of it.</h2>
+                <h2 id="idea-h">Satellites change. Your fire history doesn’t.</h2>
                 <p className="t-lead">
-                  NASA has watched fires from space since 2000 with MODIS, at 1 km resolution. In 2012 the sharper VIIRS
-                  sensors arrived, at 375 m. They see many more small fires, so the raw numbers jump whenever a new
-                  satellite starts, even if nothing changed on the ground.
+                  MODIS has watched Brazil since 2000 at 1 km. The sharper VIIRS sensors joined in 2012 at 375 m and
+                  spot many more small fires. Left raw, every new satellite looks like a worse fire season. We put them
+                  all on one scale, so a jump in the calendar means a change on the ground.
                 </p>
                 <p className="bfc-facts">VIIRS S-NPP stopped on 2 November 2026.<br />VIIRS NOAA-20 is the scale every count is converted to.</p>
                 <a className="link" href="#method">See the conversion method</a>
@@ -152,12 +152,12 @@ export default function Landing() {
         <section className="section" id="statement" aria-labelledby="statement-h">
           <div className="wrap">
             <div data-moment="liquid-type">
-              <h2 id="statement-h" className="mo-lt__type">More fire, not more satellites</h2>
+              <h2 id="statement-h" className="mo-lt__type">Real change, not sensor change</h2>
             </div>
             <div className="grid grid--top bfc-stmt">
               <p className="span-5">
-                We harmonize MODIS and VIIRS into one unit, the <strong className="bfc-nowrap">fire-day</strong>: a 1 km square that burned on a
-                given day. That gives a single calendar from 2003 until today where years can be compared fairly.
+                Every detection becomes a <strong className="bfc-nowrap">fire-day</strong>: a 1 km square that burned on a given day, counted
+                once and converted to the NOAA-20 scale. So 2005 and 2025 sit side by side, and the comparison is fair.
               </p>
               <div className="frame frame--lit span-6 start-7 bfc-rc-frame" data-visual>
                 <div className="stage"><RawVsCorrected show={show} /></div>
@@ -171,12 +171,12 @@ export default function Landing() {
           <div className="wrap">
             <div className="section-head">
               <p className="bfc-eyebrow">How it works</p>
-              <h2 id="how-h">Three steps to your fire calendar</h2>
+              <h2 id="how-h">Your fire calendar in three steps</h2>
             </div>
             <ol className="grid bfc-how">
               <li className="span-4"><span className="step-num">1</span><h3>Pick your area</h3><p>Your location, a point with a radius, a ready-made region of Brazil, or a shape you draw on the map.</p></li>
-              <li className="span-4"><span className="step-num">2</span><h3>Read one clear message</h3><p>Is fire activity around you above or below normal for this time of year?</p></li>
-              <li className="span-4"><span className="step-num">3</span><h3>Look back in the calendar</h3><p>Every month since 2003, marked by how much burned and what is typical.</p></li>
+              <li className="span-4"><span className="step-num">2</span><h3>See if this month is unusual</h3><p>One line: is fire activity above or below a typical month here?</p></li>
+              <li className="span-4"><span className="step-num">3</span><h3>Find the critical months</h3><p>Every month since 2003: the usual season, its peak, the odd years.</p></li>
             </ol>
             <div className="bfc-window" {...PAINTING} data-fx-seed="7" role="img" aria-label={heroWindowLabel(show)}>
               <HeroWindow show={show} />
@@ -191,8 +191,8 @@ export default function Landing() {
               data-fx-palette='{"bg":"#ff6a1f","surface":"#ffb347","ink":"#1c0700","muted":"#4a1a00","accent":"#c81d25"}'
               data-fx-params='{"calmX":0.5,"calmY":0.5,"calm":0.7,"tint":0.7}'>
               <div className="bfc-cta__in">
-                <h2 id="start-h">What is the fire calendar where you are?</h2>
-                <p>It takes one tap. No account, and your location stays in your browser.</p>
+                <h2 id="start-h">When does your area usually burn?</h2>
+                <p>One tap to find out. No account, and your location stays in your browser.</p>
                 <a className="btn btn--primary" href={TOOL}>Open the fire calendar<Arrow /></a>
               </div>
             </div>
@@ -205,17 +205,17 @@ export default function Landing() {
             <div className="grid">
               <div className="span-5">
                 <p className="bfc-eyebrow">Motivation</p>
-                <h2 id="tool-h">History you can read at a glance</h2>
+                <h2 id="tool-h">Built for people who plan around fire</h2>
               </div>
               <div className="span-6 start-7 stack-4">
                 <p>
-                  People who live with fire seasons, such as farmers, brigades, teachers and journalists, ask simple
-                  questions: is this normal, and when does it usually get worse? The data to answer them is public, but it
-                  is split across instruments and hard to read.
+                  Early-warning services, scientists and land managers ask the same questions about wildfires and
+                  agricultural burning: is this season unusual, and when are the critical months? The answers are in public
+                  satellite data, but split across instruments that don’t agree.
                 </p>
                 <p>
-                  We show history, not predictions. Recent months are marked as provisional, weak numbers as uncertain,
-                  and what is typical for the coming months is always labelled as history, <strong>not a forecast</strong>.
+                  Everything here is history. Recent months are marked provisional, weak numbers uncertain, and what is
+                  typical for the coming months is always labelled as history, <strong>not a forecast</strong>.
                 </p>
               </div>
             </div>
@@ -227,25 +227,25 @@ export default function Landing() {
         <section className="section" id="method" style={vars({ '--hm': 2 })} aria-labelledby="method-h">
           <div className="wrap">
             <div className="section-head">
-              <h2 id="method-h">The method in 3 steps</h2>
+              <h2 id="method-h">How the years stay comparable</h2>
             </div>
             <div className="grid">
               <article className="card card--row card--open m-nolift span-4">
                 <span className="step-num">1</span>
-                <h3>Counts fire-days on a 1 km grid</h3>
-                <p>Many hotspots in one cell on one day count once, so a sharper sensor cannot inflate the total.</p>
+                <h3>Count fire-days, not hotspots</h3>
+                <p>Many hotspots in one 1 km cell on one day count once, so a sharper sensor can’t inflate the total.</p>
                 <div className="panel" data-fx="grain-gradient" data-fx-seed="11"><StepGrid /></div>
               </article>
               <article className="card card--row card--open m-nolift span-4">
                 <span className="step-num">2</span>
-                <h3>Converts each satellite to NOAA-20</h3>
-                <p>Months seen by two satellites at once set the conversion, and held-out years test it.</p>
+                <h3>Put every satellite on one scale</h3>
+                <p>Months seen by two satellites at once set the conversion to NOAA-20; held-out years check it.</p>
                 <div className="panel" data-fx="grain-gradient" data-fx-seed="23"><StepConvert /></div>
               </article>
               <article className="card card--row card--open m-nolift span-4">
                 <span className="step-num">3</span>
-                <h3>Marks provisional months in the calendar</h3>
-                <p>NASA replaces near-real-time data with final data about five months later. Until then the month is hatched.</p>
+                <h3>Flag months that may still change</h3>
+                <p>NASA replaces near-real-time data with final data about five months later. Until then the month is hatched as provisional.</p>
                 <div className="panel" data-fx="grain-gradient" data-fx-seed="37"><StepProvisional show={show} /></div>
               </article>
             </div>
@@ -293,8 +293,8 @@ export default function Landing() {
           <div className="closing__cta close--word">
             <div className="section-head--split">
               <div>
-                <h2 id="close-h">Check the fire calendar for your area</h2>
-                <p className="t-lead">No account needed. Every number comes from NASA FIRMS.</p>
+                <h2 id="close-h">See your area’s fire calendar</h2>
+                <p className="t-lead">Free, no account. Every number comes from NASA FIRMS.</p>
               </div>
               <a className="btn btn--primary" href={TOOL}>See the fire calendar<Arrow /></a>
             </div>
