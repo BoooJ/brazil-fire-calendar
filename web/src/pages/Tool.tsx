@@ -480,7 +480,7 @@ export default function Tool() {
                     </div>
                     <Upcoming data={data} />
                     <ForecastPanel area={area.polygon} refDate={null} available={status?.forecast_available !== false} refresh={attempt} onLoad={setForecast} />
-                    <Briefing data={data} detailed={detailed} coverage={status?.coverage} />
+                    <Briefing data={data} place={area.label} detailed={detailed} coverage={status?.coverage} />
                     {detailed && <Reliability data={data} status={status} />}
                     <p className="sheet-disclaimer">Experimental estimate. Not a real forecast.</p>
                     <footer className="sheet-foot">
@@ -527,12 +527,39 @@ function Upcoming({ data }: { data: Analysis }) {
   );
 }
 
-function Briefing({ data, detailed, coverage }: { data: Analysis; detailed: boolean; coverage?: Coverage[] }) {
+/** "In short", worded for the chosen place (Mike, 15 Nov). The same facts as the API's `briefing`, read off the API's own
+ *  numbers (peak month, worst year, vs average, monthly averages, yearly totals); the API cannot name the place. */
+function briefingFor(data: Analysis, place: string): string {
+  const c = data.cards;
+  const src = 'Source: NASA FIRMS (MODIS + VIIRS).';
+  if (c.peak_month == null) return `No fires were detected by satellite in ${place} since ${data.query.start.slice(0, 4)}. ${src}`;
+  const mean = new Map(data.average_by_month.map((a) => [a.month, a.mean ?? 0]));
+  const peakMean = mean.get(c.peak_month) ?? 0;
+  // the main season: months with at least a third of the peak month's average (the API's rule)
+  const season = Array.from({ length: 12 }, (_, i) => i + 1).filter((m) => (mean.get(m) ?? 0) >= 0.33 * peakMean);
+  const parts = [`In ${place}, fire activity peaks in ${MONTHS[c.peak_month - 1]}, and the fire season runs from ${MONTHS[season[0] - 1]} to ${MONTHS[season[season.length - 1] - 1]}.`];
+  const full = data.yearly.filter((y) => y.complete && y.count != null);
+  const worst = full.find((y) => y.year === c.worst_year);
+  if (worst && full.length) {
+    const avg = full.reduce((a, y) => a + (y.count ?? 0), 0) / full.length;
+    parts.push(`The most active year in the ${full.length} years of research was ${worst.year}${avg ? ` (${((worst.count ?? 0) / avg).toFixed(1)}x an average year)` : ''}.`);
+  }
+  if (c.vs_avg_pct != null) {
+    const when = `${MONTHS[c.ref_month - 1]} ${c.ref_year}`;
+    parts.push(`${c.partial ? 'So far in' : 'In'} ${when}, activity is ${Math.abs(Math.round(c.vs_avg_pct))}% ${c.vs_avg_pct >= 0 ? 'above' : 'below'} the average.`);
+  }
+  const next = data.next_months.reduce<(typeof data.next_months)[number] | null>((b, n) => (n.mean != null && (b == null || n.mean > (b.mean ?? 0)) ? n : b), null);
+  if (next?.mean) parts.push(`In the next three months, ${MONTHS[next.month - 1]} is historically the most active (average ${num(Math.round(next.mean))} hotspots).`);
+  parts.push('This is a retrospective estimate, not a real forecast.', src);
+  return parts.join(' ');
+}
+
+function Briefing({ data, place, detailed, coverage }: { data: Analysis; place: string; detailed: boolean; coverage?: Coverage[] }) {
   const c = data.cards;
   return (
     <section className="briefing">
       <h2>In short</h2>
-      <p>{data.briefing}</p>
+      <p>{briefingFor(data, place)}</p>
 
       {detailed ? (
         <>

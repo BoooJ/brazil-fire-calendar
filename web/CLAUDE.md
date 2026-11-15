@@ -17,6 +17,7 @@ Scope: everything the user sees. `../docs/api-contract.md` is the source of trut
 
 - **Never edit `mocks/` by hand.** They come from `python infra/tools/make_mocks.py`.
 - **Display, don't recompute:** `vs_avg_pct`, `rank`, `estimated_fires`, `briefing` and the averages come from the API. Don't calculate them in the browser.
+- **Exception, "In short" (Mike, 15 Nov):** the paragraph is worded in `briefingFor()` (`Tool.tsx`) so it can name the chosen place; every number in it is still read off the API (cards, averages, yearly totals, next months), never invented.
 - **A past reference date is sent as `ref_date` and `end`** (the page "as of" that day). With `ref_date` alone the API keeps every later month.
 
 ## Rules for the UI
