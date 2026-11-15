@@ -233,7 +233,7 @@ export default function Landing() {
             </div>
             <div className="l-card l-card--white l-col l-duo">
               <Timeline />
-              <RawVsCorrected show={show} />
+              <RawVsCorrected show={show} record={false} />
             </div>
           </div>
         </section>
