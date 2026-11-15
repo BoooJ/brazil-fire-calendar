@@ -6,6 +6,7 @@ import { BurningCalendar, HeatmapLegend } from './BurningCalendar';
 import { TypicalYearChart, YearlyChart } from './Charts';
 import { savePng, type EChartHandle } from './EChart';
 import type { Mode } from './FireCalendar';
+import { MON, MONTHS, compact as short, num, pctLong, pctShort } from '../format';
 
 interface Props {
   data: Analysis;
@@ -33,6 +34,7 @@ function useCompact() {
 export default function Detailed({ data, mode, onMode, selected, onSelect, slug, onCsv }: Props) {
   const compact = useCompact();
   const calRef = useRef<EChartHandle>(null);
+  const [table, setTable] = useState(false);
   const typRef = useRef<EChartHandle>(null);
   const yrRef = useRef<EChartHandle>(null);
 
@@ -59,10 +61,12 @@ export default function Detailed({ data, mode, onMode, selected, onSelect, slug,
               <button role="radio" aria-checked={mode === 'vs'} className={mode === 'vs' ? 'on' : ''} onClick={() => onMode('vs')}>vs Average</button>
             </div>
             <button className="btn btn-ghost" onClick={() => savePng(calRef.current, `burning-calendar-${slug}-${mode}.png`)} aria-label="Download the burning calendar as a PNG image">PNG</button>
+            <button className="btn btn-ghost" onClick={() => setTable((t) => !t)} aria-pressed={table}>{table ? 'Heatmap' : 'Table'}</button>
             <button className="btn btn-ghost" onClick={onCsv} aria-label="Download the calendar as a CSV file">CSV</button>
           </div>
         </div>
-        <div className="chart-card">
+        {table && <CalendarTable data={data} mode={mode} onPick={pick} />}
+        <div className="chart-card" hidden={table}>
           <div className="chart-scroll">
             <BurningCalendar
               ref={calRef}
@@ -110,5 +114,38 @@ export default function Detailed({ data, mode, onMode, selected, onSelect, slug,
         </div>
       </section>
     </>
+  );
+}
+
+/** The heatmap as a plain table: every month is a button (keyboard and screen readers), same API values. */
+function CalendarTable({ data, mode, onPick }: { data: Analysis; mode: Mode; onPick: (year: number, month: number) => void }) {
+  const years = [...new Set(data.calendar.map((c) => c.year))].sort((a, b) => b - a);
+  const by = new Map(data.calendar.map((c) => [`${c.year}-${c.month}`, c]));
+  return (
+    <div className="cal-table-wrap">
+      <table className="cal-table">
+        <caption>Burning calendar as a table: {mode === 'counts' ? 'corrected count (fire-days)' : 'compared with the average'} per month, * provisional. Choose a month for details and the map.</caption>
+        <thead><tr><th scope="col">Year</th>{MON.map((m) => <th scope="col" key={m}>{m}</th>)}</tr></thead>
+        <tbody>
+          {years.map((y) => (
+            <tr key={y}>
+              <th scope="row">{y}</th>
+              {MON.map((m, i) => {
+                const c = by.get(`${y}-${i + 1}`);
+                return (
+                  <td key={m}>
+                    {c ? (
+                      <button onClick={() => onPick(y, i + 1)} aria-label={`${MONTHS[i]} ${y}: ${num(c.count)} fire-days, ${pctLong(c.vs_avg_pct)}${c.provisional ? ', provisional' : ''}`}>
+                        {mode === 'counts' ? short(c.count) : pctShort(c.vs_avg_pct)}{c.provisional ? '*' : ''}
+                      </button>
+                    ) : '–'}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

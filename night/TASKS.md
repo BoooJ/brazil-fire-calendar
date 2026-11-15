@@ -121,7 +121,8 @@ Global rules for this block:
   - Longer, eased fade (0 → 8% → 18% → 36%) on the desktop globe edge; the hard band is gone.
 - [x] Month card and data sources dialog: add a close animation (needs a short delayed unmount)
   - New components/useClosing.ts: 160 ms sink/fade-out before unmount (instant with reduced motion). Month card focus now returns to its calendar brick even when opened from the brick card.
-- [ ] Detailed view heatmap is a canvas: cells are not reachable by keyboard (see night/QUESTIONS.md)
+- [x] Detailed view heatmap is a canvas: cells are not reachable by keyboard (see night/QUESTIONS.md)
+  - New "Table" toggle beside PNG/CSV swaps the canvas heatmap for a real table (caption, th scopes, each month a button with a full aria-label, * provisional). Enter opens the month card; focus comes back.
 - [x] Gate on phones: the long single column could show the four ways as numbered steps (1 location · 2 region · 3 point · 4 draw)
   - Under 600px the four dividers carry numbered badges (CSS counter) and a "1 your location" divider appears above the location button; desktop unchanged.
 - [x] Landing "How it works" cards follow tonight's tool changes
