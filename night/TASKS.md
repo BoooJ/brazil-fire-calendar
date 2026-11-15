@@ -144,3 +144,5 @@ Global rules for this block:
   - onKeyDown on .cal-grid; Tab still reaches every brick, Enter opens the brick card.
 - [x] Landing CSS: remove the dead hero-window / year-list rules (HeroWindow and the year list are gone)
   - ~25 unused .bfc-win / .bfc-kpi / .bfc-yr rules deleted; the app frame stats keep their own rules.
+- [x] Calendar fine print said "colour shows how much burned" in vs Average mode too
+  - Now mode-dependent: vs Average explains orange above / purple below the average.
