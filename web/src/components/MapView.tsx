@@ -294,7 +294,7 @@ export default function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCa
     <>
       <div ref={el} className="map" aria-label="Map of fire hotspots for the selected month" role="region" />
       {noImagery && (
-        <p className="map-imagery-note" role="status">Satellite imagery could not load. The area and its hotspots are still shown.</p>
+        <p className="map-imagery-note" role="status">Satellite imagery could not load.<span className="map-imagery-more"> The area and its hotspots are still shown.</span></p>
       )}
     </>
   );

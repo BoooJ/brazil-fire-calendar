@@ -218,4 +218,4 @@ Global rules for this block:
 - [x] Detailed heatmap on phones: cells have no numbers there, so the "avg" row was a row of blank dark cells (said nothing without a tap)
   - Compact heatmap only: the average row takes the month colour scale (its mean in Counts; the neutral middle in vs Average, since it is the average) with a thin dotted white edge, like the quick view's dotted typical bricks. Tooltip unchanged; desktop unchanged (numbers in neutral cells).
 - [x] Map: when the NASA GIBS imagery cannot load (offline, blocked network) the map was a silent black square
-  - After 3 failed imagery tiles (and none loaded) a small status note above the zoom buttons says "Satellite imagery could not load. The area and its hotspots are still shown."; it clears if a tile loads.
+  - After 3 failed imagery tiles (and none loaded) a small status note above the zoom buttons says "Satellite imagery could not load. The area and its hotspots are still shown."; it clears if a tile loads. Phones show only the first sentence; 220px wide so the month card never cuts it.
