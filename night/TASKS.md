@@ -215,3 +215,5 @@ Global rules for this block:
   - Phone keeps the "typical" tag on the next-year row only; the phone padding rule now comes after the base rule; note reads "Dotted bricks: a typical year (the 2003–2025 average) for 2027 and the rest of 2026." + `next_months_label`.
 - [x] Phone calendar legend: the last colour step ("1.3k+") wrapped alone onto a second line; "What the marks mean" was a 32px tap target
   - Under 600px the legend uses 12px side padding and 8px between steps (all five fit one line at 375), the disclosure is 44px tall and the extra row gap is gone.
+- [x] Detailed heatmap on phones: cells have no numbers there, so the "avg" row was a row of blank dark cells (said nothing without a tap)
+  - Compact heatmap only: the average row takes the month colour scale (its mean in Counts; the neutral middle in vs Average, since it is the average) with a thin dotted white edge, like the quick view's dotted typical bricks. Tooltip unchanged; desktop unchanged (numbers in neutral cells).

@@ -71,9 +71,14 @@ export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningC
         _row: r,
       }));
 
+    // Phones (compact) have no numbers in the cells, so the average row takes the month cells' colour scale
+    // (counts: its mean; vs Average: the neutral middle, since it is the average) instead of a blank neutral row.
+    const avgValue = (mean: number | null) =>
+      mean == null ? '-' : !compact ? mean : mode === 'counts' ? (mean === 0 ? -1 : log(mean)) : 0;
     const avgRow = average.map((a) => ({
-      value: [a.month - 1, 0, a.mean ?? '-'],
-      itemStyle: { borderColor: CHART_BG, borderWidth: compact ? 1 : 2 },
+      value: [a.month - 1, 0, avgValue(a.mean)],
+      // compact: a thin dotted edge marks the coloured average row as typical, like the quick view's dotted bricks
+      itemStyle: compact ? { borderColor: 'rgba(255,255,255,0.7)', borderWidth: 1, borderType: 'dotted' as const } : { borderColor: CHART_BG, borderWidth: 2 },
       label: { formatter: () => (compact ? '' : num(a.mean)), color: '#e9e6df', fontStyle: 'italic' as const },
       _avg: a,
     }));
@@ -85,7 +90,7 @@ export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningC
       extraCssText: 'border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.45);',
       formatter: (p: any) => {
         const [x, y] = p.value as [number, number];
-        if (p.seriesIndex === 1) {
+        if (p.seriesIndex >= 1) {
           const d = p.data as any;
           if (d._avg) {
             const a = d._avg as MonthAverage;
@@ -134,8 +139,8 @@ export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningC
       },
       visualMap: [
         mode === 'counts'
-          ? { show: false, seriesIndex: 0, type: 'continuous', min: log(1), max: countsMax, inRange: { color: COUNTS_SCALE }, outOfRange: { color: NO_FIRE } }
-          : { show: false, seriesIndex: 0, type: 'continuous', min: -2, max: 2, inRange: { color: ANOMALY_SCALE }, outOfRange: { color: NO_FIRE } },
+          ? { show: false, seriesIndex: compact ? [0, 2] : 0, type: 'continuous', min: log(1), max: countsMax, inRange: { color: COUNTS_SCALE }, outOfRange: { color: NO_FIRE } }
+          : { show: false, seriesIndex: compact ? [0, 2] : 0, type: 'continuous', min: -2, max: 2, inRange: { color: ANOMALY_SCALE }, outOfRange: { color: NO_FIRE } },
         // Year totals + average row: one flat neutral colour (heatmaps require a visualMap).
         { show: false, seriesIndex: 1, type: 'piecewise', pieces: [{ min: -Infinity, max: Infinity, color: NEUTRAL_CELL }] },
       ],
@@ -159,7 +164,8 @@ export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningC
           emphasis: { itemStyle: { borderColor: '#fff', borderWidth: 2 } },
           progressive: 0,
         },
-        { type: 'heatmap', data: [...yearTotals, ...avgRow] as any, label: { show: true, fontFamily: CHART_FONT, fontSize: 10 }, emphasis: { disabled: true } },
+        { type: 'heatmap', data: (compact ? yearTotals : [...yearTotals, ...avgRow]) as any, label: { show: true, fontFamily: CHART_FONT, fontSize: 10 }, emphasis: { disabled: true } },
+        ...(compact ? [{ type: 'heatmap' as const, data: avgRow as any, label: { show: false }, emphasis: { disabled: true } }] : []),
       ],
     };
   }, [calendar, average, yearly, years, maxCount, mode, selected, compact, unitMain, period]);
