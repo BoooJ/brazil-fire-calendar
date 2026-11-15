@@ -6,11 +6,11 @@ import statistics
 from datetime import date
 
 FIRST_YEAR = 2003
-SATELLITES = ("modis_terra", "modis_aqua", "viirs_snpp", "viirs_noaa20")
+# Two satellites only, one per instrument, so no fire is seen twice (team decision, 15 Nov 2026).
+# The data keeps MODIS Aqua and VIIRS S-NPP, but the API never reads them.
+SATELLITES = ("modis_terra", "viirs_noaa20")
 SAT_PERIODS = {  # FIRMS coverage dates
     "modis_terra": (date(2000, 11, 1), None),
-    "modis_aqua": (date(2002, 7, 4), None),
-    "viirs_snpp": (date(2012, 1, 20), date(2026, 11, 2)),
     "viirs_noaa20": (date(2018, 4, 1), None),
 }
 MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July",
@@ -29,25 +29,30 @@ def sat_active(sat: str, year: int, month: int, until: date) -> bool:
 
 
 class Harmonizer:
-    """Turns per-satellite fire-days into NOAA-20 equivalent fire-days (rules from harmonization_v*.json)."""
+    """Turns fire-days into NOAA-20 equivalent fire-days (rules from harmonization_v*.json).
+    Each month uses ONE source satellite times its factor: counts are never summed across satellites."""
 
     def __init__(self, spec: dict):
-        rules = {r["source"]: r for r in spec["rules"]}
         self.spec = spec
-        self.k_snpp = float(rules["viirs_snpp"]["factor"])
-        self.k_aqua = {int(m): float(f) for m, f in rules["modis_aqua"]["factor_by_month"].items()}
+        self.rules = []
+        for r in spec["rules"]:
+            lo = tuple(int(x) for x in r["from"].split("-")) if "from" in r else (0, 1)
+            hi = tuple(int(x) for x in r["to"].split("-")) if "to" in r else (9999, 12)
+            by_month = {int(m): float(f) for m, f in r.get("factor_by_month", {}).items()}
+            self.rules.append((lo, hi, r["source"], float(r.get("factor", 1.0)), by_month))
 
-    @staticmethod
-    def source(year: int, month: int) -> str:
-        if (year, month) >= (2018, 4):
-            return "viirs_noaa20"
-        if (year, month) >= (2012, 2):
-            return "viirs_snpp"
-        return "modis_aqua"
+    def _rule(self, year: int, month: int) -> tuple:
+        for rule in self.rules:
+            if rule[0] <= (year, month) <= rule[1]:
+                return rule
+        raise ValueError(f"No harmonization rule for {year}-{month:02d}")
+
+    def source(self, year: int, month: int) -> str:
+        return self._rule(year, month)[2]
 
     def factor(self, year: int, month: int) -> float:
-        src = self.source(year, month)
-        return 1.0 if src == "viirs_noaa20" else self.k_snpp if src == "viirs_snpp" else self.k_aqua[month]
+        _lo, _hi, _src, factor, by_month = self._rule(year, month)
+        return by_month.get(month, factor)
 
     def corrected(self, year: int, month: int, fire_days: dict[str, int]) -> float:
         return fire_days.get(self.source(year, month), 0) * self.factor(year, month)

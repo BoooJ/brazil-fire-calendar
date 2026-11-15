@@ -12,7 +12,7 @@ Build a website that turns 20+ years of NASA fire hotspots over Brazil into one 
 
 1. The **17 MVP features** in the [README](../README.md#mvp-features) are the job. Nothing else until they all work.
 2. **Extras** only after the Sunday 12:00 checkpoint passes.
-3. **Feature freeze: Sunday 15:00.** After that: only fixes, polish, video and submission.
+3. **No feature freeze** (team decision, Sunday 15 Nov): new work can land until submission, as long as `main` keeps running.
 4. **We are not doing:** forecasts (one exception: the science team's next-week model, `/api/forecast`, always labelled "model estimate, experimental"), non-NASA data, other countries (except as a late extra).
 5. If two rules conflict, **the deadline wins**: ship the MVP.
 
@@ -77,7 +77,6 @@ Step-by-step commands: [GIT_GUIDE.md](GIT_GUIDE.md).
 | **Saturday 21:00** | **Checkpoint 1:** first raw Pantanal calendar from **real data** in the website |
 | **Saturday night** | Sleep |
 | **Sunday 12:00** | **Checkpoint 2:** all 17 MVP features work (even roughly), online |
-| **Sunday 15:00** | **Feature freeze** |
 | **Sunday 19:00** | Video / slides finished |
 | **Sunday 21:00** | **Submitted** |
 | **Sunday 23:00** | Hard deadline |

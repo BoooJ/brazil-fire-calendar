@@ -26,23 +26,19 @@ FAKE_NOTE = (
     "FAKE DATA - for website development only. "
     "Shapes follow docs/api-contract.md; every number is invented."
 )
-CONTRACT_VERSION = "0.2"
+CONTRACT_VERSION = "0.3"
 DATA_UPDATED = "2026-11-14T15:20:00Z"
 TODAY = date(2026, 11, 14)
 FINAL_UNTIL = date(2026, 5, 31)  # after this: NASA near-real-time data -> "provisional"
 FIRST_YEAR = 2003
 
-SATELLITES = ("modis_terra", "modis_aqua", "viirs_snpp", "viirs_noaa20")
+SATELLITES = ("modis_terra", "viirs_noaa20")  # contract v0.3: one satellite per instrument
 SAT_PERIODS = {  # real FIRMS coverage dates
     "modis_terra": (date(2000, 11, 1), None),
-    "modis_aqua": (date(2002, 7, 4), None),
-    "viirs_snpp": (date(2012, 1, 20), date(2026, 11, 2)),
     "viirs_noaa20": (date(2018, 4, 1), None),
 }
 RAW_PER_FIRE_DAY = {  # fake ratio: raw hotspots detected per corrected fire-day
-    "modis_terra": (0.28, 0.36),
-    "modis_aqua": (0.30, 0.38),
-    "viirs_snpp": (2.8, 3.4),
+    "modis_terra": (0.18, 0.24),
     "viirs_noaa20": (2.7, 3.3),
 }
 MONTH_NAMES = [
@@ -263,8 +259,6 @@ def briefing(cards: dict, season: list[int], worst_year: int, worst_factor: floa
 
 PASS_WINDOWS = {  # rough UTC overpass windows over Brazil (fake but plausible)
     "modis_terra": [("D", 1300, 1430), ("N", 100, 230)],
-    "modis_aqua": [("D", 1630, 1800), ("N", 430, 600)],
-    "viirs_snpp": [("D", 1630, 1830), ("N", 430, 630)],
     "viirs_noaa20": [("D", 1530, 1730), ("N", 330, 530)],
 }
 
@@ -282,7 +276,7 @@ def make_hotspots(rng: random.Random, year: int, month: int, total: int, n: int 
         cx, cy = rng.choice(centers)
         lon = min(max(rng.gauss(cx, 0.06), w), e)
         lat = min(max(rng.gauss(cy, 0.06), s), nn)
-        sat = rng.choices(SATELLITES, weights=[0.1, 0.1, 0.4, 0.4])[0]
+        sat = rng.choices(SATELLITES, weights=[0.2, 0.8])[0]
         daynight, lo, hi = rng.choice(PASS_WINDOWS[sat])
         if sat.startswith("modis"):
             raw = rng.randint(30, 100)
@@ -376,7 +370,7 @@ def write_calendar_csv(name: str, analysis: dict) -> None:
 
 
 def write_hotspots_csv(name: str, geo: dict) -> None:
-    instrument = {"modis_terra": "MODIS", "modis_aqua": "MODIS", "viirs_snpp": "VIIRS", "viirs_noaa20": "VIIRS"}
+    instrument = {"modis_terra": "MODIS", "viirs_noaa20": "VIIRS"}
     with open(OUT / name, "w", encoding="utf-8", newline="") as f:
         w = csv.writer(f, lineterminator="\n")
         w.writerow(["latitude", "longitude", "acq_date", "acq_time_utc", "satellite", "instrument",

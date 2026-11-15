@@ -1,4 +1,4 @@
-"""Brazil Fire Calendar API - implements docs/api-contract.md (v0.2).
+"""Brazil Fire Calendar API - implements docs/api-contract.md (v0.3).
 
 Run from the repo root (loads ~25 M fire-days in memory, takes a few seconds):
     .venv/Scripts/python -m uvicorn main:app --app-dir infra/api --port 8000
@@ -35,7 +35,7 @@ from forecast import FIRST_REF, Forecaster, find_model_dir  # noqa: E402
 from presets import PRESETS, box  # noqa: E402
 from store import Store  # noqa: E402
 
-CONTRACT_VERSION = "0.2"
+CONTRACT_VERSION = "0.3"
 MAX_POINTS = 1000
 MIN_AREA_KM2 = 4.0    # the data is on a ~1.1 km grid: smaller areas may contain no grid cell at all
 CACHE_SIZE = 256      # analysis answers kept in memory (presets and recently viewed areas)
@@ -225,8 +225,8 @@ def _compute_analysis(geom, start: date, end: date, ref: date) -> dict:
     reliability = {
         "median_error_pct": validation.get("median_abs_error_pct"),
         "validated_years": validation.get("validated_years", []),
-        "note": "v0 harmonization: Brazil-wide factors, tested on Brazil totals for 2018-2019. "
-                "Small areas have larger errors.",
+        "note": STORE.harm_spec.get("reliability_note")
+                or "Brazil-wide factors, tested on Brazil totals for 2018-2019. Small areas have larger errors.",
     }
     km2 = area_km2(geom)
     if not geom.intersects(BRAZIL):

@@ -10,7 +10,7 @@ Scope: everything between NASA FIRMS and the API. Read `../docs/api-contract.md`
 | 2 (done) | `pipeline/02_extract_brazil.py` | `brazil_csv/<product>/<final or provisional>/*.csv`: Brazil's CSV copied out of each yearly zip, plus the archive-request files |
 | 3 (done) | `pipeline/03_clean.py` | `clean/hotspots/satellite=…/year=…/*.parquet`: one table, every row kept and flagged |
 | 4 (done) | `pipeline/04_fire_days.py` | `derived/fire_days/`: one row per 0.01° cell × UTC day × satellite; NRT hotspots in static cells dropped; `derived/static_cells.parquet` |
-| 5 (done, v0) | `pipeline/05_harmonize.py` | `derived/harmonization_v0.json`: NOAA-20 from 2018-04; S-NPP × 1.015 for 2012-02..2018-03; MODIS Aqua × monthly factor (3.4–5.0) before. Replace with the `science/` method |
+| 5 (done, v1) | `pipeline/05_harmonize.py` | `derived/harmonization_v1.json`: **MODIS Terra + VIIRS NOAA-20 only** (team decision, 15 Nov): NOAA-20 from 2018-04; MODIS Terra × monthly factor (4.1–7.4) before. Hold-out 2018–2019: 10.0 % median error (v0, Aqua + S-NPP: 6.6 %). The API loads and serves only these two satellites |
 | 1c (done, run by hand) | `pipeline/01c_download_recent.py` | `brazil_csv/{modis,viirs_noaa20}/provisional/fire_nrt_<SRC>_api.csv`: near-real-time hotspots **newer than the last archive file**, from the FIRMS area API (`MODIS_NRT`, `VIIRS_NOAA20_NRT`). FIRMS has no country API any more, so Brazil is kept with a 0.05° mask of cells where NASA's own Brazil files have hotspots (tested on 10–13 Nov 2026: 0.12 % missed, 0.40 % kept from next door, all at the border). Then re-run steps 3–4 |
 
 Make each step re-runnable: skip work whose output already exists, and never re-download what is already in `raw/`.
