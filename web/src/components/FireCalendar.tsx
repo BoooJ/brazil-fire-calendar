@@ -290,6 +290,14 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
 function Legend({ mode, thresholds, period }: { mode: Mode; thresholds: number[]; period: string }) {
   const t = thresholds.map((x) => (isFinite(x) ? compact(x) : '–'));
   const countLabels = [`under ${t[0]}`, `${t[0]}+`, `${t[1]}+`, `${t[2]}+`, `${t[3]}+`];
+  const marks = (
+    <ul>
+      <li><span className="day mini typical lv2" />Typical (history, not a forecast)</li>
+      <li><span className="day mini lv2 is-prov" />Provisional: may still change</li>
+      <li><span className="day mini lv2 is-unc" />Uncertain: few fires</li>
+      <li><span className="day mini is-now" />Month in progress</li>
+    </ul>
+  );
   return (
     <div className="legend" aria-label="Legend">
       <div className="legend-row">
@@ -300,14 +308,12 @@ function Legend({ mode, thresholds, period }: { mode: Mode; thresholds: number[]
           ))}
         </ul>
       </div>
-      <div className="legend-row">
-        <ul>
-          <li><span className="day mini typical lv2" />Typical (history, not a forecast)</li>
-          <li><span className="day mini lv2 is-prov" />Provisional: may still change</li>
-          <li><span className="day mini lv2 is-unc" />Uncertain: few fires</li>
-          <li><span className="day mini is-now" />Month in progress</li>
-        </ul>
-      </div>
+      <div className="legend-row legend-states">{marks}</div>
+      {/* phones: the same keys folded away, so the bricks come sooner */}
+      <details className="legend-states-phone">
+        <summary>What the marks mean</summary>
+        {marks}
+      </details>
     </div>
   );
 }

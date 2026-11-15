@@ -136,6 +136,7 @@ Global rules for this block:
 
 - [x] Landing "Built for people…" app frame showed a list of years the tool doesn't have (invented UI)
   - Left pane is now the tool's white sheet with the brick calendar (10 years, the open month outlined); map pane keeps the real month stats; glow gradients on the mini-map removed.
-- [ ] Phone: the calendar legend takes ~150px before the first brick; fold the state keys (typical / provisional / uncertain / in progress) into a "What the marks mean" disclosure under 600px
+- [x] Phone: the calendar legend takes ~150px before the first brick; fold the state keys (typical / provisional / uncertain / in progress) into a "What the marks mean" disclosure under 600px
+  - Under 600px the four state keys sit in a "What the marks mean ▾" disclosure; the colour steps with values stay visible. Desktop unchanged.
 - [ ] web/CLAUDE.md file table: describe FireCalendar as bricks + anchored card, `headlineFor`/`trendOf`/`rankLine` in format.ts, `components/useClosing.ts`
 
