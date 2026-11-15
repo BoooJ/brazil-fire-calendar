@@ -163,3 +163,5 @@ Global rules for this block:
   - Flags get a small amber dot; brick card says "Fire detected" then "442 corrected count" (number first, bigger); Key numbers → calendar now uses the sheet's 40 + line + 40 rhythm.
 - [x] Key numbers on phones/tablets: "Peak month" sat alone in a half-empty last row
   - In the two-column layout the last card spans the full width; desktop's three columns unchanged.
+- [x] vs Average mode: typical (dotted) bricks kept their orange count colours, which read as "above average" in that legend
+  - In vs Average the typical bricks and their legend key are neutral grey dotted (they are the average); Counts unchanged.

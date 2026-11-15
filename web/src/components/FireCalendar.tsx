@@ -33,6 +33,8 @@ interface Props {
 
 export default function FireCalendar({ data, selected, onSelect, mode, onMode, onCsv }: Props) {
   const levels = useMemo(() => makeCountLevels(data.calendar), [data.calendar]);
+  // typical bricks: coloured by size in Counts; in vs Average they ARE the average, so they stay neutral
+  const typLv = (mean: number | null | undefined) => (mode === 'counts' ? levels.level(mean ?? null) : 0);
   // one tooltip for hover and keyboard focus, styled like the detailed view's chart tooltip
   const [tip, setTip] = useState<{ item: CalendarItem; el: HTMLElement; x: number; y: number } | null>(null);
   const place = (item: CalendarItem, el: HTMLElement) => {
@@ -188,7 +190,7 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
                       : `${MONTHS[idx]}, typical ${period}: ${num(a?.mean)} (history, not a forecast)`;
                     return (
                       <div className="cell" key={m}>
-                        <span className={`day typical lv${levels.level(a?.mean ?? null)}`} role="img" aria-label={text} title={text} />
+                        <span className={`day typical lv${typLv(a?.mean)}`} role="img" aria-label={text} title={text} />
                         <span className="cell-mon" aria-hidden="true">{m}</span>
                       </div>
                     );
@@ -215,7 +217,7 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
                     return (
                       <div className="cell" key={m}>
                         {future && y === ref_year ? (
-                          <span className={`day typical lv${levels.level(a?.mean ?? null)}`} role="img"
+                          <span className={`day typical lv${typLv(a?.mean)}`} role="img"
                             aria-label={`${MONTHS[idx]} ${y} is usually around ${num(a?.mean)} (typical ${period}, not a forecast)`}
                             title={`${MONTHS[idx]} is usually around ${num(a?.mean)} (typical ${period}, not a forecast)`} />
                         ) : (
@@ -306,7 +308,7 @@ function Legend({ mode, thresholds, period }: { mode: Mode; thresholds: number[]
   const countLabels = [`under ${t[0]}`, `${t[0]}+`, `${t[1]}+`, `${t[2]}+`, `${t[3]}+`];
   const marks = (
     <ul>
-      <li><span className="day mini typical lv2" />Typical (history, not a forecast)</li>
+      <li><span className={`day mini typical ${mode === 'counts' ? 'lv2' : 'lv0'}`} />Typical (history, not a forecast)</li>
       <li><span className="day mini lv2 is-prov" />Provisional: may still change</li>
       <li><span className="day mini lv2 is-unc" />Uncertain: few fires</li>
       <li><span className="day mini is-now" />Month in progress</li>
