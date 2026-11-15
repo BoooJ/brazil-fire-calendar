@@ -222,12 +222,12 @@ export default function Landing() {
               <p className="l-eyebrow">The idea</p>
               <h2 id="idea-h"><span>A harmonized dataset</span> from two different instruments.</h2>
               <p className="l-body">
-                NASA has watched the world’s fires since 2000 with the MODIS instrument. In 2012, a second
+                NASA has watched Brazil’s fires since 2000 with the MODIS instrument. In 2012, a second
                 instrument, VIIRS, joined it. MODIS sees the ground in 1 km pixels, while VIIRS uses 375 m pixels,
                 so it catches many smaller fires that MODIS misses. Without context, this can look like fire suddenly
-                increased when VIIRS started working. That is why we need to bring both onto one scale. In the chart
-                on the side, the bars show what the satellites reported each year. They jump in 2018, when the
-                sharper sensor arrived.
+                increased when VIIRS started working. That is why we need to bring both onto one scale. In the chart,
+                the bars show what the satellites reported each year. They jump in 2018, when a newer VIIRS
+                satellite, NOAA-20, arrived.
               </p>
               <a className="l-link" href="#method">How we do it<Arrow /></a>
             </div>
