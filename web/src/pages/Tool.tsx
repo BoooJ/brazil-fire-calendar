@@ -1,13 +1,13 @@
 import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import '../styles.css';
 import { ApiError, downloadCsv, getAnalysis, getHotspots, getPresets, getStatus, requestUpdate } from '../api';
-import type { Analysis, AnalysisRequest, CalendarItem, Forecast, Hotspots, Preset, Status } from '../types';
+import type { Analysis, AnalysisRequest, CalendarItem, Coverage, Forecast, Hotspots, Preset, Status } from '../types';
 import { SATELLITES, SAT_NAMES } from '../types';
 import { drawnArea, pointCount, type Area } from '../geo';
 import Globe, { BRAZIL_CENTER, zoomForRadius } from '../components/Globe';
 import LocationGate, { PinIcon } from '../components/LocationGate';
 import FireCalendar, { type Mode } from '../components/FireCalendar';
-import MonthDetail, { type MapState } from '../components/MonthDetail';
+import MonthDetail, { satNote, type MapState } from '../components/MonthDetail';
 import ErrorNote from '../components/ErrorNote';
 import ForecastPanel from '../components/ForecastPanel';
 import DateControls, { FIRST_YEAR } from '../components/Controls';
@@ -403,7 +403,7 @@ export default function Tool() {
                     </div>
                     <Upcoming data={data} />
                     <ForecastPanel area={area.polygon} refDate={refDate} available={status?.forecast_available !== false} refresh={attempt} onShowMap={showForecastMap} onHideMap={clearMap} onShown={!!fcMap && stage === 'map'} />
-                    <Briefing data={data} short={!detailed} />
+                    <Briefing data={data} short={!detailed} coverage={status?.coverage} />
                     {detailed && <Reliability data={data} status={status} />}
                     <footer className="sheet-foot">
                       <p>Data: NASA FIRMS (MODIS C6.1, VIIRS S-NPP and NOAA-20). Map imagery: NASA GIBS, for display only.</p>
@@ -417,7 +417,7 @@ export default function Tool() {
         </main>
       </div>
 
-      {selected && <MonthDetail item={selected} map={map} onShowMap={showOnMap} onCsv={hotspotsCsv} onClose={closeDetail} />}
+      {selected && <MonthDetail item={selected} map={map} onShowMap={showOnMap} onCsv={hotspotsCsv} onClose={closeDetail} coverage={status?.coverage} />}
       {showSources && <SourcesDialog status={status} onClose={closeSources} />}
       {toast && <div className="toast" role="status">{toast}</div>}
     </div>
@@ -506,7 +506,7 @@ function Upcoming({ data }: { data: Analysis }) {
   );
 }
 
-function Briefing({ data, short }: { data: Analysis; short: boolean }) {
+function Briefing({ data, short, coverage }: { data: Analysis; short: boolean; coverage?: Coverage[] }) {
   const [copied, setCopied] = useState<null | 'ok' | 'fail'>(null);
   const c = data.cards;
   const copy = () => {
@@ -528,7 +528,7 @@ function Briefing({ data, short }: { data: Analysis; short: boolean }) {
       <dl className="sats">
         {SATELLITES.map((k) => (
           <div key={k}>
-            <dt>{SAT_NAMES[k]}</dt>
+            <dt>{SAT_NAMES[k]}{satNote(coverage, k, c.ref_year, c.ref_month)}</dt>
             <dd>{c.detected[k] == null ? <span className="muted">no data</span> : num(c.detected[k])}</dd>
           </div>
         ))}

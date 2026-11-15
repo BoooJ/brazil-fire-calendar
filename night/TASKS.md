@@ -287,3 +287,8 @@ Global rules for this block:
   - ForecastPanel takes `refresh` (the page's reload counter) and fetches again with it.
 - [x] The next-week estimate sat ~3 screens down with nothing on the first screen pointing to it
   - Hero's "not a forecast" bullet ends with a "Next week: model estimate ↓" text link (only while the model is available): smooth scroll (instant with reduced motion) to the panel and focus on its heading. Checked 375 / 1440, axe clean.
+
+## Found on the 07:55 run
+
+- [x] "Hotspots seen by each satellite this month" showed VIIRS S-NPP like an active satellite, though it ended on 2 Nov 2026 (and "no data" before a launch was unexplained)
+  - `coverageNote()` (format.ts) reads `/api/status` coverage: under the satellite's name, "ended 2 Nov 2026" or "from 20 Jan 2012" when it stopped/started in or before that month. Same in the month card (MonthDetail `coverage`). Display only. Checked 375 / 1440.

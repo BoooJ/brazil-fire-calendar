@@ -345,6 +345,8 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
 .sats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
 .sats > div { padding: 10px 12px; border-radius: var(--r-md); background: var(--sheet-soft); }
 .sats dt { font-size: var(--t-xs); color: var(--sheet-ink-2); }
+.sats dt { overflow-wrap: normal; }
+.sats .sat-note { display: block; white-space: nowrap; }
 .sats dd { font-size: var(--t-lg); font-weight: 700; font-variant-numeric: tabular-nums; }
 /* Next-week fire chance (the only forecast): its label is a filled tag so it reads as part of the numbers */
 .tag-model { background: #eef0f6; color: var(--sheet-ink-2); margin: 0; }

@@ -1,4 +1,4 @@
-import type { Cards } from './types';
+import type { Cards, Coverage, SatelliteKey } from './types';
 
 export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 export const MON = MONTHS.map((m) => m.slice(0, 3));
@@ -91,4 +91,15 @@ export function rankLine(c: Cards): string | null {
   return c.rank === 1
     ? `The most active ${month} in ${c.of_years} years${c.partial ? ' so far' : ''}`
     : `One of the ${c.rank === 2 ? 'two' : 'three'} most active ${month}s in ${c.of_years} years${c.partial ? ' so far' : ''}`;
+}
+
+/** A satellite that started or stopped inside (or stopped before) a month: "ended 2 Nov 2026" / "from 20 Jan 2012" (also explains "no data" before launch). From /api/status coverage, display only. */
+export function coverageNote(coverage: Coverage[] | null | undefined, sat: SatelliteKey, year: number, month: number): string | null {
+  const c = coverage?.find((x) => x.satellite === sat);
+  if (!c) return null;
+  const first = `${year}-${String(month).padStart(2, '0')}-01`;
+  const last = `${year}-${String(month).padStart(2, '0')}-31`;
+  if (c.to && c.to < last) return `ended ${dateShort(c.to)}`;
+  if (c.from > first) return `from ${dateShort(c.from)}`;
+  return null;
 }

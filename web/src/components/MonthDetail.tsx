@@ -1,9 +1,15 @@
 import { useEffect, useRef } from 'react';
-import type { CalendarItem } from '../types';
+import type { CalendarItem, Coverage, SatelliteKey } from '../types';
 import { SATELLITES, SAT_NAMES } from '../types';
-import { MONTHS, num, pctLong } from '../format';
+import { MONTHS, coverageNote, num, pctLong } from '../format';
 import ErrorNote from './ErrorNote';
 import { useClosing } from './useClosing';
+
+/** "ended 2 Nov 2026" on its own line under a satellite's name when it started or stopped in (or before) that month */
+export function satNote(coverage: Coverage[] | null | undefined, sat: SatelliteKey, year: number, month: number) {
+  const n = coverageNote(coverage, sat, year, month);
+  return n ? <span className="sat-note">{n}</span> : null;
+}
 
 export type MapState =
   | { kind: 'idle' }
@@ -17,9 +23,10 @@ interface Props {
   onShowMap: () => void;
   onCsv: () => void;
   onClose: () => void;
+  coverage?: Coverage[];
 }
 
-export default function MonthDetail({ item, map, onShowMap, onCsv, onClose }: Props) {
+export default function MonthDetail({ item, map, onShowMap, onCsv, onClose, coverage }: Props) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const { closing, close } = useClosing(onClose);
 
@@ -62,7 +69,7 @@ export default function MonthDetail({ item, map, onShowMap, onCsv, onClose }: Pr
       <dl className="sats">
         {SATELLITES.map((k) => (
           <div key={k}>
-            <dt>{SAT_NAMES[k]}</dt>
+            <dt>{SAT_NAMES[k]}{satNote(coverage, k, item.year, item.month)}</dt>
             <dd>{item.detected[k] == null ? <span className="muted">no data</span> : num(item.detected[k])}</dd>
           </div>
         ))}
