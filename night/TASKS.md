@@ -320,6 +320,9 @@ Global rules for this block:
   - Under 361px (landing.css only, kit untouched): the start label and the 2012/2018 ticks hide (the dashed line still meets the 2003 tick; the figure's aria-label says it), the card is a little taller (`--ratio: 100%`) so 2003 and 2026 show. 390+ unchanged.
 - [x] Landing call to action on 320px phones: the card's content (heading, "Open the fire calendar" button) was wider than the card and cut off on the right
   - landing.css: the card's inner grid can shrink (`min-width: 0`), and under 361px the card's side padding and the button are a little smaller. 390 / 1440 unchanged; no text past the edge anywhere on the landing at 320.
+
+## Found on the 08:55 run
+
 - [x] Detailed view Key numbers at 900px+: "Peak month" spanned the whole last row and left an empty slot beside "Estimated fires"
   - The 2-column rule (`.kc:not(.kc-2) > div:last-child`) out-ranked the wide-screen reset; the reset now uses the same selector, so the five cards fill the 3-column grid (big card + 2×2). Phones unchanged. Checked 820 / 1440.
 - [x] Detailed view chart headings: the PNG button sat beside "Typical year" at some widths and dropped under the subtitle at others (always under "Year by year")
