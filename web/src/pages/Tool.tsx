@@ -5,7 +5,8 @@ import type { Polygon } from 'geojson';
 import type { Analysis, AnalysisRequest, CalendarItem, Coverage, Forecast, Hotspots, Preset, Status } from '../types';
 import { SATELLITES, SAT_NAMES } from '../types';
 import { drawnArea, pointCount, scatterIn, type Area } from '../geo';
-import Globe, { BRAZIL_CENTER, zoomForRadius } from '../components/Globe';
+import Globe, { BRAZIL_CENTER, loadWorld, zoomForRadius } from '../components/Globe';
+import { splashUntil } from '../splash';
 import LocationGate, { PinIcon, type Way } from '../components/LocationGate';
 import StatusHero from '../components/Status';
 import MonthHistory from '../components/MonthHistory';
@@ -26,15 +27,12 @@ import { MON, MONTHS, dateRange, num, todayIso } from '../format';
 const MapView = lazy(() => import('../components/MapView'));
 const Detailed = lazy(() => import('../components/Detailed'));
 
-const STORE = 'bfc.area.v1';
-
-function loadArea(): Area | null {
-  try {
-    const raw = localStorage.getItem(STORE);
-    return raw ? (JSON.parse(raw) as Area) : null;
-  } catch {
-    return null;
-  }
+// The location step is asked every time the tool opens: no area is remembered between visits.
+// (Older builds saved it here and skipped the question; clear what they left behind.)
+try {
+  localStorage.removeItem('bfc.area.v1');
+} catch {
+  /* private mode: fine */
 }
 
 type Load = { kind: 'loading' } | { kind: 'error'; message: string } | { kind: 'ok'; data: Analysis };
@@ -52,7 +50,7 @@ export default function Tool() {
   const today = useMemo(todayIso, []);
   const [presets, setPresets] = useState<Preset[]>([]);
   const [status, setStatus] = useState<Status | null>(null);
-  const [area, setArea] = useState<Area | null>(loadArea);
+  const [area, setArea] = useState<Area | null>(null);
   const [picked, setPicked] = useState<{ lon: number; lat: number } | null>(null);
   const [way, setWay] = useState<Way>('state');
   const [hoverState, setHoverState] = useState<string | null>(null);
@@ -86,8 +84,12 @@ export default function Tool() {
   }, []);
 
   useEffect(() => {
-    getPresets().then(setPresets).catch(() => setPresets([]));
-    getStatus().then(setStatus).catch(() => setStatus(null));
+    // the loading screen stays until the location step is complete: presets, status and the globe's map
+    splashUntil(
+      getPresets().then(setPresets).catch(() => setPresets([])),
+      getStatus().then(setStatus).catch(() => setStatus(null)),
+      loadWorld(),
+    );
   }, []);
 
   // One request body for the analysis and the calendar download.
@@ -128,12 +130,6 @@ export default function Tool() {
     setHoverState(null);
     setDrawMode('none');
     clearMap();
-    try {
-      if (a) localStorage.setItem(STORE, JSON.stringify(a));
-      else localStorage.removeItem(STORE);
-    } catch {
-      /* private mode: fine */
-    }
   };
 
   const chooseAreaRef = useRef(chooseArea);

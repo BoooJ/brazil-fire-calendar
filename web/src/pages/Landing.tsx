@@ -13,6 +13,7 @@ import shotTool from '../landing/pictures/tool.png';
 import heroVideo from '../landing/media/hero.mp4';
 import heroVideoSmall from '../landing/media/hero-720.mp4';
 import heroPoster from '../landing/media/hero-poster.jpg';
+import { imageReady, splashUntil } from '../splash';
 
 const TOOL = '#/app';
 const REPO = 'https://github.com/BoooJ/brazil-fire-calendar';
@@ -89,7 +90,7 @@ function Folder({ n, title, text, children, label }: { n: string; title: string;
 /** The hero's background film: muted, looping nonstop, behind a flat dark scrim. It always starts by itself,
  *  also with reduced motion (team decision). Browsers that still block autoplay (e.g. iPhone Low Power Mode)
  *  get it started on the first touch, scroll or key. Decoration only, no data. */
-function HeroVideo() {
+function HeroVideo({ onReady }: { onReady: () => void }) {
   const ref = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -101,8 +102,13 @@ function HeroVideo() {
     v.setAttribute('muted', '');
     v.src = window.matchMedia('(max-width: 900px)').matches ? heroVideoSmall : heroVideo;
 
+    // ready for the loading screen = the film is moving; where autoplay is blocked, its first frame is there
+    const playing = () => onReady();
+    const blocked = () => (v.readyState >= 2 ? onReady() : v.addEventListener('loadeddata', onReady, { once: true }));
+    v.addEventListener('playing', playing);
+    v.addEventListener('error', playing); // a broken film never holds the page back
     const kick = () => {
-      if (v.paused) v.play().catch(() => {});
+      if (v.paused) v.play().catch(blocked);
     };
     const events = ['pointerdown', 'touchstart', 'scroll', 'keydown'] as const;
     const onFirst = () => {
@@ -117,12 +123,15 @@ function HeroVideo() {
     events.forEach((e) => window.addEventListener(e, onFirst, { passive: true }));
     document.addEventListener('visibilitychange', onVisible);
     return () => {
+      v.removeEventListener('playing', playing);
+      v.removeEventListener('error', playing);
+      v.removeEventListener('loadeddata', onReady);
       v.removeEventListener('canplay', kick);
       v.removeEventListener('pause', kick);
       events.forEach((e) => window.removeEventListener(e, onFirst));
       document.removeEventListener('visibilitychange', onVisible);
     };
-  }, []);
+  }, [onReady]);
 
   return (
     <div className="l-hero__media" aria-hidden="true">
@@ -132,13 +141,19 @@ function HeroVideo() {
   );
 }
 
+// resolved once the hero film is on screen (see HeroVideo): the loading screen waits for it
+let filmReady: () => void = () => {};
+const film = new Promise<void>((r) => (filmReady = r));
+
 export default function Landing() {
   const [show, setShow] = useState<Showcase | null>(null);
   const [menu, setMenu] = useState(false);
 
   useEffect(() => {
     let alive = true;
-    getShowcase().then((s) => alive && setShow(s)).catch(() => {});
+    const showcase = getShowcase().then((s) => alive && setShow(s)).catch(() => {});
+    // the loading screen stays until the film runs, its poster, the data pictures and the page's images are in
+    splashUntil(film, imageReady(heroPoster), showcase);
     const id = decodeURIComponent(window.location.hash.slice(1));
     if (id && !id.startsWith('/')) document.getElementById(id)?.scrollIntoView({ behavior: 'instant' });
     return () => {
@@ -172,7 +187,7 @@ export default function Landing() {
       <main id="top">
         {/* 1. the promise, with the product itself as the picture */}
         <section className="l-hero" aria-labelledby="hero-h">
-          <HeroVideo />
+          <HeroVideo onReady={filmReady} />
           <div className="l-wrap l-hero__text">
             <p className="l-eyebrow">NASA Space Apps 2026 · MODIS + VIIRS, one record</p>
             <h1 id="hero-h">Know your fire season.</h1>
