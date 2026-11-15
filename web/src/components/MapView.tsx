@@ -1,6 +1,6 @@
 // The fire map: hotspots of one month on NASA imagery, and the tool to draw an area (rectangle or polygon).
 // It sits in the same place as the globe and takes over when there are points to show or an area to draw.
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { FeatureCollection, Point, Polygon } from 'geojson';
@@ -56,6 +56,8 @@ export default function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCa
   const draw = useRef({ mode: drawMode, start: null as maplibregl.LngLat | null, pts: [] as [number, number][] });
   const cb = useRef({ onDrawDone, onDrawCancel, onUnavailable });
   cb.current = { onDrawDone, onDrawCancel, onUnavailable };
+  // the NASA GIBS imagery could not load (offline, blocked): say so instead of a silent black map
+  const [noImagery, setNoImagery] = useState(false);
 
   // ---------- init ----------
   useEffect(() => {
@@ -81,6 +83,19 @@ export default function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCa
     // bottom left: the top holds the caption and the legend, the bottom right the month's details
     m.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-left');
     m.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-left');
+
+    let imageryErrors = 0;
+    let imageryLoaded = false;
+    m.on('error', (e: any) => {
+      if (e?.sourceId !== 'bluemarble' || imageryLoaded) return;
+      if (++imageryErrors >= 3) setNoImagery(true);
+    });
+    m.on('sourcedata', (e: any) => {
+      if (e?.sourceId === 'bluemarble' && e.tile && e.tile.state === 'loaded') {
+        imageryLoaded = true;
+        setNoImagery(false);
+      }
+    });
 
     // 'style.load' fires once the style is parsed, without waiting for basemap tiles.
     const init = () => {
@@ -275,5 +290,12 @@ export default function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCa
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [area, hotspots]);
 
-  return <div ref={el} className="map" aria-label="Map of fire hotspots for the selected month" role="region" />;
+  return (
+    <>
+      <div ref={el} className="map" aria-label="Map of fire hotspots for the selected month" role="region" />
+      {noImagery && (
+        <p className="map-imagery-note" role="status">Satellite imagery could not load. The area and its hotspots are still shown.</p>
+      )}
+    </>
+  );
 }

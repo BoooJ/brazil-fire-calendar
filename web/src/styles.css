@@ -340,6 +340,8 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
 .empty-art i { width: 28px; height: 28px; border-radius: 50%; border: 2px dotted var(--sheet-edge); }
 .map-empty { position: absolute; z-index: 3; left: 50%; top: 50%; transform: translate(-50%, -50%); display: grid; gap: 4px; max-width: min(320px, calc(100% - 32px)); padding: 14px 18px; border-radius: var(--r-md); background: var(--overlay-strong); border: 1px solid var(--line); text-align: center; font-size: var(--t-sm); color: var(--ink-2); pointer-events: none; }
 .map-empty strong { color: var(--ink); font-size: var(--t-md); }
+/* above the zoom buttons and the imagery credit (bottom left) */
+.map-imagery-note { position: absolute; z-index: 2; left: 10px; bottom: 112px; max-width: min(300px, calc(100% - 120px)); padding: 6px 12px; border-radius: var(--r-md); background: var(--overlay); border: 1px solid var(--line); color: var(--ink-2); font-size: var(--t-xs); pointer-events: none; }
 
 /* ---------- month detail (bottom sheet) ---------- */
 .detail { position: fixed; z-index: 20; left: 0; right: 0; bottom: 0; max-height: 82vh; overflow: auto; padding: 22px 18px 20px; border-radius: var(--r-2xl) var(--r-2xl) 0 0; background: var(--surface-2); color: var(--ink); box-shadow: var(--shadow-sheet); animation: rise 0.22s ease-out; }
