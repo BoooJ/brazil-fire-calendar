@@ -298,3 +298,5 @@ Global rules for this block:
   - Phones show the API's `yearly` totals in the short form ("2.3k", "13k", * when the year is not complete) at 9px. Desktop unchanged. Checked 375.
 - [x] Map legends at 1366: the last colour step ("50%+") wrapped alone onto its own line
   - The colour steps sit in one `.map-legend-scale` group that wraps as a whole (both the forecast and the fire-strength legend). Checked 375 / 1366 / 1440.
+- [x] Hero link "Next week: model estimate ↓" also showed for reference dates before 29 Apr 2018, where the panel can only say there is no estimate
+  - The link hides for those dates (`FIRST_FORECAST_DAY` exported from ForecastPanel). Checked today / 2010 / 2019.

@@ -7,7 +7,7 @@ import { dateRange, dateShort, num } from '../format';
 // Every number is the API's; the browser only formats them. Its `label` is always shown next to them.
 
 /** The model is fed with VIIRS NOAA-20 data, so it cannot replay a date before this (docs/api-contract.md). */
-const FIRST_FORECAST_DAY = '2018-04-29';
+export const FIRST_FORECAST_DAY = '2018-04-29';
 
 const INTENSITY = { low: 'Low', medium: 'Medium', high: 'High' } as const;
 

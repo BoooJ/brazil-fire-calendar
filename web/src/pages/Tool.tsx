@@ -9,7 +9,7 @@ import LocationGate, { PinIcon } from '../components/LocationGate';
 import FireCalendar, { type Mode } from '../components/FireCalendar';
 import MonthDetail, { satNote, type MapState } from '../components/MonthDetail';
 import ErrorNote from '../components/ErrorNote';
-import ForecastPanel from '../components/ForecastPanel';
+import ForecastPanel, { FIRST_FORECAST_DAY } from '../components/ForecastPanel';
 import DateControls, { FIRST_YEAR } from '../components/Controls';
 import { KeyCards, Reliability, SourcesDialog } from '../components/Panels';
 import { Flame } from '../components/Brand';
@@ -379,7 +379,7 @@ export default function Tool() {
                   <ErrorNote size="page" title="We could not load the fire data" message={load.message} onRetry={() => setAttempt((n) => n + 1)} />
                 </section>
               )}
-              {data && <Hero key={`${area.label}|${data.query.ref_date}`} data={data} area={area} status={status} asOf={refDate} updating={updating} onUpdate={updateNow} onForecast={status?.forecast_available === false ? undefined : toForecast} />}
+              {data && <Hero key={`${area.label}|${data.query.ref_date}`} data={data} area={area} status={status} asOf={refDate} updating={updating} onUpdate={updateNow} onForecast={status?.forecast_available === false || (refDate != null && refDate < FIRST_FORECAST_DAY) ? undefined : toForecast} />}
               <DateControls refDate={refDate} setRefDate={changeRefDate} fromYear={fromYear} setFromYear={setFromYear}
                 detailed={detailed} setDetailed={setDetailed} today={today} />
               {load.kind === 'loading' && (
