@@ -4,7 +4,7 @@ import { Suspense, lazy, useEffect, useState } from 'react';
 //   #/     the landing page
 //   #/app  the tool
 // Each page is its own chunk with its own stylesheet. The two never share a document: moving from one to
-// the other reloads the page, so the landing page's design kit (public/assets/) and the tool's styles
+// the other reloads the page, so the landing page's stylesheet and the tool's styles
 // cannot leak into each other.
 const Landing = lazy(() => import('./pages/Landing'));
 const Tool = lazy(() => import('./pages/Tool'));

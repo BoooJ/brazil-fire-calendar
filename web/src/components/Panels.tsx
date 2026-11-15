@@ -68,12 +68,23 @@ export function Reliability({ data, status }: { data: Analysis; status: Status |
       </dl>
       <p className="muted">{r.note}</p>
       <ul className="points">
-        <li><strong>Why correct at all?</strong> Newer satellites see smaller fires. VIIRS (2012 onwards) records many more hotspots than MODIS for the same burning, so raw counts jump when a satellite is added even if nothing changed on the ground.</li>
+        <li><strong>Why correct at all?</strong> Newer satellites see smaller fires. VIIRS (NOAA-20, 2018 onwards) records many more hotspots than MODIS for the same burning, so raw counts jump when a satellite is added even if nothing changed on the ground.</li>
         <li><strong>What we count:</strong> fire-days, the 1 km squares that burned on a given day, converted to one common scale (NOAA-20 equivalent).</li>
         {status?.final_until && (
           <li><strong>Provisional:</strong> data after {dateShort(status.final_until)} is NASA's near-real-time version and may still change.</li>
         )}
       </ul>
+      <h3>What the terms mean</h3>
+      <dl className="glossary">
+        <div><dt>Hotspot</dt><dd>One detection by one satellite. Sharper satellites report the same fire many times.</dd></div>
+        <div><dt>Fire-day</dt><dd>A 1 km square where fire was seen on one day, counted once however many hotspots fell in it.</dd></div>
+        <div><dt>Corrected count</dt><dd>Fire-days converted to one scale (the NOAA-20 satellite), so every year can be compared.</dd></div>
+        <div><dt>Rank</dt><dd>Where this month stands among the same month of every year. 1st is the most fire.</dd></div>
+        <div><dt>Estimated fires</dt><dd>Burning squares that touch each other, counted as one fire.</dd></div>
+        <div><dt>Provisional</dt><dd>Built on NASA’s near-real-time data, which is replaced by final data about five months later.</dd></div>
+        <div><dt>Uncertain</dt><dd>Very few fires, or a large conversion error: read the comparison with care.</dd></div>
+        <div><dt>Usual range</dt><dd>What 8 years in 10 fall between (the 10th to 90th percentile).</dd></div>
+      </dl>
     </section>
   );
 }
@@ -112,14 +123,15 @@ export function SourcesDialog({ status, onClose }: { status: Status | null; onCl
         </div>
         <ul className="points">
           <li>Final (science-quality) data until <strong>{status?.final_until ? dateShort(status.final_until) : '–'}</strong>. Later days are near-real-time and marked provisional.</li>
-          <li>Areas are plain boxes, circles or shapes you draw. No outside border data is used.</li>
+          <li>Areas are a Brazilian state, a circle, a box or a shape you draw. State borders come from Natural Earth (public domain): they outline the area you ask about, and the fire numbers inside it are still NASA’s only.</li>
           {status?.forecast_available !== false && (
             <li>Next week’s fire chance: the team’s experimental model on 5&nbsp;km cells, fed only with the last 28 days of VIIRS NOAA-20 detections and the usual pattern for that week of the year. A model estimate, not an official fire warning.</li>
           )}
-          <li>For display only, never for the numbers: map imagery from NASA GIBS (Blue Marble), country outlines on the globe (and on the map if its imagery fails) from Natural Earth (public domain).</li>
+          <li>For display only, never for the numbers: map imagery from NASA GIBS (Blue Marble), country outlines from Natural Earth (public domain).</li>
         </ul>
         <p className="modal-links">
           <a href="https://firms.modaps.eosdis.nasa.gov/" target="_blank" rel="noreferrer">NASA FIRMS</a>
+          <a href="https://www.naturalearthdata.com/" target="_blank" rel="noreferrer">Natural Earth</a>
           <a href="https://www.earthdata.nasa.gov/engage/open-data-services-software/earthdata-developer-portal/gibs-api" target="_blank" rel="noreferrer">NASA GIBS</a>
         </p>
         <p className="fineprint">

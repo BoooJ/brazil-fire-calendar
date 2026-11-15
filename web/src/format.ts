@@ -24,6 +24,15 @@ export function pctShort(p: number | null | undefined): string {
   return `${arrow}${Math.abs(Math.round(p))}%`;
 }
 
+/** Plain words for the quick view: "▲ 31% above typical", "● close to typical", "▲ 7.0× typical" */
+export function vsTypical(p: number | null | undefined): string {
+  if (p == null) return 'nothing to compare with yet';
+  if (p >= 200) return `▲ ${(p / 100 + 1).toFixed(1)}× typical`;
+  if (p >= 20) return `▲ ${Math.round(p)}% above typical`;
+  if (p <= -20) return `▼ ${Math.abs(Math.round(p))}% below typical`;
+  return '● close to typical';
+}
+
 export function pctLong(p: number | null | undefined): string {
   if (p == null) return 'no average to compare with';
   const r = Math.round(p);
@@ -71,18 +80,23 @@ export const todayIso = () => new Date().toISOString().slice(0, 10);
 export const trendOf = (c: Cards): 'up' | 'down' | 'flat' | null =>
   !c.count || c.vs_avg_pct == null ? null : c.vs_avg_pct >= 20 ? 'up' : c.vs_avg_pct <= -20 ? 'down' : 'flat';
 
-/** The tool's one message for a month: is this unusual here? Wording only: every number is the API's.
- *  Shared with the landing page. */
-export function headlineFor(c: Cards): string {
+/** The tool's one message for a month, in three parts so the middle can be set in ink and the rest in grey:
+ *  "Fire activity is" + "31% higher" + "than a typical November". Wording only: every number is the API's.
+ *  `n` is the number inside `strong` (so it can roll when the data changes). Shared with the landing page. */
+export function headlineParts(c: Cards): { lead: string; strong: string; tail: string; n?: number } {
   const month = MONTHS[c.ref_month - 1];
   const p = c.vs_avg_pct;
-  if (!c.count) return c.partial ? `No fires detected here so far this ${month}` : `No fires detected here in ${month} ${c.ref_year}`;
-  if (p == null) return `Fire was detected here in ${month}, with no earlier year to compare`;
-  if (p >= 200) return `Fire activity here is ${(p / 100 + 1).toFixed(1)}× a typical ${month}`;
-  if (p >= 20) return `Fire activity here is ${Math.round(p)}% above a typical ${month}`;
-  if (p <= -20) return `Fire activity here is ${Math.abs(Math.round(p))}% below a typical ${month}`;
-  return `Fire activity here is close to a typical ${month}`;
+  if (!c.count) return { lead: '', strong: 'No fire detected', tail: c.partial ? `here so far this ${month}` : `here in ${month} ${c.ref_year}` };
+  if (p == null) return { lead: '', strong: 'Fire was detected', tail: `here in ${month}, with no earlier year to compare` };
+  if (p >= 200) return { lead: 'Fire activity is', strong: `${(p / 100 + 1).toFixed(1)}×`, tail: `a typical ${month}` };
+  if (p >= 20) return { lead: 'Fire activity is', strong: `${Math.round(p)}% higher`, tail: `than a typical ${month}`, n: Math.round(p) };
+  if (p <= -20) return { lead: 'Fire activity is', strong: `${Math.abs(Math.round(p))}% lower`, tail: `than a typical ${month}`, n: Math.abs(Math.round(p)) };
+  return { lead: 'Fire activity is', strong: 'close to', tail: `a typical ${month}` };
 }
+export const headlineFor = (c: Cards): string => {
+  const h = headlineParts(c);
+  return [h.lead, h.strong, h.tail].filter(Boolean).join(' ');
+};
 
 /** "One of the most active Novembers in 24 years", only for the top three (the API's rank, as is). */
 export function rankLine(c: Cards): string | null {

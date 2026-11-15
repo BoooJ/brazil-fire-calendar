@@ -1,24 +1,25 @@
-// Colour scales of the dark panels (heatmap, charts, map). Both scales are colour-blind safe (checked
+// Colour scales of the charts, the heatmap and the map (light theme: paler = less, darker = more). Both scales are colour-blind safe (checked
 // against deuteranopia, protanopia and tritanopia) and every value is also shown as a number.
 // The quick view's marked days take their colours from styles.css (--lv*, --vs*).
 
-// Counts: "inferno" (sequential, perceptually uniform). Darkest stop dropped
-// so low months stay visible on the dark background.
-export const COUNTS_SCALE = ['#2a0b4a', '#57106e', '#8a226a', '#bc3754', '#e45a31', '#f98e09', '#f9cb35', '#fcffa4'];
+// Counts: yellow → orange → red, the same family as the quick calendar's bricks (--lv1…--lv4), darker = more.
+export const COUNTS_SCALE = ['#fff3c4', '#ffe08a', '#ffc65c', '#ffa23f', '#f2682a', '#d63d1f', '#b5121b', '#7a0c14'];
 
 // vs Average: purple (below) <-> neutral <-> orange (above). No red/green.
-export const ANOMALY_SCALE = ['#4b2991', '#7b5cb8', '#b4a4d8', '#d9d4e4', '#f7c58a', '#ec8b2e', '#b35806'];
+export const ANOMALY_SCALE = ['#4b2991', '#7b5cb8', '#b4a4d8', '#efeff1', '#f7c58a', '#ec8b2e', '#b35806'];
 
 // Satellites in the charts: Okabe–Ito based, readable with colour-blindness; every series is also named.
 export const SAT_COLOR = {
   modis_terra: '#56B4E9',
   modis_aqua: '#0072B2',
   viirs_snpp: '#CC79A7',
-  viirs_noaa20: '#9b8ce0',
+  viirs_noaa20: '#7b6fd0',
 } as const;
 
-export const NO_FIRE = '#1b1f2a';
-export const NEUTRAL_CELL = '#262b38';
+export const NO_FIRE = '#f5f5f7';
+export const NEUTRAL_CELL = '#ffffff';
+/** the reference year's line in the charts, and the one accent of the page */
+export const EMBER = '#d9480f';
 
 // Map points: fire strength (FRP, MW), same family as COUNTS_SCALE.
 export const FRP_STOPS: [number, string][] = [
@@ -47,7 +48,7 @@ export const ANOMALY_TICKS: { pos: number; label: string }[] = [
   { pos: 2, label: '▲ 4×+' },
 ];
 
-// Next-week fire chance (the forecast map): viridis without its darkest stops, so it reads on the dark imagery
+// Next-week fire chance (the forecast map): viridis without its darkest stops, so it reads on the imagery
 // and never looks like the hotspots' inferno colours. Colour-blind safe; the legend gives every step's value.
 export const CHANCE_STOPS: [number, string][] = [
   [0, '#3b528b'],

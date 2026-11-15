@@ -4,10 +4,13 @@ import type { AreaGeometry, Preset } from './types';
 
 export interface Area {
   label: string;
-  polygon: Polygon;
+  /** a box, circle or drawn shape (Polygon), or a state's real border (Polygon or MultiPolygon) */
+  polygon: AreaGeometry;
   center: [number, number]; // [lon, lat]
   radiusDeg: number; // angular size, used to zoom the globe
   presetId?: string;
+  /** a Brazilian state picked by its border (states.ts), e.g. 'RR' */
+  stateId?: string;
 }
 
 const RAD = Math.PI / 180;

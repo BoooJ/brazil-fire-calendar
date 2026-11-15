@@ -9,7 +9,8 @@ import { SAT_NAMES } from '../types';
 import { CHANCE_STOPS, FRP_STOPS } from '../colors';
 import { areaBbox, closeRing, rectPolygon } from '../geo';
 import { timeUtc } from '../format';
-import { loadWorld } from './Globe';
+import { loadWorld, OCEAN } from './Globe';
+import { STATES, stateById, type StateFeature } from '../states';
 
 export type DrawMode = 'none' | 'rect' | 'polygon';
 
@@ -25,6 +26,8 @@ interface Props {
   onDrawCancel: () => void;
   /** the browser cannot draw the map (no WebGL): the caller falls back to the globe */
   onUnavailable?: () => void;
+  /** with this, the state under the pointer highlights and lifts, and a click (or tap) selects it */
+  onState?: (s: StateFeature) => void;
 }
 
 // Basemap: NASA GIBS (Blue Marble shaded relief) — imagery only, never used for the numbers.
@@ -45,15 +48,15 @@ const STYLE: maplibregl.StyleSpecification = {
     },
   },
   layers: [
-    { id: 'bg', type: 'background', paint: { 'background-color': '#04050b' } },
-    { id: 'bluemarble', type: 'raster', source: 'bluemarble', paint: { 'raster-brightness-max': 0.55, 'raster-saturation': -0.45, 'raster-contrast': 0.1 } },
+    { id: 'bg', type: 'background', paint: { 'background-color': OCEAN } },
+    { id: 'bluemarble', type: 'raster', source: 'bluemarble', paint: { 'raster-brightness-max': 0.82, 'raster-saturation': -0.3 } },
   ],
 };
 
 const EMPTY: FeatureCollection = { type: 'FeatureCollection', features: [] };
 const esc = (s: unknown) => String(s ?? '').replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
-export default function MapView({ area, hotspots, cells = null, cellsLabel = '', drawMode, onDrawDone, onDrawCancel, onUnavailable }: Props) {
+export default function MapView({ area, hotspots, cells = null, cellsLabel = '', drawMode, onDrawDone, onDrawCancel, onUnavailable, onState }: Props) {
   const el = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const ready = useRef(false);
@@ -61,8 +64,8 @@ export default function MapView({ area, hotspots, cells = null, cellsLabel = '',
   const fcLabel = useRef(cellsLabel);
   fcLabel.current = cellsLabel;
   const draw = useRef({ mode: drawMode, start: null as maplibregl.LngLat | null, pts: [] as [number, number][] });
-  const cb = useRef({ onDrawDone, onDrawCancel, onUnavailable });
-  cb.current = { onDrawDone, onDrawCancel, onUnavailable };
+  const cb = useRef({ onDrawDone, onDrawCancel, onUnavailable, onState });
+  cb.current = { onDrawDone, onDrawCancel, onUnavailable, onState };
   // the NASA GIBS imagery could not load (offline, blocked): say so instead of a silent black map
   const [noImagery, setNoImagery] = useState(false);
 
@@ -107,6 +110,35 @@ export default function MapView({ area, hotspots, cells = null, cellsLabel = '',
     // 'style.load' fires once the style is parsed, without waiting for basemap tiles.
     const init = () => {
       if (ready.current || m.getSource('area')) return;
+      // Brazil's states (Natural Earth): thin borders; the one under the pointer lifts over a shadow and a click selects it
+      m.addSource('states', { type: 'geojson', data: { type: 'FeatureCollection', features: STATES }, promoteId: 'id' });
+      const lit = ['boolean', ['feature-state', 'hover'], false] as any;
+      m.addLayer({ id: 'states-shadow', type: 'fill', source: 'states', paint: { 'fill-color': '#1d1d1f', 'fill-opacity': ['case', lit, 0.35, 0], 'fill-translate': [0, 5], 'fill-opacity-transition': { duration: 140 } } });
+      m.addLayer({ id: 'states-lift', type: 'fill', source: 'states', paint: { 'fill-color': '#fff1e8', 'fill-opacity': ['case', lit, 0.5, 0.001], 'fill-translate': [0, -3], 'fill-opacity-transition': { duration: 140 } } });
+      m.addLayer({ id: 'states-line', type: 'line', source: 'states', paint: { 'line-color': '#ffffff', 'line-opacity': ['case', lit, 1, 0.45], 'line-width': ['case', lit, 2, 0.7], 'line-translate': ['literal', [0, 0]] } });
+      let hovered: string | null = null;
+      const light = (id: string | null) => {
+        if (id === hovered) return;
+        if (hovered) m.setFeatureState({ source: 'states', id: hovered }, { hover: false });
+        hovered = id;
+        if (id) m.setFeatureState({ source: 'states', id }, { hover: true });
+      };
+      const stateUnder = (e: maplibregl.MapMouseEvent) => {
+        if (!cb.current.onState || draw.current.mode !== 'none') return null;
+        if (m.queryRenderedFeatures(e.point, { layers: ['hotspots', 'fc'] }).length) return null;
+        return (m.queryRenderedFeatures(e.point, { layers: ['states-lift'] })[0]?.properties?.id as string | undefined) ?? null;
+      };
+      m.on('mousemove', (e) => {
+        const id = stateUnder(e);
+        light(id);
+        if (draw.current.mode === 'none' && !m.queryRenderedFeatures(e.point, { layers: ['hotspots', 'fc'] }).length) m.getCanvas().style.cursor = id ? 'pointer' : '';
+      });
+      m.on('mouseout', () => light(null));
+      m.on('click', (e) => {
+        const s = stateById(stateUnder(e));
+        if (s) cb.current.onState?.(s);
+      });
+
       m.addSource('area', { type: 'geojson', data: EMPTY });
       m.addLayer({ id: 'area-fill', type: 'fill', source: 'area', paint: { 'fill-color': '#ff6a1f', 'fill-opacity': 0.06 } });
       m.addLayer({ id: 'area-line', type: 'line', source: 'area', paint: { 'line-color': '#ff6a1f', 'line-width': 2 } });
@@ -119,7 +151,7 @@ export default function MapView({ area, hotspots, cells = null, cellsLabel = '',
           'circle-radius': ['interpolate', ['exponential', 2], ['zoom'], 5, 2.2, 9, 17, 11, 68],
           'circle-color': ['interpolate', ['linear'], ['get', 'probability'], ...CHANCE_STOPS.flat()] as any,
           'circle-opacity': 0.85,
-          'circle-stroke-color': '#04050b', 'circle-stroke-width': 0.4,
+          'circle-stroke-color': '#1d1d1f', 'circle-stroke-width': 0.4,
         },
       });
 
@@ -137,7 +169,7 @@ export default function MapView({ area, hotspots, cells = null, cellsLabel = '',
           'circle-radius': ['interpolate', ['linear'], ['zoom'], 3, 2.2, 8, 6],
           // fire strength (FRP, MW); a hotspot without a value takes the lowest colour
           'circle-color': ['interpolate', ['linear'], ['coalesce', ['get', 'frp'], 0], ...FRP_STOPS.flat()] as any,
-          'circle-stroke-color': '#04050b', 'circle-stroke-width': 0.6,
+          'circle-stroke-color': '#1d1d1f', 'circle-stroke-width': 0.6,
           'circle-opacity': ['case', ['get', 'provisional'], 0.65, 0.95],
         },
       });
@@ -301,10 +333,11 @@ export default function MapView({ area, hotspots, cells = null, cellsLabel = '',
         if (m.getSource('fallback-world')) return;
         m.addSource('fallback-world', { type: 'geojson', data: w.others as FeatureCollection });
         m.addSource('fallback-brazil', { type: 'geojson', data: w.brazil as FeatureCollection });
-        const before = m.getLayer('area-fill') ? 'area-fill' : undefined;
-        m.addLayer({ id: 'fallback-world', type: 'fill', source: 'fallback-world', paint: { 'fill-color': '#0a0d55' } }, before);
-        m.addLayer({ id: 'fallback-world-line', type: 'line', source: 'fallback-world', paint: { 'line-color': '#01020a', 'line-width': 0.8 } }, before);
-        m.addLayer({ id: 'fallback-brazil', type: 'fill', source: 'fallback-brazil', paint: { 'fill-color': '#3a3f55' } }, before);
+        const before = m.getLayer('states-shadow') ? 'states-shadow' : undefined;
+        m.addLayer({ id: 'fallback-world', type: 'fill', source: 'fallback-world', paint: { 'fill-color': '#f6f7f9' } }, before);
+        m.addLayer({ id: 'fallback-world-line', type: 'line', source: 'fallback-world', paint: { 'line-color': '#d9dde4', 'line-width': 0.8 } }, before);
+        if (m.getLayer('states-line')) m.setPaintProperty('states-line', 'line-color', '#8b93a1');
+        m.addLayer({ id: 'fallback-brazil', type: 'fill', source: 'fallback-brazil', paint: { 'fill-color': '#ffffff' } }, before);
       };
       // 'ready' (our layers exist) rather than isStyleLoaded(): that one stays false while imagery tiles keep failing
       if (ready.current) add();
