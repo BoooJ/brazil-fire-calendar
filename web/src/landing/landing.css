@@ -138,9 +138,6 @@ body { margin: 0; background: var(--canvas); color: var(--ink); }
 .l-hero .l-row { margin-top: 32px; justify-content: center; }
 .l-hero .l-btn { border-color: rgba(255, 255, 255, .7); background: rgba(0, 0, 0, .25); color: #fff !important; }
 .l-hero .l-btn:hover { border-color: #fff; background: rgba(0, 0, 0, .45); }
-.l-hero__pause { position: absolute; right: 20px; bottom: 20px; display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid rgba(255, 255, 255, .45); border-radius: var(--r-pill); background: rgba(0, 0, 0, .35); color: #fff; cursor: pointer; transition: background-color .2s; }
-.l-hero__pause:hover { background: rgba(0, 0, 0, .6); }
-.l-hero__pause:focus-visible { outline-color: #fff; }
 .l-hero-more { padding: 72px 0 var(--section); }
 .l-hero-more .l-wrap { display: grid; justify-items: center; }
 .l-hero__shot { width: 100%; aspect-ratio: 16 / 9; }

@@ -86,47 +86,48 @@ function Folder({ n, title, text, children, label }: { n: string; title: string;
   );
 }
 
-/** The hero's background film: muted, looping, behind a flat dark scrim. It never starts with reduced motion
- *  (the poster frame shows instead), and a small button pauses or plays it. Decoration only, no data. */
+/** The hero's background film: muted, looping nonstop, behind a flat dark scrim. It always starts by itself,
+ *  also with reduced motion (team decision). Browsers that still block autoplay (e.g. iPhone Low Power Mode)
+ *  get it started on the first touch, scroll or key. Decoration only, no data. */
 function HeroVideo() {
   const ref = useRef<HTMLVideoElement>(null);
-  const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
     const v = ref.current;
     if (!v) return;
+    // muted must be set as a property before playing, or some browsers refuse to autoplay
+    v.muted = true;
+    v.defaultMuted = true;
+    v.setAttribute('muted', '');
     v.src = window.matchMedia('(max-width: 900px)').matches ? heroVideoSmall : heroVideo;
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) v.play().catch(() => setPlaying(false));
+
+    const kick = () => {
+      if (v.paused) v.play().catch(() => {});
+    };
+    const events = ['pointerdown', 'touchstart', 'scroll', 'keydown'] as const;
+    const onFirst = () => {
+      kick();
+      if (!v.paused) events.forEach((e) => window.removeEventListener(e, onFirst));
+    };
+    const onVisible = () => document.visibilityState === 'visible' && kick();
+
+    kick();
+    v.addEventListener('canplay', kick);
+    v.addEventListener('pause', kick); // e.g. the OS paused it: start again (it never stops on purpose)
+    events.forEach((e) => window.addEventListener(e, onFirst, { passive: true }));
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      v.removeEventListener('canplay', kick);
+      v.removeEventListener('pause', kick);
+      events.forEach((e) => window.removeEventListener(e, onFirst));
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, []);
 
-  const toggle = () => {
-    const v = ref.current;
-    if (!v) return;
-    if (v.paused) v.play().catch(() => {});
-    else v.pause();
-  };
-
   return (
-    <div className="l-hero__media">
-      <video
-        ref={ref}
-        className="l-hero__video"
-        poster={heroPoster}
-        muted
-        loop
-        playsInline
-        preload="auto"
-        aria-hidden="true"
-        tabIndex={-1}
-        onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
-      />
-      <div className="l-hero__scrim" aria-hidden="true" />
-      <button className="l-hero__pause" type="button" onClick={toggle} aria-label={playing ? 'Pause background video' : 'Play background video'}>
-        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor">
-          {playing ? <path d="M4 3h3v10H4zM9 3h3v10H9z" /> : <path d="M4 2.5v11l9.5-5.5z" />}
-        </svg>
-      </button>
+    <div className="l-hero__media" aria-hidden="true">
+      <video ref={ref} className="l-hero__video" poster={heroPoster} autoPlay muted loop playsInline preload="auto" tabIndex={-1} disablePictureInPicture />
+      <div className="l-hero__scrim" />
     </div>
   );
 }
