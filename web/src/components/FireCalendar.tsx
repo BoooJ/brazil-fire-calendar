@@ -78,7 +78,7 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
             <button role="radio" aria-checked={mode === 'counts'} className={mode === 'counts' ? 'on' : ''} onClick={() => onMode('counts')}>Counts</button>
             <button role="radio" aria-checked={mode === 'vs'} className={mode === 'vs' ? 'on' : ''} onClick={() => onMode('vs')}>vs Average</button>
           </div>
-          <button className="btn btn-ghost" onClick={onCsv} title="Download the calendar as a CSV file">CSV</button>
+          <button className="btn btn-ghost" onClick={onCsv} title="Download the calendar as a CSV file" aria-label="Download the calendar as a CSV file">CSV</button>
         </div>
       </div>
 
@@ -99,11 +99,12 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
               const a = avg.get(idx + 1);
               return (
                 <div className="cell" key={m}>
-                  <span className={`day typical lv${levels.level(a?.mean ?? null)}`}
+                  <span className={`day typical lv${levels.level(a?.mean ?? null)}`} role="img"
+                    aria-label={`${MONTHS[idx]}, average ${period}: ${num(a?.mean)} fire-days (history, not a forecast)`}
                     title={`${MONTHS[idx]}, average ${period}: ${num(a?.mean)} fire-days (history, not a forecast)`}>
                     {compact(a?.mean)}
                   </span>
-                  <span className="cell-mon">{m}</span>
+                  <span className="cell-mon" aria-hidden="true">{m}</span>
                 </div>
               );
             })}
@@ -126,14 +127,15 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
                     return (
                       <div className="cell" key={m}>
                         {future && y === ref_year ? (
-                          <span className={`day typical lv${levels.level(a?.mean ?? null)}`}
+                          <span className={`day typical lv${levels.level(a?.mean ?? null)}`} role="img"
+                            aria-label={`${MONTHS[idx]} ${y} is usually around ${num(a?.mean)} fire-days (average ${period}, not a forecast)`}
                             title={`${MONTHS[idx]} is usually around ${num(a?.mean)} fire-days (average ${period}, not a forecast)`}>
                             {compact(a?.mean)}
                           </span>
                         ) : (
                           <span className="day empty" aria-hidden="true" />
                         )}
-                        <span className="cell-mon">{m}</span>
+                        <span className="cell-mon" aria-hidden="true">{m}</span>
                       </div>
                     );
                   }
@@ -144,14 +146,15 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
                       <button className={cellClass(item)} onClick={() => onSelect(item)} aria-label={describe(item)} title={describe(item)}>
                         {mode === 'counts' ? compact(item.count) : pctShort(item.vs_avg_pct)}
                       </button>
-                      <span className="cell-mon">{m}</span>
+                      <span className="cell-mon" aria-hidden="true">{m}</span>
                     </div>
                   );
                 })}
               </div>
-              <div className="yr-total" title={total?.complete === false ? 'Year not complete' : undefined}>
+              <div className="yr-total" title={total?.complete === false ? 'Year not complete' : undefined}
+                role="img" aria-label={`${y} total: ${num(total?.count)} fire-days${total?.complete === false ? ', year not complete' : ''}`}>
                 {compact(total?.count)}
-                {total && !total.complete && <span aria-label="year not complete">*</span>}
+                {total && !total.complete && <span aria-hidden="true">*</span>}
               </div>
             </div>
           );

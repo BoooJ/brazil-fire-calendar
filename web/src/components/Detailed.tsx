@@ -58,8 +58,8 @@ export default function Detailed({ data, mode, onMode, selected, onSelect, slug,
               <button role="radio" aria-checked={mode === 'counts'} className={mode === 'counts' ? 'on' : ''} onClick={() => onMode('counts')}>Counts</button>
               <button role="radio" aria-checked={mode === 'vs'} className={mode === 'vs' ? 'on' : ''} onClick={() => onMode('vs')}>vs Average</button>
             </div>
-            <button className="btn btn-ghost" onClick={() => savePng(calRef.current, `burning-calendar-${slug}-${mode}.png`)}>PNG</button>
-            <button className="btn btn-ghost" onClick={onCsv}>CSV</button>
+            <button className="btn btn-ghost" onClick={() => savePng(calRef.current, `burning-calendar-${slug}-${mode}.png`)} aria-label="Download the burning calendar as a PNG image">PNG</button>
+            <button className="btn btn-ghost" onClick={onCsv} aria-label="Download the calendar as a CSV file">CSV</button>
           </div>
         </div>
         <div className="chart-card">
@@ -90,7 +90,7 @@ export default function Detailed({ data, mode, onMode, selected, onSelect, slug,
             <h2 id="typ-title">Typical year</h2>
             <p className="muted">The usual monthly range ({period}) against {data.cards.ref_year}.</p>
           </div>
-          <button className="btn btn-ghost" onClick={() => savePng(typRef.current, `typical-year-${slug}.png`)}>PNG</button>
+          <button className="btn btn-ghost" onClick={() => savePng(typRef.current, `typical-year-${slug}.png`)} aria-label="Download the typical year chart as a PNG image">PNG</button>
         </div>
         <div className="chart-card">
           <TypicalYearChart ref={typRef} average={data.average_by_month} calendar={data.calendar} refYear={data.cards.ref_year} period={period} compact={compact} />
@@ -103,7 +103,7 @@ export default function Detailed({ data, mode, onMode, selected, onSelect, slug,
             <h2 id="yr-title">Year by year: raw against corrected</h2>
             <p className="muted">The bars jump when VIIRS arrives (2012, 2018). The corrected line does not.</p>
           </div>
-          <button className="btn btn-ghost" onClick={() => savePng(yrRef.current, `year-by-year-${slug}.png`)}>PNG</button>
+          <button className="btn btn-ghost" onClick={() => savePng(yrRef.current, `year-by-year-${slug}.png`)} aria-label="Download the year-by-year chart as a PNG image">PNG</button>
         </div>
         <div className="chart-card">
           <YearlyChart ref={yrRef} yearly={data.yearly} unitMain={data.unit.main} compact={compact} />

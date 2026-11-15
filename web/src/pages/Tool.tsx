@@ -225,7 +225,7 @@ export default function Tool() {
         <div className="topbar-actions">
           <button className="toplink" onClick={() => setShowSources(true)}>Data sources</button>
           {area && (
-            <button className="pill" onClick={() => chooseArea(null)} title="Change location">
+            <button className="pill" onClick={() => chooseArea(null)} title="Change location" aria-label={`Location: ${area.label}. Change location`}>
               <PinIcon /> <span className="pill-text">{area.label}</span> <span className="pill-action">Change</span>
             </button>
           )}
@@ -275,7 +275,7 @@ export default function Tool() {
                   showing {num(map.returned)} of {num(map.total)}
                 </span>
               )}
-              <button onClick={clearMap}>Clear</button>
+              <button onClick={clearMap} aria-label="Clear the hotspots from the map">Clear</button>
             </div>
           )}
           {stage === 'map' && map.kind === 'shown' && map.total === 0 && mapMonth && (

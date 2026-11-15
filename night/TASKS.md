@@ -20,7 +20,8 @@
   - Heatmap vs-average ticks now read ▼ ¼× · ▼ ½× · ● avg · ▲ 2× · ▲ 4×+; quick legend middle step says "near average (±20%)". Count steps already had values.
 - [x] Keyboard: every interactive element reachable with Tab, visible :focus-visible ring using a design token, Escape closes dialogs/popups
   - Focus ring uses --focus / --focus-sheet tokens. Month card: focus moves in on open, back to the cell on close, Escape closes it. (Detailed heatmap cells are canvas: the quick view is the keyboard path.)
-- [ ] ARIA: labels for icon-only buttons, the calendar grid cells announce month, year and count
+- [x] ARIA: labels for icon-only buttons, the calendar grid cells announce month, year and count
+  - Typical cells and year totals get role=img + labels, month initials hidden from screen readers, PNG/CSV/Clear/location buttons say what they do.
 - [ ] Contrast: check all text and UI against WCAG AA on both the white sheet and the dark panels; fix tokens, not single colours
 - [ ] Hover details on calendar cells: consistent tooltip style, works with keyboard focus too
 - [ ] Design tokens: replace hard-coded colours, radii, shadows and spacing in src/styles.css and components with the tokens at the top
