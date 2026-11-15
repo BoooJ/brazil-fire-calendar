@@ -444,19 +444,22 @@ function Upcoming({ data }: { data: Analysis }) {
 }
 
 function Briefing({ data, short }: { data: Analysis; short: boolean }) {
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<null | 'ok' | 'fail'>(null);
   const c = data.cards;
   const copy = () => {
-    navigator.clipboard?.writeText(data.briefing).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
+    const done = (r: 'ok' | 'fail') => { setCopied(r); setTimeout(() => setCopied(null), 2500); };
+    if (!navigator.clipboard) return done('fail');
+    navigator.clipboard.writeText(data.briefing).then(() => done('ok'), () => done('fail'));
   };
   return (
     <section className="briefing">
       <h2>Fire briefing</h2>
       <p>{data.briefing}</p>
-      <button className="btn btn-ghost" onClick={copy}>{copied ? 'Copied' : 'Copy text'}</button>
+      <div className="copy-row">
+        <button className="btn btn-ghost" onClick={copy}>{copied === 'ok' ? '✓ Copied' : 'Copy text'}</button>
+        {/* announced to screen readers; on failure the text is still selectable above */}
+        <span className={'copy-note' + (copied === 'ok' ? ' sr-only' : '')} role="status">{copied === 'ok' ? 'Briefing copied to the clipboard.' : copied === 'fail' ? 'Could not copy here: select the text above instead.' : ''}</span>
+      </div>
 
       <h3>Hotspots seen by each satellite this month</h3>
       <dl className="sats">

@@ -178,3 +178,5 @@ Global rules for this block:
   - Globe stage is a labelled region ("Globe and map"); the strip's bricks carry no text (colour only, the strip is aria-hidden). axe now reports no violations on the three screens.
 - [x] axe-core pass (month card, Detailed view, table, data sources): key-number notes were `<span>` inside `<dl>`; month card was an `<aside role="dialog">`
   - Notes are `<dd class="kc-note">` (same look); the month card is a `<div role="dialog">`. No axe violations left on the six screens checked at 375px. Also: the "last card spans the row" rule no longer touches the two reliability cards.
+- [x] Fire briefing "Copy text": no screen-reader feedback and a silent failure when the clipboard is blocked
+  - Button shows "✓ Copied"; a status line announces it (hidden visually) or says "Could not copy here: select the text above instead" when the clipboard fails.
