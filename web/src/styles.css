@@ -374,8 +374,6 @@ button.day:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px;
 .legend ol { display: flex; gap: 4px; }
 .legend li { display: grid; justify-items: center; gap: 3px; min-width: 26px; }
 .legend small { font-family: var(--mono); font-size: 9px; letter-spacing: 0; color: var(--ink-2); }
-.cal-keys { display: flex; flex-wrap: wrap; gap: 6px var(--s-4); margin-top: var(--s-4); padding-top: var(--s-4); border-top: 1px solid var(--line); font-size: var(--t-xs); color: var(--ink-2); }
-.cal-keys li { display: inline-flex; align-items: center; gap: 6px; }
 /* tooltip (hover, keyboard focus) and the month's small card, anchored to its brick */
 .cal-tip { position: fixed; z-index: 30; transform: translate(-50%, calc(-100% - 12px)); max-width: 300px; text-align: center; white-space: nowrap; pointer-events: none; animation: tip-soft 0.34s cubic-bezier(0.16, 1, 0.3, 1) both; }
 @keyframes tip-soft { from { opacity: 0; transform: translate(-50%, calc(-100% - 8px)); } }

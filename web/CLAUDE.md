@@ -23,7 +23,7 @@ Scope: everything the user sees. `../docs/api-contract.md` is the source of trut
 
 - **Areas:** convert a rectangle, or lat/lon + radius (a 64-point circle), into a GeoJSON `Polygon` with **`[lon, lat]`** order before sending it (`src/geo.ts`).
 - **Burning calendar:** years × months grid, with `Counts` / `vs Average` modes, an average row, year totals, hover details, and a click that opens that month on the map.
-- **Every state needs a design:** loading, zero fires, API error, `truncated` hotspots ("showing 300 of N"), and `provisional` / `uncertain` / `partial` cells (dotted or faded, explained in the legend).
+- **Every state needs a design:** loading, zero fires, API error, `truncated` hotspots ("showing 300 of N"), and `provisional` / `uncertain` / `partial` cells (dotted or faded; the quick calendar has no key under it (Mike, 15 Nov): they are explained in the brick's card).
 - **Naming (Mike, 15 Nov):** the main number (`count`, the API's "fire-days") is called **hotspots** on the site (adjusted: "hotspots (satellite-adjusted)"). Raw FIRMS rows (`detected`, map points, CSV) are **satellite detections**. Never show "fire-day" to users.
 - **One disclaimer only (Mike, 15 Nov):** the tool says "Experimental estimate. Not a real forecast." **once**, at the bottom of the sheet (`.sheet-disclaimer` in `Tool.tsx`). Do not add "estimate / not a forecast / not an official warning" to any card, key, tooltip, panel or label. This replaces showing `next_months_label` and the forecast `label` on the page.
 

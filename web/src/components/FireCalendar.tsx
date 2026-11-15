@@ -401,11 +401,6 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
         </div>
         <Legend mode={mode} thresholds={levels.thresholds} unit={unit} />
       </div>
-      <ul className="cal-keys">
-        <li><span className={`day mini est ${mode === 'counts' ? 'lv2' : 'vs2'}`} />Faded: coming weeks, as in past years</li>
-        <li><span className="day mini lv0 is-now" />This {unit}</li>
-        <li><span className={`day mini is-unc ${mode === 'counts' ? 'lv2' : 'vs3'}`} />Uncertain (very few fires)</li>
-      </ul>
 
       {tip && (
         <div className="cal-tip" role="presentation" aria-hidden="true"
