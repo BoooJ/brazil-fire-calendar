@@ -249,3 +249,5 @@ Global rules for this block:
   - Two table cells updated (needs the usual quick human review of CLAUDE.md changes).
 - [x] Phone toast ("Update now" answer): a three-line message in a pill shape looked like a blob
   - Under 600px the toast is a full-width card (16px gutters, --r-lg corners, above the safe area). Desktop pill unchanged.
+- [x] axe pass after tonight's changes: table cells with "2.5k" had an aria-label that did not contain the visible "2.5k" (label-in-name, 11 cells); the landing's "typ." tag was light grey (2.2:1)
+  - Table buttons have no aria-label now: the visible value is the name core, with month/year and full numbers as screen-reader text (the "*" is a CSS mark; "provisional" is in the text). The scroll box is `position: relative` so that hidden text cannot widen the page at 375. "typ." uses #5d6070. axe: no violations on landing (390, 1440) and the table view.

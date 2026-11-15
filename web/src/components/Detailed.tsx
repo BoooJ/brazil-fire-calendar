@@ -149,8 +149,10 @@ function CalendarTable({ data, mode, onPick, period }: { data: Analysis; mode: M
                 return (
                   <td key={m}>
                     {c ? (
-                      <button onClick={() => onPick(y, i + 1)} aria-label={`${MONTHS[i]} ${y}: ${num(c.count)} fire-days, ${pctLong(c.vs_avg_pct)}${c.provisional ? ', provisional' : ''}`}>
-                        {mode === 'counts' ? short(c.count) : pctShort(c.vs_avg_pct)}{c.provisional ? '*' : ''}
+                      <button className={c.provisional ? 'is-prov' : undefined} onClick={() => onPick(y, i + 1)}>
+                        <span className="sr-only">{MONTHS[i]} {y}: </span>
+                        {mode === 'counts' ? short(c.count) : pctShort(c.vs_avg_pct)}
+                        <span className="sr-only"> ({num(c.count)} fire-days, {pctLong(c.vs_avg_pct)}{c.provisional ? ', provisional' : ''})</span>
                       </button>
                     ) : '–'}
                   </td>

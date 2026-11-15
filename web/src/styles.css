@@ -282,7 +282,7 @@ strong { font-weight: 650; }
 .yr:has(.now-tag) { margin-bottom: 10px; }
 /* the grown, ringed brick (hover, focus, open card) must not cover its own tag: the tag steps down a little */
 .cell:has(> button.day:is(:hover, :focus-visible, [aria-expanded="true"])) .now-tag { transform: translateY(4px); }
-.cal-table-wrap { overflow-x: auto; border-radius: var(--r-lg); border: 1px solid var(--sheet-line); }
+.cal-table-wrap { position: relative; overflow-x: auto; border-radius: var(--r-lg); border: 1px solid var(--sheet-line); }
 .cal-table { width: 100%; border-collapse: collapse; font-size: var(--t-sm); font-variant-numeric: tabular-nums; }
 .cal-table-note { margin: 0 0 var(--s-2); font-size: var(--t-sm); color: var(--sheet-ink-2); }
 .cal-table th[scope="row"], .cal-table thead th:first-child { position: sticky; left: 0; z-index: 1; background: var(--sheet); } /* the year stays in view while the months scroll */
@@ -290,6 +290,7 @@ strong { font-weight: 650; }
 .cal-table th[scope='row'] { padding: 0 var(--s-3); text-align: left; }
 .cal-table button { width: 100%; min-width: 44px; min-height: 36px; border: 0; border-radius: var(--r-xs); background: none; color: var(--sheet-ink); font: inherit; }
 .cal-table button:hover { background: var(--sheet-soft); }
+.cal-table button.is-prov::after { content: '*'; } /* provisional mark; the button's name already says "provisional" */
 .cal-table-avg td, .cal-table-avg th { font-style: italic; color: var(--sheet-ink-2); background: var(--sheet-soft); }
 .cal-table-avg th[scope="row"] { background: var(--sheet-soft); }
 .cal-table-total { padding: 0 var(--s-3); font-weight: 650; color: var(--sheet-ink-2); }
