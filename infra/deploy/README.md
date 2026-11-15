@@ -43,7 +43,7 @@ ssh ubuntu@vps-c33c493b.vps.ovh.net 'cd ~/brazil-fire-api && sudo docker build -
 
 ## Update the data
 
-1. Re-run the pipeline locally (steps 1–5).
+1. Re-run the pipeline locally (steps 1–5). To add only the newest hours: `python infra/pipeline/01c_download_recent.py`, then steps 3 and 4.
 2. `python infra/deploy/deploy_hf.py --data` (needs `hf auth login`).
 3. On the VPS, delete the old copy so the container downloads the new one, then restart:
    `sudo rm -rf /opt/brazil-fire/data/* && sudo docker restart brazil-fire-api`

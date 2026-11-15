@@ -85,6 +85,7 @@ python infra/tools/make_mocks.py   # regenerate web/mocks/
 
 # data pipeline (re-runnable; DATA_DIR comes from .env)
 python infra/pipeline/01_download.py        # FIRMS yearly zips -> DATA_DIR/raw (one copy at a time)
+python infra/pipeline/01c_download_recent.py # newest hours (after the last archive file) from the FIRMS API
 python infra/pipeline/02_extract_brazil.py  # Brazil CSVs -> DATA_DIR/brazil_csv
 python infra/pipeline/03_clean.py           # one flagged table -> DATA_DIR/clean/hotspots (Parquet)
 python infra/pipeline/04_fire_days.py       # fire-days on a 0.01 deg grid -> DATA_DIR/derived/fire_days
