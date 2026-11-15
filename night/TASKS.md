@@ -30,7 +30,8 @@
   - [x] Sub-task 1: radius scale (--r-*), surfaces (--surface, --surface-2, --overlay, --sheet-soft) and shadows (--shadow-*) tokenised in styles.css
   - [x] Sub-task 2: remaining text colours (#ffd9c2, #ffd08a, #ece9e2…), chart panel colours shared with EChart.tsx, a spacing scale
     - Added --fire-ink, --warn-ink, --warn, --panel*, and a --s-1…--s-7 spacing scale (defined; new rules should use it, old paddings left as is to avoid visual drift).
-- [ ] Buttons: one consistent set of variants (primary, secondary, ghost) with hover, active, disabled and focus states
+- [x] Buttons: one consistent set of variants (primary, secondary, ghost) with hover, active, disabled and focus states
+  - Documented the variants at the top of the buttons block; every variant now has hover, pressed and disabled states (no press animation when disabled); segmented buttons get a hover colour.
 - [ ] LocationGate ("Where should we look?"): clearer step layout, helpful hints, mobile-friendly inputs
 - [ ] Micro-interactions: smooth transitions for view switch (quick ↔ detailed), calendar hover and panel open/close; respect prefers-reduced-motion
 - [ ] MonthDetail and Panels: tidy typography hierarchy (sizes, weights, line-height), numbers in tabular figures
