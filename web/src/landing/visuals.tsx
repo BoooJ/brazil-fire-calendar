@@ -22,8 +22,6 @@ const Demo = () => <span className="l-demo">Demo data</span>;
 // ---------- satellites timeline (facts from the README: NASA FIRMS coverage) ----------
 const LANES: { key: SatelliteKey; from: number; to: number | null; label: string; badge?: string; ref?: boolean }[] = [
   { key: 'modis_terra', from: 2000 + 10 / 12, to: null, label: 'Since Nov 2000' },
-  { key: 'modis_aqua', from: 2002 + 6 / 12, to: null, label: 'Since Jul 2002' },
-  { key: 'viirs_snpp', from: 2012 + 0.6 / 12, to: 2026 + 10 / 12, label: 'Jan 2012 to Nov 2026', badge: 'Ended Nov 2026' },
   { key: 'viirs_noaa20', from: 2018 + 3 / 12, to: null, label: 'Since Apr 2018', badge: 'Our reference', ref: true },
 ];
 
@@ -34,8 +32,8 @@ export function Timeline() {
   const pos = (year: number) => ((year - Y0) / (Y1 - Y0)) * 100;
   return (
     <div className="l-tl" role="img"
-      aria-label="Satellite coverage: MODIS Terra from November 2000, MODIS Aqua from July 2002, VIIRS S-NPP from January 2012 until it ended in November 2026, VIIRS NOAA-20 from April 2018, the reference every count is converted to. The calendar starts in January 2003.">
-      <p className="l-tl__title">Four satellites, one record</p>
+      aria-label="Satellite coverage: MODIS Terra from November 2000, VIIRS NOAA-20 from April 2018, the reference every count is converted to. The calendar starts in January 2003.">
+      <p className="l-tl__title">Two satellites, one record</p>
       <div className="l-tl__lanes">
         {LANES.map((l) => (
           <div className="l-lane" key={l.key}>
@@ -52,7 +50,7 @@ export function Timeline() {
           </div>
         ))}
         <div className="l-tl__ticks" aria-hidden="true">
-          {[2003, 2012, 2018, now.getUTCFullYear()].map((y) => <span key={y} style={{ left: `${pos(y).toFixed(2)}%` }}>{y}</span>)}
+          {[2003, 2018, now.getUTCFullYear()].map((y) => <span key={y} style={{ left: `${pos(y).toFixed(2)}%` }}>{y}</span>)}
         </div>
       </div>
       <p className="l-tl__note"><i />Where the calendar starts: January 2003.</p>
@@ -69,7 +67,7 @@ export function RawVsCorrected({ show }: { show: Show }) {
   const span = years.length ? `${years[0].year} to ${years[years.length - 1].year}` : '';
   return (
     <div className="l-rc" role="img"
-      aria-label={`Detections reported per year jump when the VIIRS satellites arrive in 2012 and 2018; the harmonized record stays on one scale. ${show?.areaName ?? ''}${span && `, ${span}`}${show?.demo ? ' (demo data)' : ''}.`}>
+      aria-label={`Detections reported per year jump when the sharper VIIRS sensor arrives in 2018; the harmonized record stays on one scale. ${show?.areaName ?? ''}${span && `, ${span}`}${show?.demo ? ' (demo data)' : ''}.`}>
       <div className="l-rc__head">
         <p>{show ? `${show.areaName}, ${span}` : ' '}</p>
         {show?.demo && <Demo />}
@@ -86,8 +84,7 @@ export function RawVsCorrected({ show }: { show: Show }) {
         ))}
       </div>
       <ul className="l-rc__key">
-        <li><i style={{ background: SAT.modis_terra.colour }} />MODIS</li>
-        <li><i style={{ background: SAT.viirs_snpp.colour }} />VIIRS S-NPP</li>
+        <li><i style={{ background: SAT.modis_terra.colour }} />MODIS Terra</li>
         <li><i style={{ background: SAT.viirs_noaa20.colour }} />VIIRS NOAA-20</li>
         <li><i className="k-line" />Our one record</li>
       </ul>

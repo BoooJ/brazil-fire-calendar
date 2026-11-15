@@ -24,8 +24,8 @@ const NAV = [
 
 const TOOLS = [
   ['NASA FIRMS', 'Active-fire detections, the only data behind the numbers'],
-  ['MODIS', 'Terra and Aqua, 1 km, watching since 2000'],
-  ['VIIRS', 'S-NPP and NOAA-20, 375 m, since 2012'],
+  ['MODIS', 'Terra, 1 km, watching since 2000'],
+  ['VIIRS', 'NOAA-20, 375 m, since 2018'],
   ['Python · DuckDB · FastAPI', 'The data pipeline and the API'],
   ['React · MapLibre · ECharts', 'This website, its map and charts'],
   ['Claude Code', 'AI coding assistant used during the hackathon'],
@@ -139,22 +139,22 @@ export default function Landing() {
             </figure>
             <dl className="l-facts">
               <div><dt>Every month since</dt><dd>January 2003</dd></div>
-              <div><dt>Satellites combined</dt><dd>Four, on one scale</dd></div>
+              <div><dt>Satellites combined</dt><dd>Two, on one scale</dd></div>
               <div><dt>Data source</dt><dd>NASA FIRMS</dd></div>
             </dl>
           </div>
         </section>
 
-        {/* 2. the idea, with the four satellites on one time line */}
+        {/* 2. the idea, with the two satellites on one time line */}
         <section className="l-sec" id="idea" aria-labelledby="idea-h">
           <div className="l-wrap l-split">
             <div className="l-col">
               <p className="l-eyebrow">The idea</p>
               <h2 id="idea-h"><span>Satellites come and go.</span> Your fire record stays whole.</h2>
               <p className="l-body">
-                NASA has watched Brazil’s fires since 2000, first with MODIS, then with the sharper VIIRS sensors,
-                which catch many small fires MODIS misses. Stitch them together untouched and every new satellite
-                looks like a worse fire year. We bring all four onto one scale, so when the calendar rises, more
+                NASA has watched Brazil’s fires since 2000, first with MODIS, then with the sharper VIIRS sensor,
+                which catches many small fires MODIS misses. Stitch them together untouched and the newer satellite
+                looks like a worse fire year. We bring both onto one scale, so when the calendar rises, more
                 actually burned.
               </p>
               <a className="l-link" href="#method">How we do it<Arrow /></a>
@@ -170,8 +170,8 @@ export default function Landing() {
               <p className="l-eyebrow">Why it matters</p>
               <h2 id="statement-h"><span>A bad year,</span> or just a better satellite?</h2>
               <p className="l-body">
-                The bars are what the satellites reported each year. They leap in 2012 and 2018, when sharper
-                sensors launched. The dark line is our single record: the same fires, counted the same way
+                The bars are what the satellites reported each year. They leap in 2018, when the sharper
+                sensor arrived. The dark line is our single record: the same fires, counted the same way
                 every year. Now 2005 and 2025 can be compared fairly.
               </p>
             </div>
@@ -287,7 +287,7 @@ export default function Landing() {
               <Folder n="02" title="UI / UX" text="The calendar, the map and the words. Made to be read at a glance, by everyone." label="the tool’s burning calendar.">
                 <img src={shotHow3} alt="" loading="lazy" />
               </Folder>
-              <Folder n="03" title="Science" text="The method that puts four satellites on one scale, and the checks that keep it honest." label="four satellites converted to one scale.">
+              <Folder n="03" title="Science" text="The method that puts two satellites on one scale, and the checks that keep it honest." label="two satellites converted to one scale.">
                 <div className="l-fold__live"><StepConvert /></div>
               </Folder>
             </ul>
@@ -312,7 +312,7 @@ export default function Landing() {
           <div className="l-foot__cols">
             <div className="l-foot__brand">
               <a className="l-logo" href="#top"><Flame size={20} />Brazil Fire Calendar</a>
-              <p>Brazil’s fire history from four NASA satellites, on one scale. Built for the NASA Space Apps Challenge 2026.</p>
+              <p>Brazil’s fire history from two NASA satellites, on one scale. Built for the NASA Space Apps Challenge 2026.</p>
             </div>
             <div><h3>Site</h3><ul>{NAV.map(([href, label]) => <li key={href}><a href={href}>{label}</a></li>)}</ul></div>
             <div><h3>Data</h3><ul><li><a href="https://firms.modaps.eosdis.nasa.gov/">NASA FIRMS</a></li><li><a href="https://www.earthdata.nasa.gov/engage/open-data-services-software/earthdata-developer-portal/gibs-api">NASA GIBS</a></li><li><a href="https://www.naturalearthdata.com/">Natural Earth</a></li></ul></div>

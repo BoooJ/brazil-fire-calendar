@@ -1,10 +1,11 @@
-// Shapes from docs/api-contract.md (v0.1). Keep in sync with the contract.
+// Shapes from docs/api-contract.md (v0.3). Keep in sync with the contract.
 // Missing values are null, never 0 (e.g. a satellite that was not in orbit yet).
 import type { Polygon, MultiPolygon } from 'geojson';
 
 export type AreaGeometry = Polygon | MultiPolygon;
 export type SatelliteKey = 'modis_terra' | 'modis_aqua' | 'viirs_snpp' | 'viirs_noaa20';
-export const SATELLITES: SatelliteKey[] = ['modis_terra', 'modis_aqua', 'viirs_snpp', 'viirs_noaa20'];
+// contract v0.3: one satellite per instrument, so no fire is counted twice (the other two keys are gone from the API)
+export const SATELLITES: SatelliteKey[] = ['modis_terra', 'viirs_noaa20'];
 export const SAT_NAMES: Record<SatelliteKey, string> = {
   modis_terra: 'MODIS Terra',
   modis_aqua: 'MODIS Aqua',

@@ -106,7 +106,7 @@ export default function Detailed({ data, mode, onMode, selected, onSelect, slug,
         <div className="cal-head">
           <div>
             <h2 id="yr-title">Year by year: raw against corrected</h2>
-            <p className="muted">The bars jump when VIIRS arrives (2012, 2018). The corrected line does not. A hollow point: year not finished.</p>
+            <p className="muted">The bars jump when VIIRS arrives (2018). The corrected line does not. A hollow point: year not finished.</p>
           </div>
           <button className="btn btn-ghost" onClick={() => savePng(yrRef.current, `year-by-year-${slug}.png`)} aria-label="Download the year-by-year chart as a PNG image">PNG</button>
         </div>

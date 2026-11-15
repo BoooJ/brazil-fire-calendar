@@ -68,7 +68,7 @@ export function Reliability({ data, status }: { data: Analysis; status: Status |
       </dl>
       <p className="muted">{r.note}</p>
       <ul className="points">
-        <li><strong>Why correct at all?</strong> Newer satellites see smaller fires. VIIRS (2012 onwards) records many more hotspots than MODIS for the same burning, so raw counts jump when a satellite is added even if nothing changed on the ground.</li>
+        <li><strong>Why correct at all?</strong> Newer satellites see smaller fires. VIIRS (NOAA-20, 2018 onwards) records many more hotspots than MODIS for the same burning, so raw counts jump when a satellite is added even if nothing changed on the ground.</li>
         <li><strong>What we count:</strong> fire-days, the 1 km squares that burned on a given day, converted to one common scale (NOAA-20 equivalent).</li>
         {status?.final_until && (
           <li><strong>Provisional:</strong> data after {dateShort(status.final_until)} is NASA's near-real-time version and may still change.</li>
