@@ -74,8 +74,8 @@ export const YearlyChart = forwardRef<EChartHandle, { yearly: YearItem[]; unitMa
     grid: { top: compact ? 96 : 56, left: compact ? 44 : 52, right: compact ? 40 : 52, bottom: 24 }, // a phone: the legend takes two or three lines
     xAxis: { type: 'category', data: yearly.map((r) => String(r.year)), axisLabel: axisText, axisLine: { lineStyle: { color: '#3a4152' } } },
     yAxis: [
-      { type: 'value', name: 'raw hotspots', nameTextStyle: axisText, axisLabel: { ...axisText, formatter: thousands }, splitLine: split },
-      { type: 'value', name: 'corrected fire-days', nameTextStyle: { ...axisText, color: '#f9cb35' }, axisLabel: { ...axisText, color: '#f9cb35', formatter: thousands }, splitLine: { show: false } },
+      { type: 'value', name: 'raw hotspots', nameTextStyle: { ...axisText, align: 'left' }, axisLabel: { ...axisText, formatter: thousands }, splitLine: split },
+      { type: 'value', name: compact ? 'corrected' : 'corrected fire-days', nameTextStyle: { ...axisText, color: '#f9cb35', align: 'right' }, axisLabel: { ...axisText, color: '#f9cb35', formatter: thousands }, splitLine: { show: false } },
     ],
     series: [
       ...SATELLITES.map((s) => ({

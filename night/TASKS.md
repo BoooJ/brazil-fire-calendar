@@ -184,3 +184,5 @@ Global rules for this block:
   - Bottom fade eased over seven stops (45% → 100%); no edge over the light Brazil fill at 820 and 375.
 - [x] Phone/tablet tool: the white "Brazil Fire Calendar" name sat directly on light Brazil (hard to read)
   - Under 900px the name gets the location pill's dark translucent ground; both top-bar items now match.
+- [x] Detailed view "Year by year" chart at 375px: the right axis name "corrected fire-days" was cut off at the edge
+  - Axis names align inward (left axis starts at its line, right axis ends at its line); on phones the right one reads "corrected".
