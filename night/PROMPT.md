@@ -4,7 +4,7 @@ You are working unattended on the website (`web/`). Nobody will answer questions
 
 **Rules:** follow the root `CLAUDE.md` and `web/CLAUDE.md` exactly. Never edit `web/mocks/` or the kit files in `web/public/assets/`. Display API values, never recompute them. Work ONLY on branch `web/night-ui`, never push to `main`, never force-push.
 
-## Loop (repeat until about 45 minutes have passed since this run started)
+## Loop (repeat until the time limit given in the run's instructions)
 
 1. Open `night/TASKS.md`, take the FIRST `- [ ]` task. If it is big, split it into sub-tasks in the file and do the first.
 2. Do it. Then `cd web && npm run build` must pass. If it fails, fix it; never commit a broken build.
