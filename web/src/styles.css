@@ -273,8 +273,8 @@ strong { font-weight: 650; }
 .cal-grid[data-period='week'] .day { border-radius: 2px; border-width: 1px; }
 .cell { position: relative; display: grid; place-items: center; }
 .cell-mon { display: none; }
-.now-tag { position: absolute; bottom: -12px; z-index: 1; font-size: 8px; font-weight: 800; letter-spacing: 0.06em; white-space: nowrap; color: var(--sheet-ink-2); }
-.yr:has(.now-tag) { margin-bottom: 8px; }
+.now-tag { position: absolute; bottom: -14px; z-index: 1; font-size: var(--t-2xs); font-weight: 750; letter-spacing: 0.04em; white-space: nowrap; color: var(--sheet-ink-2); }
+.yr:has(.now-tag) { margin-bottom: 10px; }
 .cal-table-wrap { overflow-x: auto; border-radius: var(--r-lg); border: 1px solid var(--sheet-line); }
 .cal-table { width: 100%; border-collapse: collapse; font-size: var(--t-sm); font-variant-numeric: tabular-nums; }
 .cal-table-note { margin: 0 0 var(--s-2); font-size: var(--t-sm); color: var(--sheet-ink-2); }

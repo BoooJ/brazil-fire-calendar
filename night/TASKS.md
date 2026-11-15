@@ -198,3 +198,5 @@ Global rules for this block:
   - Facts keep at least 32px above them; lead says "More than twenty years". All sections still one screen at the four sizes.
 - [x] Landing app frame: the "B" of "Burning calendar" was clipped by the drawn sheet's rounded corner
   - Inside the frame's white pane the drawn sheet has no radius (the pane gives the edge); the heading shows whole.
+- [x] The "SO FAR" / "NOW" tag under the current brick was 8px (the last literal font size, hard to read)
+  - Now --t-2xs (10px), a little more room under that row. Type scale has no literal sizes left in styles.css.
