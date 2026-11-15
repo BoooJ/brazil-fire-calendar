@@ -227,3 +227,5 @@ Global rules for this block:
   - The tag sits above the brick (own white ground) and steps down 4px while its brick is hovered, focused or open.
 - [x] Detailed view on phones: the calendar tools wrapped as [Counts | vs Average] [PNG] / [Table] [CSV], splitting the downloads; the Table button said "Heatmap, pressed"
   - Order is now view (Counts/vs Average, Table/Heatmap) then downloads (PNG, CSV), so phones wrap into those two groups. The switch has no pressed state; its name says what it shows ("Show as a table" / "Show the heatmap").
+- [x] Detailed view table lacked what the heatmap shows: the average row and the year totals; on desktop the 12 months needed sideways scrolling
+  - Table gets a first "Average" row (the API's monthly means as-is, "Average count" in vs Average mode, history not a forecast) and a "Total" column (`yearly`, * year not complete). With a mouse and ≥600px the columns are fixed-width (no 44px touch minimum), so the whole year fits; phones keep 44px cells, sideways scroll and the sticky Year.

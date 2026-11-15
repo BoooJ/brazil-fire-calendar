@@ -66,7 +66,7 @@ export default function Detailed({ data, mode, onMode, selected, onSelect, slug,
             <button className="btn btn-ghost" onClick={onCsv} aria-label="Download the calendar as a CSV file">CSV</button>
           </div>
         </div>
-        {table && <CalendarTable data={data} mode={mode} onPick={pick} />}
+        {table && <CalendarTable data={data} mode={mode} onPick={pick} period={period} />}
         <div className="chart-card" hidden={table}>
           <div className="chart-scroll">
             <BurningCalendar
@@ -119,18 +119,28 @@ export default function Detailed({ data, mode, onMode, selected, onSelect, slug,
 }
 
 /** The heatmap as a plain table: every month is a button (keyboard and screen readers), same API values. */
-function CalendarTable({ data, mode, onPick }: { data: Analysis; mode: Mode; onPick: (year: number, month: number) => void }) {
+function CalendarTable({ data, mode, onPick, period }: { data: Analysis; mode: Mode; onPick: (year: number, month: number) => void; period: string }) {
+  const totals = new Map(data.yearly.map((r) => [r.year, r]));
   const years = [...new Set(data.calendar.map((c) => c.year))].sort((a, b) => b - a);
   const by = new Map(data.calendar.map((c) => [`${c.year}-${c.month}`, c]));
   return (
     <>
     {/* the words sit outside the scrolling box, so a phone shows them whole; the caption stays for screen readers */}
-    <p className="cal-table-note" aria-hidden="true">{mode === 'counts' ? 'Corrected count (fire-days)' : 'Compared with the average'} per month, * provisional. Choose a month for details and the map.</p>
+    <p className="cal-table-note" aria-hidden="true">{mode === 'counts' ? 'Corrected count (fire-days)' : 'Compared with the average'} per month, * provisional. Top row: the {period} average (history, not a forecast). Choose a month for details and the map.</p>
     <div className="cal-table-wrap">
       <table className="cal-table">
-        <caption className="sr-only">Burning calendar as a table: {mode === 'counts' ? 'corrected count (fire-days)' : 'compared with the average'} per month, * provisional. Choose a month for details and the map.</caption>
-        <thead><tr><th scope="col">Year</th>{MON.map((m) => <th scope="col" key={m}>{m}</th>)}</tr></thead>
+        <caption className="sr-only">Burning calendar as a table: {mode === 'counts' ? 'corrected count (fire-days)' : 'compared with the average'} per month, * provisional; first row: the {period} average, history, not a forecast; last column: the year's total. Choose a month for details and the map.</caption>
+        <thead><tr><th scope="col">Year</th>{MON.map((m) => <th scope="col" key={m}>{m}</th>)}<th scope="col">Total</th></tr></thead>
         <tbody>
+          {/* the same average row as the heatmap: the API's monthly means, as they are */}
+          <tr className="cal-table-avg">
+            <th scope="row">{mode === 'counts' ? 'Average' : 'Average count'}</th>
+            {MON.map((m, i) => {
+              const a = data.average_by_month.find((x) => x.month === i + 1);
+              return <td key={m}>{a?.mean == null ? '–' : short(a.mean)}</td>;
+            })}
+            <td />
+          </tr>
           {years.map((y) => (
             <tr key={y}>
               <th scope="row">{y}</th>
@@ -146,6 +156,7 @@ function CalendarTable({ data, mode, onPick }: { data: Analysis; mode: Mode; onP
                   </td>
                 );
               })}
+              <td className="cal-table-total">{(() => { const r = totals.get(y); return r?.count == null ? '–' : short(r.count) + (r.complete ? '' : '*'); })()}</td>
             </tr>
           ))}
         </tbody>
