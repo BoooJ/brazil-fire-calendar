@@ -42,3 +42,12 @@
   - Hotspot popup restyled like the calendar tooltip: date/time title, fire strength as the big number, satellite and pass, confidence, amber provisional flag; max 260px wide for phones.
 - [x] Find and merge duplicated UI components or duplicated CSS rules
   - Merged the two .chip rules; the calendar tooltip and map popup share one tooltip rule (+ --panel-flag token). Error messages already merged into ErrorNote.tsx earlier tonight.
+
+## Found on the 2026-11-15 night run (after the list above was done)
+
+- [x] Hero stats: "rank among Novs" reads oddly; use the full month name ("rank among Novembers")
+  - Tool.tsx Hero uses MONTHS instead of MON for that label.
+- [ ] Desktop globe: the left fade over light-grey Brazil shows as a visible grey band at ~60% width (1366px). Soften the gradient or start it on the dark ocean
+- [ ] Month card and data sources dialog: add a close animation (needs a short delayed unmount)
+- [ ] Detailed view heatmap is a canvas: cells are not reachable by keyboard (see night/QUESTIONS.md)
+- [ ] Gate on phones: the long single column could show the four ways as numbered steps (1 location · 2 region · 3 point · 4 draw)

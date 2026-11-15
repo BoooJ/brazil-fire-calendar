@@ -407,7 +407,7 @@ function Hero({ data, area, status, asOf, updating, onUpdate }: {
       <dl className="stats">
         <div><dd>{num(c.count)}</dd><dt>fire-days{c.partial ? ' so far' : ''}</dt></div>
         <div><dd>{c.estimated_fires == null ? '–' : `≈ ${num(c.estimated_fires)}`}</dd><dt>separate fires</dt></div>
-        <div><dd>{c.rank == null ? '–' : <>{c.rank}<small> of {c.of_years}</small></>}</dd><dt>rank among {MON[c.ref_month - 1]}s</dt></div>
+        <div><dd>{c.rank == null ? '–' : <>{c.rank}<small> of {c.of_years}</small></>}</dd><dt>rank among {MONTHS[c.ref_month - 1]}s</dt></div>
       </dl>
       <p className="hero-meta">
         {provisional && <span className="tag">Provisional</span>}
