@@ -254,6 +254,8 @@ strong { font-weight: 650; }
 .bfc-cta h2 { font-size: clamp(30px, 4.6vw, 64px); line-height: 1.04; }
 .bfc-cta p { font-size: var(--t-lead); font-weight: 500; max-width: 46ch; color: var(--muted); }
 .bfc-cta .btn { height: 56px; padding: 0 var(--s-6); font-size: 18px; font-weight: 650; margin-top: var(--s-3); }
+.bfc-cta__in { min-width: 0; max-width: min(720px, 100%); } /* the card's grid item may shrink below its button's width */
+@media (max-width: 360px) { .bfc-cta { padding-inline: var(--s-4); } .bfc-cta .btn { padding: 0 20px; font-size: 16px; } } /* 320px: "Open the fire calendar" fits the card */
 
 /* ---------- the start buttons: a hairline highlight, a soft halo on hover, a firm press ---------- */
 .btn--primary {
