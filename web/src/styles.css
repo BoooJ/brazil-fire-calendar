@@ -336,6 +336,15 @@ button.day:hover:not(.is-now) { box-shadow: 0 4px 12px rgba(20, 21, 26, 0.18); }
 .kc .kc-vs.is-up dd { color: #b34700; }
 .kc .kc-vs.is-down dd { color: var(--vs0); }
 .kc-2 { margin-bottom: 14px; }
+/* type hierarchy of the panels: label 12/600 · value 18–40/700+ · note 12/1.35; numbers always tabular */
+.detail, .kc, .stats, .sats, .next, .sources, .cal-tip { font-variant-numeric: tabular-nums; }
+.kc span { line-height: 1.35; margin-top: 2px; }
+.kc dt, .sats dt { letter-spacing: 0.01em; line-height: 1.3; }
+.sheet h2 + .muted { margin-top: 4px; }
+.reliability h2 { margin-bottom: 12px; }
+.detail .eyebrow { margin-right: 48px; }
+.detail .flags { line-height: 1.4; }
+.detail-line { line-height: 1.35; }
 .reliability .muted { max-width: 68ch; }
 .points { display: grid; gap: 8px; margin-top: 12px; font-size: 14px; max-width: 68ch; }
 .points li { padding-left: 14px; position: relative; }

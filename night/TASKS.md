@@ -36,6 +36,7 @@
   - Coordinate hint (tap the globe, south/west negative, example), outside-Brazil inputs flagged with aria-invalid + amber edge, dropped inputMode=decimal (iOS keypad had no minus sign), enterKeyHint/autoComplete set.
 - [x] Micro-interactions: smooth transitions for view switch (quick ↔ detailed), calendar hover and panel open/close; respect prefers-reduced-motion
   - Calendar area fades/lifts in on quick ↔ detailed, cells lift with a soft shadow on hover, dialog backdrop fades in, chips ease. All switched off by the existing prefers-reduced-motion rule. (Close animations not added: would need delayed unmount.)
-- [ ] MonthDetail and Panels: tidy typography hierarchy (sizes, weights, line-height), numbers in tabular figures
+- [x] MonthDetail and Panels: tidy typography hierarchy (sizes, weights, line-height), numbers in tabular figures
+  - Tabular figures on every number block (month card, key cards, stats, satellites, coming months, sources, tooltip); tightened label/note line-heights and heading spacing; month card eyebrow no longer runs under the close button.
 - [ ] Map popups: consistent styling with the rest of the tool, readable on mobile
 - [ ] Find and merge duplicated UI components or duplicated CSS rules
