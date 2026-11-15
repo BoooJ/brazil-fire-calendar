@@ -16,7 +16,7 @@ A web app that turns NASA FIRMS active-fire hotspots over **Brazil** (2003 → t
 2. **Never commit data** (CSV, zip, Parquet, DuckDB). Exceptions: `web/mocks/` and the forecast model files in `science/forecast/artefatos/` (~21 MB). Data lives in `DATA_DIR` (from `.env`), outside OneDrive.
 3. **Never write secrets in tracked files.** Keys live only in `.env` (gitignored). Never print, log or echo `.env` values. The FIRMS API puts the MAP_KEY **in the URL path**, so never log request URLs.
 4. **Stay in your task's folder:** `infra/`, `web/` or `science/`. Don't edit another folder unless the task explicitly says so.
-5. **`docs/api-contract.md` is frozen (v0.3).** If it must change: update the contract, regenerate the mocks (`python infra/tools/make_mocks.py`), bump the version, and say so in the PR description.
+5. **`docs/api-contract.md` is frozen (v0.4).** If it must change: update the contract, regenerate the mocks (`python infra/tools/make_mocks.py`), bump the version, and say so in the PR description.
 6. **One forecast only, always labelled.** The calendar, averages and "coming months" are history ("not a forecast"); recent months are *provisional*. The only forecast is `POST /api/forecast` (the science team's next-week model), always shown with its `label` "Model estimate (experimental), not an official fire warning."
 7. **Git:** work on a branch (`infra/…`, `web/…`, `science/…`) and open small PRs to `main`. `main` must always run. Never force-push `main`.
 8. **Merging to `main` publishes the website.** A merge that changes `web/` goes live within about a minute (see Status). Run `cd web && npm run build` before merging a web PR: if the build fails, the site stays on the last good version.

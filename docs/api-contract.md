@@ -1,6 +1,8 @@
-# API contract — v0.3
+# API contract — v0.4
 
 This file is the agreement between **`infra/`** (the API) and **`web/`** (the website).
+
+**v0.4 (15 Nov):** weeks, as an addition only. `POST /api/analysis` takes an optional `"period": "week"` and then also returns `calendar_weekly[]` and `average_by_week[]` (section 3, "Weekly calendar"). Without it, nothing changes. Mock: `analysis.pantanal.week.json`.
 
 **v0.3 (15 Nov):** two satellites only, one per instrument, so no fire is counted or drawn twice: **MODIS Terra** and **VIIRS NOAA-20**. `detected` objects, `/api/status` `coverage`, hotspot points and both CSV exports only use the keys `modis_terra` and `viirs_noaa20` (MODIS Aqua and VIIRS S-NPP are gone). `count` = NOAA-20 fire-days from 2018-04, MODIS Terra fire-days × a monthly factor before (harmonization v1). Same fields and types otherwise.
 
@@ -42,6 +44,7 @@ This file is the agreement between **`infra/`** (the API) and **`web/`** (the we
 | `area` | yes | The area of interest |
 | `start`, `end` | no | Period shown. Default: `2003-01-01` → today |
 | `ref_date` | no | "Today" for the anomaly cards. Lets users replay the past, e.g. `2020-09-14`. Default: today |
+| `period` | no | `/api/analysis` only. `"month"` (default) or `"week"`: `"week"` adds the weekly calendar to the answer. Anything else → `INVALID_DATES` |
 
 ---
 
@@ -139,6 +142,28 @@ Body: common request body. Response:
 `estimated_fires` = burning cells that touch each other on consecutive days are grouped into one fire.
 
 Mocks: [`analysis.pantanal.json`](../web/mocks/analysis.pantanal.json) (reference date 2026-11-14) and [`analysis.pantanal.ref-2020-09-14.json`](../web/mocks/analysis.pantanal.ref-2020-09-14.json) (replaying the 2020 crisis).
+
+**Weekly calendar** (only with `"period": "week"`, v0.4). Everything above stays the same; two fields are added:
+
+```json
+"calendar_weekly": [
+  { "year": 2026, "week": 46, "start": "2026-11-09", "end": "2026-11-15",
+    "count": 31, "vs_avg_pct": -40.2, "provisional": true, "uncertain": false,
+    "partial": true, "days_covered": 6 }
+],
+"average_by_week": [ { "week": 46, "mean": 60.0, "median": 52.0, "p10": 12.0, "p90": 130.5, "years": 23 } ]
+```
+
+| Field | Rule |
+|---|---|
+| `year`, `week` | **ISO week** (Monday → Sunday, UTC days, weeks 1–53). `year` is the ISO year: 29 Dec 2025 is in 2026 week 1 |
+| `start`, `end` | The week's Monday and Sunday |
+| `count` | Corrected fire-days that week. A week across two months uses each month's conversion, so the weeks of a period add up to its months (up to rounding) |
+| `vs_avg_pct` | `(count ÷ expected − 1) × 100`, expected = that week number's `mean` (× `days_covered ÷ 7` if `partial`). `null` if there is no average or it is 0 |
+| `provisional`, `uncertain`, `partial`, `days_covered` | Same rules as the monthly calendar (`uncertain`: fewer than 10 fire-days) |
+| `average_by_week[]` | Per week number: `mean`, `median`, `p10`, `p90`, `years`, over the same years as `average_period`. Week 53 exists only in some years, so it has fewer `years` |
+
+Weeks run from the ISO week containing `start` to the week containing `end` (the last one is usually `partial`). About 1,250 weeks for 2003 → today. Weekly numbers are noisier than monthly ones, especially before 2018-04 (MODIS Terra) and for small areas.
 
 ### 4. `POST /api/hotspots` — fire points for the map
 

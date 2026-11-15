@@ -1,4 +1,4 @@
-"""Brazil Fire Calendar API - implements docs/api-contract.md (v0.3).
+"""Brazil Fire Calendar API - implements docs/api-contract.md (v0.4).
 
 Run from the repo root (loads ~25 M fire-days in memory, takes a few seconds):
     .venv/Scripts/python -m uvicorn main:app --app-dir infra/api --port 8000
@@ -15,7 +15,9 @@ import time
 from collections import OrderedDict
 from contextlib import asynccontextmanager
 from datetime import date
+from functools import partial
 from pathlib import Path
+from typing import Literal
 
 import numpy as np
 import shapely
@@ -30,12 +32,12 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE.parent / "pipeline"))
 from _common import data_dir, load_env  # noqa: E402
-from analysis import FIRST_YEAR, SAT_PERIODS, SATELLITES, build_analysis, days_in_month  # noqa: E402
+from analysis import FIRST_YEAR, SAT_PERIODS, SATELLITES, build_analysis, build_weekly, days_in_month  # noqa: E402
 from forecast import FIRST_REF, Forecaster, find_model_dir  # noqa: E402
 from presets import PRESETS, box  # noqa: E402
 from store import Store  # noqa: E402
 
-CONTRACT_VERSION = "0.3"
+CONTRACT_VERSION = "0.4"
 MAX_POINTS = 1000
 MIN_AREA_KM2 = 4.0    # the data is on a ~1.1 km grid: smaller areas may contain no grid cell at all
 CACHE_SIZE = 256      # analysis answers kept in memory (presets and recently viewed areas)
@@ -81,7 +83,8 @@ def _warm_cache() -> None:
     """Load the forecast model, then compute the preset areas once, so they answer instantly (even all of Brazil)."""
     _load_forecast()
     started = time.monotonic()
-    for run, body in ((run_analysis, AreaRequest), (run_forecast, ForecastRequest)):
+    weekly_request = partial(AreaRequest, period="week")
+    for run, body in ((run_analysis, AreaRequest), (run_analysis, weekly_request), (run_forecast, ForecastRequest)):
         for preset in PRESETS:
             try:
                 run(body(area=preset["area"]))
@@ -127,7 +130,7 @@ async def _api_error(_request, exc: ApiError):
 @app.exception_handler(RequestValidationError)
 async def _validation_error(_request, exc: RequestValidationError):
     fields = {str(part) for err in exc.errors() for part in err.get("loc", ())}
-    code = "INVALID_DATES" if fields & {"start", "end", "ref_date", "year", "month"} else "INVALID_AREA"
+    code = "INVALID_DATES" if fields & {"start", "end", "ref_date", "year", "month", "period"} else "INVALID_AREA"
     return JSONResponse(status_code=400, content={"error": {"code": code, "message": exc.errors()[0].get("msg", "")}})
 
 
@@ -143,6 +146,7 @@ class AreaRequest(BaseModel):
     start: date | None = None
     end: date | None = None
     ref_date: date | None = None
+    period: Literal["month", "week"] = "month"  # "week" adds calendar_weekly + average_by_week (contract v0.4)
 
 
 class HotspotsRequest(BaseModel):
@@ -198,16 +202,16 @@ def run_analysis(req: AreaRequest) -> dict:
     geom = parse_area(req.area)
     start, end, ref = resolve_dates(req.start, req.end, req.ref_date)
     key = json.dumps({"area": req.area, "start": start.isoformat(), "end": end.isoformat(),
-                      "ref": ref.isoformat(), "data": STORE.data_updated}, sort_keys=True)
+                      "ref": ref.isoformat(), "period": req.period, "data": STORE.data_updated}, sort_keys=True)
     cached = _cache_get(key)
     if cached is not None:
         return cached
-    result = _compute_analysis(geom, start, end, ref)
+    result = _compute_analysis(geom, start, end, ref, req.period)
     _cache_put(key, result)
     return result
 
 
-def _compute_analysis(geom, start: date, end: date, ref: date) -> dict:
+def _compute_analysis(geom, start: date, end: date, ref: date, period: str = "month") -> dict:
     harm = STORE.harm
     ref_partial = (ref.year, ref.month) == (end.year, end.month) and ref.day < days_in_month(ref.year, ref.month)
     cur = STORE.con.cursor()
@@ -219,6 +223,7 @@ def _compute_analysis(geom, start: date, end: date, ref: date) -> dict:
         same = STORE.same_days(cur, ref.month, ref.day, ref.year, box) if ref_partial else {}
         estimated = STORE.estimated_fires(cur, harm.source(ref.year, ref.month), ref.year, ref.month,
                                           ref.day if ref_partial else 31, box)
+        weekly = STORE.weekly(cur, end, box) if period == "week" else None
     finally:
         cur.close()
     validation = STORE.harm_spec.get("validation", {})
@@ -236,9 +241,12 @@ def _compute_analysis(geom, start: date, end: date, ref: date) -> dict:
                    "so draw an area at least ~2 km across to see fires.")
     else:
         warning = None
-    return build_analysis(monthly=monthly, same_days=same, estimated_fires=estimated, harm=harm,
-                          start=start, end=end, ref=ref, area_km2=km2,
-                          data_updated=STORE.data_updated, reliability=reliability, warning=warning)
+    result = build_analysis(monthly=monthly, same_days=same, estimated_fires=estimated, harm=harm,
+                            start=start, end=end, ref=ref, area_km2=km2,
+                            data_updated=STORE.data_updated, reliability=reliability, warning=warning)
+    if weekly is not None:
+        result.update(build_weekly(weekly=weekly, harm=harm, start=start, end=end, ref=ref))
+    return result
 
 
 def run_forecast(req: ForecastRequest) -> dict:
