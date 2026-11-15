@@ -36,12 +36,12 @@ const TOOLS = [
 ];
 
 const FAQ = [
-  ['Where does the data come from?', 'NASA FIRMS, and nothing else: MODIS and VIIRS active-fire detections. The map imagery and the borders only help you find your way. No number depends on them.'],
+  ['Where does the data come from?', 'NASA FIRMS, and nothing else: MODIS and VIIRS active-fire detections. The map imagery and country outlines only help you find your way. A state’s border only sets which area is counted; every number comes from NASA FIRMS.'],
   ['Does it predict fires?', 'No. The calendar shows what happened and what is typical. The one look ahead is an experimental next-week estimate, always labelled, and it is not an official warning.'],
-  ['How do you measure how much burned?', 'We count each 1 km square once for every day a satellite saw fire in it. That tracks fire activity, not burned area or damage.'],
-  ['Why are recent months marked provisional?', 'They use NASA’s near-real-time data, which is replaced by final data about five months later. Those numbers can still shift a little.'],
+  ['What exactly do you count?', 'We count each 1 km square once for every day a satellite saw fire in it. That tracks fire activity, not burned area or damage.'],
+  ['Why are recent months marked provisional?', 'They use NASA’s near-real-time data, which is replaced by final data a few months later. Those numbers can still shift a little.'],
   ['Which areas can I look at?', 'Any Brazilian state, your own location, a point with a radius, or a shape you draw on the map.'],
-  ['Can it be wrong?', 'Yes. Satellites miss fires under cloud and thick smoke, and converting between sensors has a margin of error. The tool shows that margin next to the numbers.'],
+  ['Can it be wrong?', 'Yes. Satellites miss fires under cloud and thick smoke, and converting between sensors has a margin of error. The tool tells you how big that margin is.'],
 ];
 
 const Arrow = () => (
@@ -223,9 +223,9 @@ export default function Landing() {
               <h2 id="idea-h"><span>Satellites come and go.</span> Your fire record stays whole.</h2>
               <p className="l-body">
                 NASA has watched Brazil’s fires since 2000, first with MODIS, then with the sharper VIIRS sensor,
-                which catches many small fires MODIS misses. Stitch them together untouched and the newer satellite
-                looks like a worse fire year. We bring both onto one scale, so when the calendar rises, more
-                actually burned.
+                which catches many small fires MODIS misses. Stitch them together untouched and the years after the
+                newer satellite arrived look like worse fire years. We bring both onto one scale, so when the calendar
+                rises, there really was more fire.
               </p>
               <a className="l-link" href="#method">How we do it<Arrow /></a>
             </div>
@@ -261,7 +261,7 @@ export default function Landing() {
               <Folder n="02" title="Get the short answer" text="Is fire here running above or below normal for this time of year? One line tells you." label="the tool’s one-line answer for the chosen area.">
                 <img src={shotHow2} alt="" loading="lazy" />
               </Folder>
-              <Folder n="03" title="Read the calendar" text="Every month since 2003, coloured by how much burned. The season, its peak and the odd years stand out." label="the tool’s burning calendar.">
+              <Folder n="03" title="Read the calendar" text="Every month since 2003, coloured by how much fire satellites saw. The season, its peak and the unusual years stand out." label="the tool’s burning calendar.">
                 <img src={shotHow3} alt="" loading="lazy" />
               </Folder>
             </ol>
@@ -320,12 +320,12 @@ export default function Landing() {
               <article className="l-card l-card--white">
                 <div className="l-steps__pic"><StepConvert /></div>
                 <h3>Put every satellite on one scale</h3>
-                <p>When two satellites watched the same months, we measure how their counts relate and convert everything to NOAA-20. Years we held back check the result.</p>
+                <p>When two satellites watched the same months, we measure how their counts relate and convert everything to NOAA-20. We test the result on years we held back.</p>
               </article>
               <article className="l-card l-card--white">
                 <div className="l-steps__pic"><StepProvisional show={show} /></div>
                 <h3>Mark what may still change</h3>
-                <p>NASA’s first numbers are near-real-time, replaced by final data about five months later. Until then the month is marked provisional.</p>
+                <p>NASA’s first numbers are near-real-time, replaced by final data a few months later. Until then the month is marked provisional.</p>
               </article>
             </div>
             <a className="l-btn l-src" href={REPO}><GitHubMark />Source code</a>
@@ -391,7 +391,7 @@ export default function Landing() {
           <div className="l-credits">
             <p>
               Fire data: NASA FIRMS (Fire Information for Resource Management System), MODIS Collection 6.1 and VIIRS
-              375 m active fire products. We acknowledge the use of data from NASA FIRMS, part of NASA Earth Science
+              375 m active fire products. We acknowledge the use of data from NASA FIRMS, part of NASA’s Earth Science
               Data and Information System (ESDIS).
             </p>
             <p>Map imagery: NASA GIBS, for display only. State borders and country outlines: Natural Earth, public domain.</p>
