@@ -161,3 +161,5 @@ Global rules for this block:
   - HowCalendar draws a "2027" row of dotted bricks from `average_by_month` (as-is) and the rest of 2026 as dotted typical bricks, coloured by level like the tool.
 - [x] Month card flags started with a stray "·"; brick card read "Fire was detected: corrected count 442"; Detailed view: "Burning calendar" sat right under the Key numbers cards
   - Flags get a small amber dot; brick card says "Fire detected" then "442 corrected count" (number first, bigger); Key numbers → calendar now uses the sheet's 40 + line + 40 rhythm.
+- [x] Key numbers on phones/tablets: "Peak month" sat alone in a half-empty last row
+  - In the two-column layout the last card spans the full width; desktop's three columns unchanged.

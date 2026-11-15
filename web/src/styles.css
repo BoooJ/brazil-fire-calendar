@@ -401,6 +401,7 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
 .kc .kc-hot { grid-column: 1 / -1; background: #ffe9d2; }
 .kc .kc-hot dd { font-size: var(--t-3xl); }
 .kc .kc-vs { grid-column: 1 / -1; }
+.kc > div:last-child { grid-column: 1 / -1; } /* peak month: no half-empty last row in two columns */
 .kc .kc-vs dd { font-size: var(--t-lg); }
 .kc .kc-vs.is-up dd { color: #b34700; }
 .kc .kc-vs.is-down dd { color: var(--vs0); }
@@ -513,7 +514,7 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
 
   .kc { grid-template-columns: 1.15fr 1fr 1fr; }
   .kc .kc-hot { grid-column: auto; grid-row: span 2; justify-content: center; }
-  .kc .kc-vs { grid-column: auto; }
+  .kc .kc-vs, .kc > div:last-child { grid-column: auto; }
   .kc-2 { grid-template-columns: repeat(2, 1fr); }
   .chart-card { padding: 18px 16px 14px; }
   .modal-backdrop { place-items: center; padding: 24px; }
