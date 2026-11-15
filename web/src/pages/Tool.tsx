@@ -214,6 +214,7 @@ export default function Tool() {
   const data = load.kind === 'ok' ? load.data : null;
   const wide = typeof window !== 'undefined' && window.matchMedia('(min-width: 900px)').matches;
   const closeSources = useCallback(() => setShowSources(false), []);
+  const closeDetail = useCallback(() => setSelected(null), []);
 
   return (
     <div className={'tool' + (stage === 'map' ? ' tool--map' : '')}>
@@ -357,7 +358,7 @@ export default function Tool() {
         </main>
       </div>
 
-      {selected && <MonthDetail item={selected} map={map} onShowMap={showOnMap} onCsv={hotspotsCsv} onClose={() => setSelected(null)} />}
+      {selected && <MonthDetail item={selected} map={map} onShowMap={showOnMap} onCsv={hotspotsCsv} onClose={closeDetail} />}
       {showSources && <SourcesDialog status={status} onClose={closeSources} />}
       {toast && <div className="toast" role="status">{toast}</div>}
     </div>

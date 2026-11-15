@@ -18,7 +18,8 @@
   - Same wording in both legends (hatched / faded / month in progress), same 0.6 fade for uncertain cells, tooltip text aligned.
 - [x] Legends: show values for every colour step; vs Average legend with ▲/▼ and a neutral middle
   - Heatmap vs-average ticks now read ▼ ¼× · ▼ ½× · ● avg · ▲ 2× · ▲ 4×+; quick legend middle step says "near average (±20%)". Count steps already had values.
-- [ ] Keyboard: every interactive element reachable with Tab, visible :focus-visible ring using a design token, Escape closes dialogs/popups
+- [x] Keyboard: every interactive element reachable with Tab, visible :focus-visible ring using a design token, Escape closes dialogs/popups
+  - Focus ring uses --focus / --focus-sheet tokens. Month card: focus moves in on open, back to the cell on close, Escape closes it. (Detailed heatmap cells are canvas: the quick view is the keyboard path.)
 - [ ] ARIA: labels for icon-only buttons, the calendar grid cells announce month, year and count
 - [ ] Contrast: check all text and UI against WCAG AA on both the white sheet and the dark panels; fix tokens, not single colours
 - [ ] Hover details on calendar cells: consistent tooltip style, works with keyboard focus too

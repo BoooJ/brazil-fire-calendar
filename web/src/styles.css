@@ -5,6 +5,8 @@
   --ink-2: #a9adbd;
   --line: rgba(255, 255, 255, 0.12);
   --fire: #ff6a1f;
+  --focus: #7aa2ff; /* keyboard focus ring on the dark page */
+  --focus-sheet: #3d63d8; /* …and on the white sheet */
   --sheet: #ffffff;
   --sheet-ink: #14151a;
   --sheet-ink-2: #5d6070;
@@ -29,7 +31,8 @@ fieldset { border: 0; min-width: 0; }
 a { color: inherit; }
 button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
-:focus-visible { outline: 3px solid #7aa2ff; outline-offset: 2px; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.sheet :focus-visible { outline-color: var(--focus-sheet); }
 strong { font-weight: 650; }
 
 .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 0.02em; color: var(--ink-2); }
