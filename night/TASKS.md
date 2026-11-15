@@ -281,3 +281,5 @@ Global rules for this block:
   - The forecast caption shows only on the map; the panel button then offers "Show the cells on the map" again.
 - [x] web/CLAUDE.md: MapView's forecast `cells` layer
   - One table cell updated (needs the usual quick human review of CLAUDE.md changes).
+- [x] Forecast panel: no way to pass the estimate on (the analysis briefing has "Copy text")
+  - "Copy as text" copies the API's own forecast `briefing` (it ends with the label), with the same status note as the briefing. The "300 of 7,774" note now says it is about the map. axe clean at 375 / 1440.

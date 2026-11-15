@@ -93,6 +93,13 @@ export default function ForecastPanel({ area, refDate, available, onShowMap, onH
 
 function ForecastBody({ f, onToggle, shown }: { f: Forecast; onToggle: () => void; shown: boolean }) {
   const s = f.summary;
+  const [copied, setCopied] = useState<null | 'ok' | 'fail'>(null);
+  // the API's own briefing (it already ends with the label), for sharing in a message or a report
+  const copy = () => {
+    const done = (r: 'ok' | 'fail') => { setCopied(r); setTimeout(() => setCopied(null), 2500); };
+    if (!navigator.clipboard || !f.briefing) return done('fail');
+    navigator.clipboard.writeText(f.briefing).then(() => done('ok'), () => done('fail'));
+  };
   return (
     <>
       <p className="fc-period">
@@ -119,15 +126,19 @@ function ForecastBody({ f, onToggle, shown }: { f: Forecast; onToggle: () => voi
       ) : (
         <p className="muted">No 5&nbsp;km cell in this area has burned before, so the model has nothing to estimate here.</p>
       )}
-      {f.returned > 0 && (
-        <p className="fc-map-row">
-          {/* stays enabled (a disabled button would drop keyboard focus): it hides them again */}
+      <div className="fc-map-row">
+        {f.returned > 0 && (
+          /* stays enabled (a disabled button would drop keyboard focus): it hides them again */
           <button className="btn btn-ghost" onClick={onToggle}>
             {shown ? 'Hide the cells from the map' : 'Show the cells on the map'}
           </button>
-          {f.truncated && <span className="muted">The {num(f.returned)} cells with the highest chance, of {num(f.total)}.</span>}
-        </p>
-      )}
+        )}
+        {f.briefing && <button className="btn btn-ghost" onClick={copy}>{copied === 'ok' ? '✓ Copied' : 'Copy as text'}</button>}
+        <span className={'copy-note' + (copied === 'ok' ? ' sr-only' : '')} role="status">
+          {copied === 'ok' ? 'Estimate copied to the clipboard.' : copied === 'fail' ? 'Could not copy here.' : ''}
+        </span>
+        {f.returned > 0 && f.truncated && <span className="muted fc-map-note">The map shows the {num(f.returned)} cells with the highest chance, of {num(f.total)}.</span>}
+      </div>
       {f.notes.length > 0 && (
         <ul className="fc-notes">
           {f.notes.map((n) => <li key={n}>{n}</li>)}

@@ -361,6 +361,7 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
 .fc-fine { font-size: var(--t-sm); line-height: 1.5; max-width: 72ch; }
 .fc-map-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2) var(--s-3); margin-bottom: var(--s-4); }
 .fc-map-row .muted { font-size: var(--t-sm); }
+.fc-map-note { flex-basis: 100%; }
 .fc-quiet { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3); }
 .fc-quiet .muted { flex: 1 1 280px; }
 @media (max-width: 599px) {
