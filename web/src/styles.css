@@ -219,6 +219,13 @@ button.day:hover { transform: scale(1.08); }
 .day.mini.is-now { box-shadow: 0 0 0 3px #d9d9e0; background: #fff; margin: 0 3px; }
 .day.mini.typical, .day.mini.is-unc { border-width: 2px; }
 
+/* calendar tooltip: same look as the detailed view's chart tooltip; shown on hover and keyboard focus */
+.cal-tip { position: fixed; z-index: 30; transform: translate(-50%, calc(-100% - 10px)); display: grid; gap: 2px; min-width: 200px; max-width: 240px; padding: 10px 12px; border-radius: 10px; background: rgba(16, 19, 27, 0.97); border: 1px solid #3a4152; color: #ece9e2; font-size: 13px; line-height: 1.4; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); pointer-events: none; animation: fade 0.12s ease-out; }
+.cal-tip b { font-size: 14px; }
+.cal-tip-big { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.cal-tip-big small { font-size: 13px; font-weight: 500; opacity: 0.7; }
+.cal-tip-flags { color: #f9cb35; }
+.cal-tip-hint { margin-top: 4px; font-size: 11px; opacity: 0.6; }
 .sats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
 .sats > div { padding: 10px 12px; border-radius: 14px; background: #f6f6f9; }
 .sats dt { font-size: 12px; color: var(--sheet-ink-2); }

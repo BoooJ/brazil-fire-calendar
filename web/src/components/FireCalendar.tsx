@@ -1,6 +1,6 @@
 // The burning calendar: years × months, drawn as marked days (filled = happened, dotted = typical).
 // The detailed view draws the same months as a dense heatmap: see BurningCalendar.tsx.
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { Analysis, CalendarItem } from '../types';
 import { MON, MONTHS, compact, num, pctLong, pctShort } from '../format';
 
@@ -32,6 +32,22 @@ interface Props {
 
 export default function FireCalendar({ data, selected, onSelect, mode, onMode, onCsv }: Props) {
   const levels = useMemo(() => makeCountLevels(data.calendar), [data.calendar]);
+  // one tooltip for hover and keyboard focus, styled like the detailed view's chart tooltip
+  const [tip, setTip] = useState<{ item: CalendarItem; el: HTMLElement; x: number; y: number } | null>(null);
+  const place = (item: CalendarItem, el: HTMLElement) => {
+    const r = el.getBoundingClientRect();
+    setTip({ item, el, x: r.left + r.width / 2, y: r.top });
+  };
+  // mouse hover, or keyboard focus (not a tap: a tap opens the month card instead)
+  const onEnter = (item: CalendarItem) => (e: React.PointerEvent<HTMLElement>) => e.pointerType === 'mouse' && place(item, e.currentTarget);
+  const onFocusTip = (item: CalendarItem) => (e: React.FocusEvent<HTMLElement>) => e.currentTarget.matches(':focus-visible') && place(item, e.currentTarget);
+  const hideTip = () => setTip(null);
+  useEffect(() => {
+    if (!tip) return;
+    const follow = () => place(tip.item, tip.el);
+    window.addEventListener('scroll', follow, { passive: true });
+    return () => window.removeEventListener('scroll', follow);
+  }, [tip]);
 
   const { years, byKey } = useMemo(() => {
     const byKey = new Map<string, CalendarItem>();
@@ -143,7 +159,8 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
                   return (
                     <div className="cell" key={m}>
                       {isNow && <span className="now-tag">{item.partial ? 'SO FAR' : 'NOW'}</span>}
-                      <button className={cellClass(item)} onClick={() => onSelect(item)} aria-label={describe(item)} title={describe(item)}>
+                      <button className={cellClass(item)} onClick={() => onSelect(item)} aria-label={describe(item)}
+                        onPointerEnter={onEnter(item)} onPointerLeave={hideTip} onFocus={onFocusTip(item)} onBlur={hideTip}>
                         {mode === 'counts' ? compact(item.count) : pctShort(item.vs_avg_pct)}
                       </button>
                       <span className="cell-mon" aria-hidden="true">{m}</span>
@@ -160,6 +177,21 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
           );
         })}
       </div>
+      {tip && (
+        <div className="cal-tip" role="presentation" aria-hidden="true"
+          style={{ left: Math.min(Math.max(tip.x, 120), window.innerWidth - 120), top: tip.y }}>
+          <b>{MONTHS[tip.item.month - 1]} {tip.item.year}</b>
+          <span className="cal-tip-big">{num(tip.item.count)} <small>fire-days</small></span>
+          <span>{pctLong(tip.item.vs_avg_pct)}{tip.item.rank != null && ` · rank ${tip.item.rank} of ${tip.item.of_years}`}</span>
+          {(tip.item.partial || tip.item.provisional || tip.item.uncertain) && (
+            <span className="cal-tip-flags">
+              {[tip.item.partial && `first ${tip.item.days_covered} days only`, tip.item.provisional && 'provisional', tip.item.uncertain && 'uncertain']
+                .filter(Boolean).join(' · ')}
+            </span>
+          )}
+          <span className="cal-tip-hint">Click for details and the map</span>
+        </div>
+      )}
       <p className="fineprint">
         Numbers are {data.unit.main}. * year not complete. Months are compared with the {period} average.
       </p>
