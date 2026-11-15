@@ -267,8 +267,13 @@ export default function Tool() {
               <span className="map-caption-text">
                 {map.total === 0
                   ? `No hotspots in ${MON[mapMonth.month - 1]} ${mapMonth.year}`
-                  : <>{MON[mapMonth.month - 1]} {mapMonth.year} · {map.truncated ? `${num(map.returned)} of ${num(map.total)} hotspots` : `${num(map.total)} hotspots`}</>}
+                  : map.truncated ? `${MON[mapMonth.month - 1]} ${mapMonth.year}` : `${MON[mapMonth.month - 1]} ${mapMonth.year} · ${num(map.total)} hotspots`}
               </span>
+              {map.truncated && (
+                <span className="map-badge" title="The map shows a sample; the CSV download has every hotspot.">
+                  showing {num(map.returned)} of {num(map.total)}
+                </span>
+              )}
               <button onClick={clearMap}>Clear</button>
             </div>
           )}
