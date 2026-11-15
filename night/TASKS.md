@@ -8,7 +8,8 @@
   - Measured all four sizes: no horizontal scroll, no clipped text. Method now fits one 1366×768 screen (smaller panels). Method on tablets stays two screens by design (--h: 2); tall phone sections grow as the kit intends.
 - [x] Loading state: consistent skeletons/spinners for the sheet, the calendar and the detailed view (no layout jump when data arrives)
   - Hero skeleton now includes the stats box; the sheet skeleton mirrors the coming-months cards and calendar rows (SheetSkeleton in Tool.tsx).
-- [ ] Zero-fires state: a clear, friendly empty state in the calendar and map instead of an empty grid
+- [x] Zero-fires state: a clear, friendly empty state in the calendar and map instead of an empty grid
+  - Calendar: hollow dotted-circle art, friendlier text and a button back to the location step. Map: centred "No fires detected" note and caption "No hotspots in Mon YYYY".
 - [ ] API error state: one consistent error message component with a retry button
 - [ ] Truncated hotspots: visible "showing 300 of N" badge on the map, readable on mobile
 - [ ] Provisional / uncertain / partial cells: make the hatching/fading consistent between FireCalendar and BurningCalendar and explain it in the legend

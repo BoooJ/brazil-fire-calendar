@@ -264,9 +264,17 @@ export default function Tool() {
             <div className="map-caption" role="status">
               <span className="dot" />
               <span className="map-caption-text">
-                {MON[mapMonth.month - 1]} {mapMonth.year} · {map.truncated ? `${num(map.returned)} of ${num(map.total)} hotspots` : `${num(map.total)} hotspots`}
+                {map.total === 0
+                  ? `No hotspots in ${MON[mapMonth.month - 1]} ${mapMonth.year}`
+                  : <>{MON[mapMonth.month - 1]} {mapMonth.year} · {map.truncated ? `${num(map.returned)} of ${num(map.total)} hotspots` : `${num(map.total)} hotspots`}</>}
               </span>
               <button onClick={clearMap}>Clear</button>
+            </div>
+          )}
+          {stage === 'map' && map.kind === 'shown' && map.total === 0 && mapMonth && (
+            <div className="map-empty" role="note">
+              <strong>No fires detected</strong>
+              <span>The satellites saw no hotspots in this area in {MONTHS[mapMonth.month - 1]} {mapMonth.year}.</span>
             </div>
           )}
           {stage === 'map' && map.kind === 'shown' && map.returned > 0 && (
@@ -319,9 +327,11 @@ export default function Tool() {
                     {detailed && <KeyCards data={data} />}
                     <Upcoming data={data} />
                     {data.calendar.every((c) => !c.count) ? (
-                      <section className="empty">
+                      <section className="empty-state">
+                        <span className="empty-art" aria-hidden="true"><i /><i /><i /><i /><i /><i /></span>
                         <h2>No fires detected here</h2>
-                        <p className="muted">The satellites recorded no fire-days in this area since {data.query.start.slice(0, 4)}. Try a larger radius or another region.</p>
+                        <p className="muted">The satellites recorded no fire-days in this area since {data.query.start.slice(0, 4)}. That is good news, or the area may be too small to catch any.</p>
+                        <button className="btn btn-ghost" onClick={() => chooseArea(null)}>Try a larger radius or another region</button>
                       </section>
                     ) : detailed ? (
                       <Suspense fallback={<section><div className="sk sk-block" aria-busy="true" aria-label="Loading the charts" /></section>}>
