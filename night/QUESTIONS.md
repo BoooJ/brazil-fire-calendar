@@ -9,6 +9,10 @@
 - 2026-11-15 (04:55 run): The calendar drew the same averages twice ("Typical" row + "2027 typical" row). I merged them: while the API has no months after the reference year, the average row is labelled "2027 · typical" (total "avg") with the not-a-forecast note under it. Mike: OK, or would you rather keep a plain "Typical" row and drop the 2027 label?
 - 2026-11-15 (04:55 run): The landing's closing band used the kit's mid-blue "painting" ground; I overrode it to a pastel blue (#dfe7f1) to match the flat light palette. Easy to revert in landing.css (last rule).
 
+- 2026-11-15 (05:55 run): When the NASA GIBS imagery cannot load, the map now draws the globe's Natural Earth outlines (display only, never for numbers) so drawing an area is not blind. Credited in web/CLAUDE.md and the data sources dialog. Mike/Paul: OK to show the outlines on the map in that case?
+- 2026-11-15 (05:55 run): On phones, once a point is picked, "Show my fire calendar" is pinned to the bottom of the screen until its place in the steps is reached. Mike: keep it?
+- 2026-11-15 (05:55 run): The landing's Team list says Infrastructure does "daily updates", but root CLAUDE.md lists the daily FIRMS update as not done yet. Left as is (it describes the role); change to "updates" if the daily job does not ship.
+
 ## For Paul (infra/)
 
 - **Fire season per area** (for the first screen: "is this the usual fire season, when does it usually end?"): please add to `/api/analysis` something like `season: { start_month: int, peak_month: int, end_month: int, rule: "months whose mean is ≥ X% of the yearly total" } | null`. Today the UI only shows `cards.peak_month`.
