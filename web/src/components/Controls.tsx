@@ -14,13 +14,17 @@ interface Props {
   detailed: boolean;
   setDetailed: (d: boolean) => void;
   today: string;
+  /** the reference date of the page on screen (the API's `query.ref_date`): where "Other day" starts */
+  shown?: string;
 }
 
-export default function DateControls({ refDate, setRefDate, fromYear, setFromYear, detailed, setDetailed, today }: Props) {
+export default function DateControls({ refDate, setRefDate, fromYear, setFromYear, detailed, setDetailed, today, shown }: Props) {
   const custom = refDate !== null && refDate !== REPLAY_DATE;
   const lastYear = Number((refDate ?? today).slice(0, 4));
   const years = Array.from({ length: lastYear - FIRST_YEAR + 1 }, (_, i) => FIRST_YEAR + i);
   const [ry, rm, rd] = REPLAY_DATE.split('-').map(Number);
+  // "Other day" opens on the day the page shows now (the latest data day, not the calendar's today)
+  const start = shown && shown !== REPLAY_DATE && shown <= today ? shown : today;
 
   return (
     <div className="controls" aria-label="Dates and view">
@@ -30,7 +34,7 @@ export default function DateControls({ refDate, setRefDate, fromYear, setFromYea
           <button role="radio" aria-checked={refDate === REPLAY_DATE} className={refDate === REPLAY_DATE ? 'on' : ''} onClick={() => setRefDate(REPLAY_DATE)}>
             Replay {rd} {MON[rm - 1]} {ry}
           </button>
-          <button role="radio" aria-checked={custom} className={custom ? 'on' : ''} onClick={() => !custom && setRefDate(today)}>Other day</button>
+          <button role="radio" aria-checked={custom} className={custom ? 'on' : ''} onClick={() => !custom && setRefDate(start)}>Other day</button>
         </div>
         <div className="seg" role="radiogroup" aria-label="View">
           <button role="radio" aria-checked={!detailed} className={!detailed ? 'on' : ''} onClick={() => setDetailed(false)}>Quick view</button>

@@ -381,7 +381,7 @@ export default function Tool() {
               )}
               {data && <Hero key={`${area.label}|${data.query.ref_date}`} data={data} area={area} status={status} asOf={refDate} updating={updating} onUpdate={updateNow} onForecast={status?.forecast_available === false || (refDate != null && refDate < FIRST_FORECAST_DAY) ? undefined : toForecast} />}
               <DateControls refDate={refDate} setRefDate={changeRefDate} fromYear={fromYear} setFromYear={setFromYear}
-                detailed={detailed} setDetailed={setDetailed} today={today} />
+                detailed={detailed} setDetailed={setDetailed} today={today} shown={data?.query.ref_date} />
               {load.kind === 'loading' && (
                 <div className="sheet" aria-busy="true" aria-label="Loading fire data"><SheetSkeleton /></div>
               )}

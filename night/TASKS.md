@@ -328,3 +328,5 @@ Global rules for this block:
   - "rank N of M years" is one unbreakable piece (`.detail-line .nobr`), so it moves to the next line whole. Checked 320 / 375.
 - [x] Landing "How the years stay comparable" (1024+): the third step's text is 3 lines, so its picture sat 24px lower than the other two
   - landing.css (kit untouched): at 1024+ the step texts take 3 lines' height, so the three panels line up. Sections still one screen at 1440×900 and 1366×768; 820 unchanged.
+- [x] "Other day" opened the date field on the calendar's today (15 Nov) while the page above said "As of 14 Nov 2026" (the latest data day)
+  - DateControls gets `shown` (the API's `query.ref_date`); "Other day" starts there (today if nothing is shown, or from the 2020 replay). Checked 375.
