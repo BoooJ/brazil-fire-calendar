@@ -27,6 +27,8 @@
 - [x] Hover details on calendar cells: consistent tooltip style, works with keyboard focus too
   - Quick view cells get a styled tooltip (same look as the heatmap's) on mouse hover and keyboard focus; taps still open the month card. Native title removed.
 - [ ] Design tokens: replace hard-coded colours, radii, shadows and spacing in src/styles.css and components with the tokens at the top
+  - [x] Sub-task 1: radius scale (--r-*), surfaces (--surface, --surface-2, --overlay, --sheet-soft) and shadows (--shadow-*) tokenised in styles.css
+  - [ ] Sub-task 2: remaining text colours (#ffd9c2, #ffd08a, #ece9e2…), chart panel colours shared with EChart.tsx, a spacing scale
 - [ ] Buttons: one consistent set of variants (primary, secondary, ghost) with hover, active, disabled and focus states
 - [ ] LocationGate ("Where should we look?"): clearer step layout, helpful hints, mobile-friendly inputs
 - [ ] Micro-interactions: smooth transitions for view switch (quick ↔ detailed), calendar hover and panel open/close; respect prefers-reduced-motion
