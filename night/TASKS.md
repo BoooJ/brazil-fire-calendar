@@ -153,5 +153,6 @@ Global rules for this block:
   - One row now: while the API has no months after the reference year it is labelled "2027 · typical" (the average row, total "avg"), with the note under it; otherwise it is the plain "Typical" row. web/CLAUDE.md's "average row" is still there.
 - [x] Location step: the disabled "Show my fire calendar" button is dark brown with dark text (hard to read, looks broken); give it a calm disabled look and a hint of what is missing
   - Disabled main button is a flat dark surface with readable grey text and says "Tap the globe or type a point first"; it becomes the orange "Show my fire calendar" once a point exists.
-- [ ] Phone (375px): the three "coming months" cards are cramped (words wrap to 1–2 per line); stack them as rows under 600px
+- [x] Phone (375px): the three "coming months" cards are cramped (words wrap to 1–2 per line); stack them as rows under 600px
+  - Under 600px each card is one row: month + words on the left, the number on the right. Desktop unchanged.
 - [ ] Desktop globe edge fade still shows vertical banding over the light Brazil fill at 1366×768; check and soften

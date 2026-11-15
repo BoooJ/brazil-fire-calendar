@@ -231,6 +231,14 @@ strong { font-weight: 650; }
 .next-mon { font-size: var(--t-sm); font-weight: 650; }
 .next-val { font-size: var(--t-2xl); font-weight: 750; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .next .muted { font-size: var(--t-xs); line-height: 1.35; }
+/* phones: one card per row, month and words on the left, the number on the right */
+@media (max-width: 599px) {
+  .next { grid-template-columns: 1fr; }
+  .next li { display: grid; grid-template-columns: 1fr auto; column-gap: var(--s-3); align-items: center; padding: 10px 14px; }
+  .next-mon { grid-column: 1; grid-row: 1; }
+  .next .muted { grid-column: 1; grid-row: 2; }
+  .next-val { grid-column: 2; grid-row: 1 / span 2; }
+}
 
 /* ---------- calendar ---------- */
 .cal-head { display: flex; flex-wrap: wrap; gap: var(--s-3); align-items: flex-end; justify-content: space-between; margin-bottom: var(--s-4); }
