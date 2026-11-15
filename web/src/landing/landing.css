@@ -153,6 +153,12 @@ strong { font-weight: 650; }
   .bfc-tl__start span { font-size: 11px; }
   #idea .frame--split { --ratio: 90%; }
 }
+/* 320px phones: the start label ran off the card and the 2012/2018 ticks ran into each other; the dashed line still meets the 2003 tick (the role=img label says it) */
+@media (max-width: 360px) {
+  .bfc-tl__start span { display: none; }
+  #idea .frame--split { --ratio: 100%; } /* room for the year ticks under the lanes */
+  .bfc-tl__ticks span:nth-child(2), .bfc-tl__ticks span:nth-child(3) { display: none; }
+}
 
 /* the statement, and raw against corrected */
 #statement .mo-lt__type { font: var(--display-weight) clamp(44px, 7.2vw, 112px) / 1 var(--font-display); letter-spacing: var(--display-tracking-xl); max-width: none; margin: 0; }

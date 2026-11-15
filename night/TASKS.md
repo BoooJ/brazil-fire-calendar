@@ -316,3 +316,5 @@ Global rules for this block:
   - Typical year and Year by year: finished points are solid yellow, the month/year not finished is a hollow ring; each chart's subtitle says "A hollow point: month (year) not finished". Values unchanged (the API's). Checked 1440.
 - [x] 320px phones: the detailed heatmap scrolled sideways inside its card, and that scroll box could not be reached with the keyboard (axe: scrollable-region-focusable)
   - The heatmap's minimum width is 256px (was 300), so it fits a 320px phone (cells ~17px) with no inner scroll. axe clean at 320 and 820 (sheet, month card, detailed view).
+- [x] Landing satellite timeline on 320px phones: "Calendar starts, Jan 2003" ran off the card over the Terra bar, the 2012/2018 ticks ran into each other ("20122018") and the year axis was cut by the card's bottom edge
+  - Under 361px (landing.css only, kit untouched): the start label and the 2012/2018 ticks hide (the dashed line still meets the 2003 tick; the figure's aria-label says it), the card is a little taller (`--ratio: 100%`) so 2003 and 2026 show. 390+ unchanged.
