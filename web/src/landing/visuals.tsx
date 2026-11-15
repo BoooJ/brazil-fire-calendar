@@ -309,11 +309,24 @@ export function HowCalendar({ show, rows = 6, mark }: { show: Show; rows?: numbe
       <b className="bfc-how-ui__h">Burning calendar</b>
       <div className="bfc-qc">
         <span />{MON.map((m) => <em key={m}>{m[0]}</em>)}
+        {/* next year: the typical months, dotted, as in the tool (history, not a forecast) */}
+        {show && [
+          <span key="typ" className="bfc-qc__typ">{ref + 1}</span>,
+          ...MON.map((m, i) => {
+            const a = show.analysis.average_by_month.find((x) => x.month === i + 1);
+            return <i key={`typ${m}`} className={`bfc-qc__d is-typ lv${level(a?.mean ?? null)}`} />;
+          }),
+        ]}
         {years.map((y) => [
           <span key={y}>{show ? y : ''}</span>,
           ...MON.map((m, i) => {
             const c = data?.cal.get(`${y}-${i + 1}`);
             const lv = c ? level(c.count) : -1;
+            const later = !c && show != null && y === ref && i + 1 > show.analysis.cards.ref_month;
+            if (later) {
+              const a = show.analysis.average_by_month.find((x) => x.month === i + 1);
+              return <i key={`${y}${m}`} className={`bfc-qc__d is-typ lv${level(a?.mean ?? null)}`} />;
+            }
             return <i key={`${y}${m}`} className={'bfc-qc__d' + (lv < 0 ? ' is-none' : ` lv${lv}`) + (c?.provisional ? ' is-prov' : '') + (mark && mark.year === y && mark.month === i + 1 ? ' is-sel' : '')} />;
           }),
         ])}

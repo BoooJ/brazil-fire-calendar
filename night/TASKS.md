@@ -157,3 +157,5 @@ Global rules for this block:
   - Under 600px each card is one row: month + words on the left, the number on the right. Desktop unchanged.
 - [x] Desktop globe edge fade still shows vertical banding over the light Brazil fill at 1366×768; check and soften
   - Eight eased stops (to 42%) instead of four: the fade over Brazil's west no longer ends in a visible edge.
+- [x] Landing "How it works" step 3 and the app frame: add the dotted next-year typical row, as the tool now shows it
+  - HowCalendar draws a "2027" row of dotted bricks from `average_by_month` (as-is) and the rest of 2026 as dotted typical bricks, coloured by level like the tool.
