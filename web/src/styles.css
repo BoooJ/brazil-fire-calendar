@@ -487,6 +487,8 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
 /* ---------- phone: every tap target at least 44px ---------- */
 @media (max-width: 899px) {
   .brand { min-height: 44px; }
+  /* the globe sits under the top bar here: the name gets the location pill's dark ground so it stays readable over light Brazil */
+  .topbar .brand { padding: 0 14px 0 12px; border-radius: var(--r-pill); background: rgba(20, 21, 30, 0.75); backdrop-filter: blur(8px); border: 1px solid var(--line); }
   .seg button, .btn-ghost, .btn-small { min-height: 44px; }
   .stage-switch button { min-height: 44px; min-width: 52px; }
   .textlink { min-height: 44px; padding: 0 4px; }

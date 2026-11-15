@@ -182,3 +182,5 @@ Global rules for this block:
   - Button shows "✓ Copied"; a status line announces it (hidden visually) or says "Could not copy here: select the text above instead" when the clipboard fails.
 - [x] Phone/tablet globe: the bottom fade made a visible grey band across Brazil (same issue as the desktop edge)
   - Bottom fade eased over seven stops (45% → 100%); no edge over the light Brazil fill at 820 and 375.
+- [x] Phone/tablet tool: the white "Brazil Fire Calendar" name sat directly on light Brazil (hard to read)
+  - Under 900px the name gets the location pill's dark translucent ground; both top-bar items now match.
