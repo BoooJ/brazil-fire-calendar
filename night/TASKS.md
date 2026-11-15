@@ -1,5 +1,54 @@
 # Night tasks (UI/UX, web/)
 
+## PRIORITY — from Mike (UI/UX owner). Do these first, in this order.
+
+Global rules for this block:
+- **No gradients anywhere** (backgrounds, text, buttons, borders, charts chrome). Flat, calm pastel/neutral colours only. Data colour scales stay as `web/CLAUDE.md` requires (they are scales, not decoration). Kit files can't be edited: override in `src/landing/landing.css`.
+- Visual references (WebFetch them, study, adapt to our palette — never copy brand assets, logos or text):
+  - Light theme, spacing, type, colour: https://www.a1.gallery/website/poolside
+  - Apple restraint (colour, spacing, minimalism; NOT the iPhone motion): https://styles.refero.design/style/a73148b9-449b-42cd-9f38-86ef694f500e
+  - Start/CTA button interaction: https://www.details.so/inspo/antimetal-6c671b
+  - Interactive data feel: https://www.scrolltide.co/#c-helio
+  - Image + text cards ("folder" cards): https://www.scrolltide.co/components#c-card-folder
+- Honesty rules still apply: only FIRMS data, display API values (never compute them in the browser), history is "not a forecast", the only forecast is `/api/forecast` with its label. Anything that needs new API data → write the exact request in `night/QUESTIONS.md` under "For Paul (infra/)" and build the UI so it can use it later.
+
+### Landing page (#/)
+
+- [ ] **Rewrite the landing copy.** Current lines read robotic ("The fire record should not jump because of it.", "More fire, not more satellites", "read one clear message"). Rewrite every headline and paragraph so each section answers what the challenge asks: one harmonized MODIS + VIIRS record → a burning calendar for an area of interest, so early-warning services, scientists and land managers see historical patterns, unusual conditions and critical periods (wildfires and agricultural burning). Tone: plain, confident, human, short; benefit first, method second. Keep every fact true (S-NPP end date, NOAA-20 as the reference scale, fire-days on a 1 km grid, provisional months). Example of the direction, not final copy: "Satellites change. Your fire history doesn't." Keep the demo label "Demo data"; avoid the kit's red-flagged words.
+- [ ] **Redesign the satellite comparison block** next to that copy (colours, layout, legibility): flat colours from our palette, clear labels, no gradients, readable at a glance. Same for the other small "signs"/badges on the landing page.
+- [ ] **"How it works" images must match the real product.** Replace/redraw the step visuals so they show the tool as it really looks now (location step, the answer, the calendar). No invented UI. Use the image + text card pattern from the scrolltide folder-card reference.
+- [ ] **Source code button:** label "Source code" with a small GitHub mark icon (inline SVG, monochrome, sized to the text).
+- [ ] **Smooth scroll** for the top nav (The idea, How it works, Method, Questions, Team): gentle scroll instead of a jump; respect `prefers-reduced-motion`; keep the hash in the URL working.
+- [ ] **Start/CTA button**: interactive hover/press behaviour adapted from the antimetal reference, in our palette.
+
+### The tool (#/app) — first screen
+
+- [ ] **Rework what the first screen says.** Users don't understand "separate fires", "fire-days so far", "1 of 24 rank among Novembers". New hierarchy:
+  1. **One big status line: is this unusual for my area right now?** Built from API values only (`briefing`, `vs_avg_pct`, `rank`, `of_years`), e.g. "Fire activity here is 25% above a typical November" or "One of the most active Novembers in 24 years". Calm colour + ▲/▼, no alarmism, and it is history, not a forecast (if showing the `/api/forecast` chance, it carries its label).
+  2. **Short practical context** under it: is this the usual fire season here, when does the season usually peak/end (from the API's monthly averages shown as-is), how intense this month is compared with the typical one. One friendly general note is allowed, e.g. "Smoke from fires can lower air quality nearby", but **no air-quality numbers** (we don't have that data).
+  3. Then the calendar.
+  Remove or hide jargon ("fire-days", "separate fires", raw rank wording) from the first screen; move technical terms to the Detailed view with a one-line explanation. If a value we'd want isn't in the API (e.g. "how many of the last 20 Novembers were above average", "typical fire duration"), don't compute it: add it to QUESTIONS.md for Paul.
+- [ ] **Rename "How reliable is this?" → "Brazil Fire Calendar can make mistakes"** (both places: `components/Panels.tsx`, `pages/Tool.tsx`). Keep the content and the one-click access.
+
+### The calendar — redesign (GitHub-contributions style)
+
+- [ ] **New calendar look.** Goal: appealing, intuitive, readable (think Flo / the GitHub contribution graph). Years as rows labelled on the left (2026, 2025, …); each period is a small **rounded square brick**, not a circle. Colour alone shows intensity (keep the colour-blind-safe scale + a compact legend with values). Remove the word "fire-days" from the calendar UI.
+- [ ] **Interaction:** hover = lively, responsive highlight + small tooltip; click = a small popover card anchored to the brick with the real data for that period (did fire happen, how it compares with typical, provisional/partial status, link to open it on the map). Keyboard accessible.
+- [ ] **Show only the last 2–3 years by default** with "Show more years" / "Show less" toggles.
+- [ ] **Add one year forward** (rest of 2026 + 2027) as "typical" bricks (dotted/outlined) using the API's typical/average values, clearly labelled with `next_months_label` ("not a forecast").
+- [ ] **Weekly bricks:** the API currently gives **monthly** values only (`docs/api-contract.md`), and we must not compute weeks from hotspots in the browser. Build the brick component so it works with months now and can switch to weeks (52/53 per year row) when the API provides weekly values. Write the exact weekly endpoint/field request for Paul in QUESTIONS.md.
+
+### Polish
+
+- [ ] **Light theme in the spirit of the poolside + Apple references**: generous spacing, a strict type scale, hand-picked flat colours, consistent radii. Go through every part of the UI (controls, panels, popovers, legends, empty/error states), not only the hero. Update tokens in `src/styles.css` rather than one-off values.
+- [ ] **Interactive data feel** (scrolltide helio reference): subtle, fast transitions when switching area/date/view and when numbers change; respect `prefers-reduced-motion`.
+
+## Blocked — needs a team decision (do NOT do these at night)
+
+- State selector for all 27 Brazilian states + real state borders instead of rectangles. Root `CLAUDE.md` rule 1 forbids outside border data (no IBGE), presets are plain boxes, and `web/CLAUDE.md` says outlines are display-only, never for selecting data. Needs Paul + team to decide.
+
+## Earlier list
+
 - [x] Tool (#/app) at 375px width: no horizontal scroll anywhere; controls, sheet and globe stack cleanly; tap targets ≥ 44px
   - Checked 375px (no overflow); phone media query makes seg/ghost/textlink/map buttons and brand link ≥ 44px.
 - [x] Tool at 820px and 1366px: check spacing, alignment and that nothing overlaps the globe/map stage
