@@ -1,6 +1,8 @@
-# API contract — v0.2
+# API contract — v0.3
 
 This file is the agreement between **`infra/`** (the API) and **`web/`** (the website).
+
+**v0.3 (15 Nov):** two satellites only, one per instrument, so no fire is counted or drawn twice: **MODIS Terra** and **VIIRS NOAA-20**. `detected` objects, `/api/status` `coverage`, hotspot points and both CSV exports only use the keys `modis_terra` and `viirs_noaa20` (MODIS Aqua and VIIRS S-NPP are gone). `count` = NOAA-20 fire-days from 2018-04, MODIS Terra fire-days × a monthly factor before (harmonization v1). Same fields and types otherwise.
 
 **v0.2 (14 Nov):** adds `POST /api/forecast` (next-week fire chance, endpoint 8), `forecast_available` in `/api/status`, and the error `FORECAST_UNAVAILABLE`. Nothing else changed.
 
@@ -20,7 +22,7 @@ This file is the agreement between **`infra/`** (the API) and **`web/`** (the we
 | Calendar range | 2003-01 → today. A request outside this range is clipped, not rejected |
 | Main unit (`count`) | **Corrected fire-days (NOAA-20 equivalent)**: number of distinct (≈1 km grid cell, day) pairs with at least one valid hotspot, harmonized across satellites |
 | Raw unit (`detected`) | **Hotspots detected**: raw FIRMS detections per satellite, after cleaning (vegetation fires only, low confidence removed) |
-| Satellite keys | `modis_terra`, `modis_aqua`, `viirs_snpp`, `viirs_noaa20` (`viirs_noaa21` reserved for later) |
+| Satellite keys | `modis_terra`, `viirs_noaa20` (v0.3: one satellite per instrument, so a fire is never seen twice) |
 | Missing values | `null` (e.g. a satellite that did not exist yet), never `0` |
 | Mocks only | Every mock file has a `"_mock"` field. The real API never sends it |
 
@@ -62,10 +64,11 @@ When the data was last updated, and what each satellite covers.
 ```json
 {
   "data_updated": "2026-11-14T15:20:00Z",
-  "contract_version": "0.2",
+  "contract_version": "0.3",
   "calendar_from": "2003-01",
   "final_until": "2026-05-31",
-  "coverage": [ { "satellite": "viirs_snpp", "from": "2012-01-20", "to": "2026-11-02" } ],
+  "coverage": [ { "satellite": "modis_terra", "from": "2000-11-01", "to": null },
+                { "satellite": "viirs_noaa20", "from": "2018-04-01", "to": null } ],
   "forecast_available": true
 }
 ```
@@ -103,7 +106,7 @@ Body: common request body. Response:
   "count": 4812,
   "vs_avg_pct": 320.4,
   "rank": 1, "of_years": 23,
-  "detected": { "modis_terra": 1650, "modis_aqua": 1590, "viirs_snpp": 15400, "viirs_noaa20": 14420 },
+  "detected": { "modis_terra": 1650, "viirs_noaa20": 14420 },
   "provisional": false,
   "uncertain": false,
   "partial": false,
@@ -175,7 +178,7 @@ Mock: [`hotspots.pantanal.2020-09.csv`](../web/mocks/hotspots.pantanal.2020-09.c
 
 Body: common request body. Returns `text/csv` with these columns:
 
-`year, month, count, vs_avg_pct, rank, of_years, provisional, uncertain, partial, detected_modis_terra, detected_modis_aqua, detected_viirs_snpp, detected_viirs_noaa20`
+`year, month, count, vs_avg_pct, rank, of_years, provisional, uncertain, partial, detected_modis_terra, detected_viirs_noaa20`
 
 Mock: [`calendar.pantanal.csv`](../web/mocks/calendar.pantanal.csv)
 

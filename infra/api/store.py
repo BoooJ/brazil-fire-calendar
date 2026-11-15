@@ -11,9 +11,10 @@ import numpy as np
 import pandas as pd
 import shapely
 
-from analysis import Harmonizer
+from analysis import SATELLITES, Harmonizer
 
 CELL_DEG = 0.01
+SATELLITES_SQL = "(" + ", ".join(f"'{s}'" for s in SATELLITES) + ")"  # only these are loaded and served
 EXPORT_COLUMNS = ["latitude", "longitude", "acq_date", "acq_time", "satellite", "instrument",
                   "confidence", "confidence_raw", "frp", "daynight", "data_version"]
 
@@ -23,7 +24,7 @@ class Store:
         fd = (root / "derived" / "fire_days" / "**" / "*.parquet").as_posix()
         hs = (root / "clean" / "hotspots" / "**" / "*.parquet").as_posix()
         st = (root / "derived" / "static_cells.parquet").as_posix()
-        harm_file = root / "derived" / "harmonization_v0.json"
+        harm_file = root / "derived" / "harmonization_v1.json"  # MODIS Terra + VIIRS NOAA-20 (pipeline step 5)
         for needed in (root / "derived" / "fire_days", harm_file):
             if not needed.exists():
                 raise SystemExit(f"Missing {needed}. Run the pipeline (steps 1-5) first.")
@@ -39,6 +40,7 @@ class Store:
             SELECT cy, cx, acq_date, satellite, CAST(year AS INTEGER) AS year, CAST(month AS INTEGER) AS month,
                    n_hotspots, provisional
             FROM read_parquet('{fd}', hive_partitioning = true)
+            WHERE satellite IN {SATELLITES_SQL}
             ORDER BY cy, cx, acq_date  -- sorted by place: an area query only reads its slice of the map
         """)
         self.con.execute(f"CREATE OR REPLACE TABLE static_cells AS SELECT * FROM read_parquet('{st}')")
@@ -48,7 +50,8 @@ class Store:
             LEFT JOIN static_cells s
               ON s.cy = CAST(floor(h.latitude / {CELL_DEG}) AS INTEGER)
              AND s.cx = CAST(floor(h.longitude / {CELL_DEG}) AS INTEGER)
-            WHERE h.valid AND NOT (h.data_version = 'provisional' AND s.cy IS NOT NULL)
+            WHERE h.valid AND h.satellite IN {SATELLITES_SQL}
+              AND NOT (h.data_version = 'provisional' AND s.cy IS NOT NULL)
         """)
 
         cells = self.con.execute("SELECT DISTINCT cy, cx FROM fire_days").df()
