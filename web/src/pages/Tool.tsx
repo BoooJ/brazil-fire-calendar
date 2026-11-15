@@ -330,6 +330,7 @@ export default function Tool() {
                   <div className="sheet">
                     {detailed && <KeyCards data={data} />}
                     <Upcoming data={data} />
+                    <div className="view-swap" key={detailed ? 'detailed' : 'quick'}>
                     {data.calendar.every((c) => !c.count) ? (
                       <section className="empty-state">
                         <span className="empty-art" aria-hidden="true"><i /><i /><i /><i /><i /><i /></span>
@@ -344,6 +345,7 @@ export default function Tool() {
                     ) : (
                       <FireCalendar data={data} selected={selected} onSelect={select} mode={mode} onMode={setMode} onCsv={calendarCsv} />
                     )}
+                    </div>
                     <Briefing data={data} short={!detailed} />
                     {detailed && <Reliability data={data} status={status} />}
                     <footer className="sheet-foot">
