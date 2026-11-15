@@ -471,6 +471,7 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
 .modal { position: relative; width: 100%; max-width: 640px; max-height: 90vh; overflow: auto; padding: 24px 18px 22px; border-radius: var(--r-2xl) var(--r-2xl) 0 0; background: var(--surface-2); color: var(--ink); line-height: 1.55; animation: rise 0.22s ease-out; }
 .modal h2 { font-size: var(--t-2xl); line-height: 1.15; letter-spacing: -0.02em; margin: 6px 44px 12px 0; }
 .modal p { font-size: var(--t-md); }
+.modal p.fineprint { font-size: var(--t-sm); margin-top: var(--s-4); } /* the credit line is fine print here too, like the bullets above it */
 .modal .points { font-size: var(--t-base); color: #c9ccd8; }
 .modal .points strong { color: var(--ink); }
 .table-scroll { overflow-x: auto; margin: 14px 0; }

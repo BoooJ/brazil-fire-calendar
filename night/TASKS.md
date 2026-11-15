@@ -231,3 +231,5 @@ Global rules for this block:
   - Table gets a first "Average" row (the API's monthly means as-is, "Average count" in vs Average mode, history not a forecast) and a "Total" column (`yearly`, * year not complete). With a mouse and ≥600px the columns are fixed-width (no 44px touch minimum), so the whole year fits; phones keep 44px cells, sideways scroll and the sticky Year.
 - [x] Location step on phones: after "Use my location" nothing visible happened — the error, the outside-Brazil note and the enabled button all appeared far below the fold; focus fell to the page while it waited
   - The location error now sits right under its button. On success the page scrolls (smoothly, instant with reduced motion) to "Show my fire calendar" and focuses it, or shows the outside-Brazil note above it. The button is aria-disabled while waiting, so focus stays on it.
+- [x] Data sources dialog: the closing credit line ("Built for the NASA Space Apps Challenge…") was 18px, bigger than the bullets above it, because `.modal p` beat `.fineprint`
+  - `.modal p.fineprint` is 13px fine print with 16px above it.
