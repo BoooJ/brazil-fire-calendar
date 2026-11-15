@@ -312,3 +312,5 @@ Global rules for this block:
   - Under 361px the five count steps sit in a 3-column grid (3 + 2, aligned). vs Average legend and 375+ unchanged.
 - [x] Data sources dialog on phones: S-NPP's end read "To 2 Nov 2026" while the satellite cards now say "ended 2 Nov 2026"
   - The phone row label is "Ended" (desktop table header stays "To").
+- [x] Detailed charts: the month in progress (Nov 2026, 14 days) and the unfinished year (2026) were drawn like full values, so they read as a sudden drop
+  - Typical year and Year by year: finished points are solid yellow, the month/year not finished is a hollow ring; each chart's subtitle says "A hollow point: month (year) not finished". Values unchanged (the API's). Checked 1440.

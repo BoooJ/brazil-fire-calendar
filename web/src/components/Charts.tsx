@@ -49,8 +49,10 @@ export const TypicalYearChart = forwardRef<EChartHandle, { average: MonthAverage
           },
           { name: 'Median', type: 'line', data: byMonth.map((a) => a?.median ?? null), symbol: 'none', lineStyle: { color: '#b4a4d8', width: 2, type: 'dashed' }, itemStyle: { color: '#b4a4d8' } },
           {
-            name: String(refYear), type: 'line', data: refCells.map((c) => c?.count ?? null), connectNulls: false,
-            lineStyle: { color: '#f9cb35', width: 3 }, itemStyle: { color: '#f9cb35' }, symbolSize: 7,
+            name: String(refYear), type: 'line', connectNulls: false,
+            // a month in progress (fewer days) is a hollow point, so its lower value does not read as a drop
+            data: refCells.map((c) => (c?.partial ? { value: c.count, itemStyle: { color: CHART_BG, borderColor: '#f9cb35', borderWidth: 2 } } : (c?.count ?? null))),
+            lineStyle: { color: '#f9cb35', width: 3 }, itemStyle: { color: '#f9cb35' }, symbol: 'circle', symbolSize: 7,
           },
         ],
       };
@@ -83,8 +85,10 @@ export const YearlyChart = forwardRef<EChartHandle, { yearly: YearItem[]; unitMa
         itemStyle: { color: SAT_COLOR[s], opacity: 0.85 }, barWidth: '62%',
       })),
       {
-        name: 'Corrected (harmonized)', type: 'line' as const, yAxisIndex: 1, data: yearly.map((r) => r.count),
-        lineStyle: { color: '#f9cb35', width: 3 }, itemStyle: { color: '#f9cb35', borderColor: CHART_BG, borderWidth: 2 }, symbolSize: 7, z: 5,
+        name: 'Corrected (harmonized)', type: 'line' as const, yAxisIndex: 1,
+        // a year not finished is a hollow point (yellow ring), so its lower total does not read as a drop
+        data: yearly.map((r) => (r.complete ? r.count : { value: r.count, itemStyle: { color: CHART_BG, borderColor: '#f9cb35', borderWidth: 2 } })),
+        lineStyle: { color: '#f9cb35', width: 3 }, itemStyle: { color: '#f9cb35', borderColor: CHART_BG, borderWidth: 2 }, symbol: 'circle', symbolSize: 7, z: 5,
       },
     ],
   }), [yearly, unitMain, compact]);

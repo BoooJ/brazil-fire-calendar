@@ -93,7 +93,7 @@ export default function Detailed({ data, mode, onMode, selected, onSelect, slug,
         <div className="cal-head">
           <div>
             <h2 id="typ-title">Typical year</h2>
-            <p className="muted">The usual monthly range ({period}) against {data.cards.ref_year}.</p>
+            <p className="muted">The usual monthly range ({period}) against {data.cards.ref_year}. A hollow point: month not finished.</p>
           </div>
           <button className="btn btn-ghost" onClick={() => savePng(typRef.current, `typical-year-${slug}.png`)} aria-label="Download the typical year chart as a PNG image">PNG</button>
         </div>
@@ -106,7 +106,7 @@ export default function Detailed({ data, mode, onMode, selected, onSelect, slug,
         <div className="cal-head">
           <div>
             <h2 id="yr-title">Year by year: raw against corrected</h2>
-            <p className="muted">The bars jump when VIIRS arrives (2012, 2018). The corrected line does not.</p>
+            <p className="muted">The bars jump when VIIRS arrives (2012, 2018). The corrected line does not. A hollow point: year not finished.</p>
           </div>
           <button className="btn btn-ghost" onClick={() => savePng(yrRef.current, `year-by-year-${slug}.png`)} aria-label="Download the year-by-year chart as a PNG image">PNG</button>
         </div>
