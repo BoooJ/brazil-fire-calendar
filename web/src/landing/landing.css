@@ -126,7 +126,7 @@ body { margin: 0; background: var(--canvas); color: var(--ink); }
 .l-demo { font: 500 11px/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: #b64400; white-space: nowrap; }
 
 /* ---------- hero ---------- */
-/* the first screen: a full-height film behind the promise (flat dark scrim, no gradient) */
+/* the first screen: a full-height film behind the promise (flat dark scrim) */
 .l-hero { position: relative; isolation: isolate; display: grid; align-items: center; min-height: max(560px, calc(100svh - var(--nav-h))); padding: 72px 0; text-align: center; color: #fff; background: #1a1410; overflow: hidden; }
 .l-hero__media { position: absolute; inset: 0; z-index: -1; }
 .l-hero__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
