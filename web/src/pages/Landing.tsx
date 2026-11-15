@@ -194,13 +194,11 @@ export default function Landing() {
         {/* 5. the call to action */}
         <section className="section" id="start" aria-labelledby="start-h">
           <div className="wrap">
-            <div className="bfc-cta fill" data-fx="grain-gradient" data-fx-seed="5"
-              data-fx-palette='{"bg":"#ff6a1f","surface":"#ffb347","ink":"#1c0700","muted":"#4a1a00","accent":"#c81d25"}'
-              data-fx-params='{"calmX":0.5,"calmY":0.5,"calm":0.7,"tint":0.7}'>
+            <div className="bfc-cta fill">
               <div className="bfc-cta__in">
                 <h2 id="start-h">When does your area usually burn?</h2>
                 <p>One tap to find out. No account, and your location stays in your browser.</p>
-                <a className="btn btn--primary" href={TOOL}>Open the fire calendar<Arrow /></a>
+                <a className="btn btn--primary bfc-go" href={TOOL}>Open the fire calendar<Arrow /></a>
               </div>
             </div>
           </div>

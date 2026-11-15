@@ -24,7 +24,8 @@ Global rules for this block:
   - Method button and footer link now read "Source code" with an inline monochrome GitHub mark (1.05em, currentColor).
 - [x] **Smooth scroll** for the top nav (The idea, How it works, Method, Questions, Team): gentle scroll instead of a jump; respect `prefers-reduced-motion`; keep the hash in the URL working.
   - `html:root { scroll-behavior: smooth }` under prefers-reduced-motion: no-preference (beats the kit's `auto`); a deep link (#method) on load still jumps instantly. Hash stays in the URL.
-- [ ] **Start/CTA button**: interactive hover/press behaviour adapted from the antimetal reference, in our palette.
+- [x] **Start/CTA button**: interactive hover/press behaviour adapted from the antimetal reference, in our palette.
+  - Every primary button: hairline top highlight, 1px lift + soft halo ring in its own colour on hover, firm 0.97 press; arrow slides on the CTA. CTA card is now flat pastel peach with a dark button (grain/gradient ground removed). Reduced motion: no movement.
 
 ### The tool (#/app) — first screen
 
