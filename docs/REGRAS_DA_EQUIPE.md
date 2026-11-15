@@ -12,7 +12,7 @@ Construir um site que transforma mais de 20 anos de focos de calor da NASA no Br
 
 1. As **17 funcionalidades do MVP** no [README](../README.md#mvp-features) são o trabalho. Nada além disso até todas funcionarem.
 2. **Extras** só depois que o checkpoint de domingo às 12h for cumprido.
-3. **Congelamento de funcionalidades: domingo às 15h.** Depois disso: só correções, acabamento, vídeo e envio.
+3. **Sem congelamento de funcionalidades** (decisão da equipe, domingo 15/11): dá para entrar coisa nova até o envio, desde que o `main` continue funcionando.
 4. **Não vamos fazer:** previsões (uma exceção: o modelo da próxima semana da equipe de ciência, `/api/forecast`, sempre marcado como "estimativa do modelo, experimental"), dados que não sejam da NASA, outros países (exceto como extra no final).
 5. Se duas regras entrarem em conflito, **o prazo vence**: entreguem o MVP.
 
@@ -77,7 +77,6 @@ Comandos passo a passo (em inglês): [GIT_GUIDE.md](GIT_GUIDE.md).
 | **Sábado 21h** | **Checkpoint 1:** primeiro calendário bruto do Pantanal com **dados reais** no site |
 | **Sábado à noite** | Dormir |
 | **Domingo 12h** | **Checkpoint 2:** as 17 funcionalidades do MVP funcionando (mesmo que de forma simples), no ar |
-| **Domingo 15h** | **Congelamento de funcionalidades** |
 | **Domingo 19h** | Vídeo / slides prontos |
 | **Domingo 21h** | **Projeto enviado** |
 | **Domingo 23h** | Prazo final |

@@ -1,16 +1,21 @@
-"""Step 5 - harmonization v0: factors that turn every satellite into "NOAA-20 equivalent" fire-days.
+"""Step 5 - harmonization v1: factors that turn MODIS Terra into "NOAA-20 equivalent" fire-days.
 
-This is a FIRST, deliberately simple version so the app can run end to end. The scientist owns the
-real method (science/README.md: per 1 deg block, more checks). v0 uses Brazil-wide factors:
+The team decided (15 Nov 2026) to build every number from two satellites only, one per instrument,
+so no fire is seen twice: VIIRS NOAA-20 (the reference) and MODIS Terra. v0 (in git history) used
+S-NPP for 2012-2018 and MODIS Aqua before 2012.
 
-  from 2018-04          NOAA-20 fire-days as they are (the reference, still flying)
-  2012-02 .. 2018-03    S-NPP fire-days  x  k_snpp            (same sensor; learned on 2018-05 .. 2026-07)
-  before 2012-02        MODIS Aqua fire-days x k_aqua[month]  (learned on 2012-02 .. 2019-12, stable orbits)
+  from 2018-04       NOAA-20 fire-days as they are (the reference, still flying)
+  before 2018-04     MODIS Terra fire-days x k_terra[month]   (learned on 2018-05 .. 2026-07, final data)
 
-Validation: fit k_aqua on 2012-2017 only, predict 2018-2019 from MODIS, compare with VIIRS.
+Validation: fit k_terra on 2020-01 .. 2026-07 only, predict the 2018-05 .. 2019-12 monthly Brazil
+totals from Terra, compare with NOAA-20 (same idea as v0's test).
+
+Known limit (for science/): Terra passes over Brazil around 10:30, before the afternoon fire peak,
+and its orbit has drifted earlier since 2020. It sees about 1/6 of NOAA-20's fire-days, against
+1/4 for Aqua (13:30, like NOAA-20), so v1 has larger errors than v0 before 2018.
 
 Input : DATA_DIR/derived/fire_days/**/*.parquet   (from step 4)
-Output: DATA_DIR/derived/harmonization_v0.json
+Output: DATA_DIR/derived/harmonization_v1.json     (read by the API)
 
 Usage:
     python infra/pipeline/05_harmonize.py
@@ -28,9 +33,9 @@ import duckdb
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _common import data_dir  # noqa: E402
 
-SNPP_FIT = ((2018, 5), (2026, 7))       # both VIIRS satellites in final data
-AQUA_FIT = ((2012, 2), (2019, 12))      # S-NPP full months, Aqua still on its stable orbit
-AQUA_FIT_TRAIN_END = (2017, 12)         # for the hold-out test on 2018-2019
+FIT = ((2018, 5), (2026, 7))       # NOAA-20 and Terra both in final data
+TRAIN = ((2020, 1), (2026, 7))     # for the hold-out test
+TEST = ((2018, 5), (2019, 12))
 
 
 def in_range(ym: tuple[int, int], lo: tuple[int, int], hi: tuple[int, int]) -> bool:
@@ -44,60 +49,56 @@ def main() -> None:
     rows = con.execute(f"""
         SELECT satellite, year, month, count(*) AS fire_days
         FROM read_parquet('{fd_glob}', hive_partitioning = true)
+        WHERE satellite IN ('modis_terra', 'viirs_noaa20')
         GROUP BY ALL
     """).fetchall()
     monthly: dict[str, dict[tuple[int, int], int]] = {}
     for sat, year, month, n in rows:
-        monthly.setdefault(sat, {})[(year, month)] = n
-    snpp, n20, aqua = monthly["viirs_snpp"], monthly["viirs_noaa20"], monthly["modis_aqua"]
+        monthly.setdefault(sat, {})[(int(year), int(month))] = n
+    terra, n20 = monthly["modis_terra"], monthly["viirs_noaa20"]
 
-    # S-NPP -> NOAA-20 (one number: same sensor, ~50 min apart)
-    both = [ym for ym in snpp if ym in n20 and in_range(ym, *SNPP_FIT)]
-    k_snpp = sum(n20[ym] for ym in both) / sum(snpp[ym] for ym in both)
-
-    def viirs_eq(ym: tuple[int, int]) -> float:
-        return snpp[ym] * k_snpp
-
-    def fit_aqua(hi: tuple[int, int]) -> dict[int, float]:
+    def fit(lo: tuple[int, int], hi: tuple[int, int]) -> dict[int, float]:
         factors = {}
         for m in range(1, 13):
-            months = [ym for ym in aqua if ym[1] == m and ym in snpp and in_range(ym, AQUA_FIT[0], hi)]
-            factors[m] = sum(viirs_eq(ym) for ym in months) / sum(aqua[ym] for ym in months)
+            months = [ym for ym in terra if ym[1] == m and ym in n20 and in_range(ym, lo, hi)]
+            factors[m] = sum(n20[ym] for ym in months) / sum(terra[ym] for ym in months)
         return factors
 
-    # Hold-out test: learn on 2012-2017, predict 2018-2019 from MODIS Aqua alone.
-    train = fit_aqua(AQUA_FIT_TRAIN_END)
+    train = fit(*TRAIN)
     errors = []
-    for ym in sorted(ym for ym in aqua if ym in snpp and in_range(ym, (2018, 1), (2019, 12))):
-        actual = viirs_eq(ym)
+    for ym in sorted(ym for ym in terra if ym in n20 and in_range(ym, *TEST)):
+        actual = n20[ym]
         if actual >= 100:  # skip near-empty months, where % errors mean nothing
-            errors.append(abs(aqua[ym] * train[ym[1]] / actual - 1) * 100)
-    k_aqua = fit_aqua(AQUA_FIT[1])
+            errors.append(abs(terra[ym] * train[ym[1]] / actual - 1) * 100)
+    k_terra = fit(*FIT)
+    median_err = round(statistics.median(errors), 1)
 
     result = {
-        "version": "v0",
+        "version": "v1",
         "created": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "unit": "NOAA-20 equivalent fire-days (0.01 deg cell x UTC day)",
+        "satellites": ["modis_terra", "viirs_noaa20"],
         "rules": [
             {"from": "2018-04", "source": "viirs_noaa20", "factor": 1.0},
-            {"from": "2012-02", "to": "2018-03", "source": "viirs_snpp", "factor": round(k_snpp, 4)},
-            {"to": "2012-01", "source": "modis_aqua", "factor_by_month": {str(m): round(f, 4) for m, f in k_aqua.items()}},
+            {"to": "2018-03", "source": "modis_terra", "factor_by_month": {str(m): round(f, 4) for m, f in k_terra.items()}},
         ],
         "validation": {
-            "method": "fit MODIS Aqua factors on 2012-02..2017-12, predict 2018-2019 monthly Brazil totals, compare with VIIRS",
+            "method": "fit MODIS Terra factors on 2020-01..2026-07, predict 2018-05..2019-12 monthly Brazil totals, compare with NOAA-20",
             "months_tested": len(errors),
-            "median_abs_error_pct": round(statistics.median(errors), 1) if errors else None,
+            "median_abs_error_pct": median_err,
             "p90_abs_error_pct": round(statistics.quantiles(errors, n=10)[-1], 1) if len(errors) >= 2 else None,
             "validated_years": [2018, 2019],
             "scope": "Brazil-wide totals; small areas will have larger errors",
         },
-        "note": "v0 placeholder. Brazil-wide factors. Replace with the science/ method (per-block factors).",
+        "reliability_note": "v1 harmonization: MODIS Terra converted to NOAA-20 with Brazil-wide monthly factors, "
+                            "tested on Brazil totals for 2018-2019. Small areas have larger errors.",
+        "note": "Two satellites only (MODIS Terra + VIIRS NOAA-20), team decision of 15 Nov 2026. "
+                "Brazil-wide factors; to be reviewed by science/.",
     }
-    out = root / "derived" / "harmonization_v0.json"
+    out = root / "derived" / "harmonization_v1.json"
     out.write_text(json.dumps(result, indent=2), encoding="utf-8")
 
-    print(f"S-NPP -> NOAA-20 factor: {k_snpp:.3f}")
-    print("MODIS Aqua -> NOAA-20 factor by month: " + ", ".join(f"{m}:{f:.2f}" for m, f in k_aqua.items()))
+    print("MODIS Terra -> NOAA-20 factor by month: " + ", ".join(f"{m}:{f:.2f}" for m, f in k_terra.items()))
     v = result["validation"]
     print(f"Hold-out 2018-2019 ({v['months_tested']} months): median error {v['median_abs_error_pct']}%, "
           f"90% of months under {v['p90_abs_error_pct']}%")
