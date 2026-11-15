@@ -25,9 +25,9 @@ Caddy serves `/var/www/brazil-fire-site` as static files (block `fire.37-187-37-
 | API container | VPS `vps-c33c493b.vps.ovh.net` (Ubuntu 24.04), Docker container `brazil-fire-api`, listening on `127.0.0.1:8077` only |
 | Data inside the VPS | `/opt/brazil-fire/data` (downloaded from the dataset at first start, then reused) |
 | HTTPS | The VPS's Caddy: block `fire-api.37-187-37-74.sslip.io { reverse_proxy 127.0.0.1:8077 }` at the end of `/etc/caddy/Caddyfile` (backup: `Caddyfile.before-fire-api-*`) |
-| Low-memory mode | `API_DB_PATH` (tables in a DuckDB file), `API_MEMORY_LIMIT=600MB`, `API_THREADS=2`, container capped at 1.2 GB. Uses ~330 MB |
+| Low-memory mode | `API_DB_PATH` (tables in a DuckDB file), `API_MEMORY_LIMIT=600MB`, `API_THREADS=2`, container capped at 1.2 GB. Uses ~330 MB without the forecast model |
 
-The Docker image is built from `hf_space/` (Dockerfile, `fetch_data.py`, requirements) plus `infra/api/` and `infra/pipeline/_common.py`.
+The Docker image is built from `hf_space/` (Dockerfile, `fetch_data.py`, requirements) plus `infra/api/`, `infra/pipeline/_common.py` and the forecast model (`science/forecast/previsao_fogo.py` + `artefatos/`, copied to `forecast/`).
 Hugging Face Docker Spaces need a paid PRO plan, so the Space part of `deploy_hf.py --app` is not used.
 
 ## Update the API code on the VPS
@@ -35,7 +35,7 @@ Hugging Face Docker Spaces need a paid PRO plan, so the Space part of `deploy_hf
 From the repo root on a computer whose SSH key is authorized on the VPS:
 
 ```bash
-S=$(mktemp -d) && mkdir -p "$S/pipeline" && cp -r infra/deploy/hf_space/. "$S/" && cp -r infra/api "$S/api" && rm -rf "$S/api/__pycache__" && cp infra/pipeline/_common.py "$S/pipeline/"
+S=$(mktemp -d) && mkdir -p "$S/pipeline" "$S/forecast" && cp -r infra/deploy/hf_space/. "$S/" && cp -r infra/api "$S/api" && rm -rf "$S/api/__pycache__" && cp infra/pipeline/_common.py "$S/pipeline/" && cp -r science/forecast/previsao_fogo.py science/forecast/artefatos "$S/forecast/"
 ssh ubuntu@vps-c33c493b.vps.ovh.net 'rm -rf ~/brazil-fire-api && mkdir -p ~/brazil-fire-api'
 scp -r "$S/." ubuntu@vps-c33c493b.vps.ovh.net:brazil-fire-api/
 ssh ubuntu@vps-c33c493b.vps.ovh.net 'cd ~/brazil-fire-api && sudo docker build -q -t brazil-fire-api . && sudo docker rm -f brazil-fire-api && sudo docker run -d --name brazil-fire-api --restart unless-stopped -p 127.0.0.1:8077:7860 --memory 1200m -e HF_DATASET=BooJPo/brazil-fire-calendar-data -e API_DB_PATH=/home/user/data/api.duckdb -e API_MEMORY_LIMIT=600MB -e API_THREADS=2 -v /opt/brazil-fire/data:/home/user/data brazil-fire-api'

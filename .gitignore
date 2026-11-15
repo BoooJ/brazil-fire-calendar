@@ -12,6 +12,8 @@ data/*
 *.duckdb.wal
 # ...except the small fake files the website is built against
 !web/mocks/*.csv
+# ...and the forecast model's lookup tables (science/forecast/artefatos, ~18 MB)
+!science/forecast/artefatos/*.parquet
 
 # ---------- Secrets: never commit ----------
 .env

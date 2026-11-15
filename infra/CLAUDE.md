@@ -33,6 +33,7 @@ First real run (MODIS 2000–2013): 5.69 M rows in 14 s, ~6 % flagged invalid. P
 ## API (`api/`)
 
 - **Status:** implemented in `main.py` (endpoints, errors), `store.py` (DuckDB + shapely area selection), `analysis.py` (calendar, averages, ranks, cards, briefing), `presets.py`. `/api/update` returns `status: failed` until the daily update exists.
+- `forecast.py` serves the science team's next-week model (`science/forecast/previsao_fogo.py`, loaded once at startup in the warm-up thread; if it fails, only `/api/forecast` is off). It feeds the model the last 28 days of valid NOAA-20 hotspots **without** `type` (NRT rows have none), with `ref_date` = the last complete day. The model works on a circle: we use the circle around the area, then keep the 5 km cells whose centre is inside.
 - Areas are matched by **cell centre** (0.01°) inside the polygon. A partial reference month is compared with the **same days** of other years. `estimated_fires` = connected burning cells (8 neighbours, same or next day) for the reference month.
 - FastAPI + DuckDB reading the Parquet in `DATA_DIR`. Settings come from `.env`: `DATA_DIR`, `API_PORT`, `CORS_ORIGINS`, `FIRMS_MAP_KEY`.
 - Implement **exactly** the endpoints, fields and error format of `docs/api-contract.md`. Response shapes must match `web/mocks/` (minus `_mock`).

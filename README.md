@@ -27,6 +27,7 @@ A web app that turns 20+ years of NASA FIRMS active-fire hotspots over Brazil in
 | 15 | Accessible colours + works on phones |
 | 16 | Daily update from the FIRMS API ("last updated" time, provisional data marked) |
 | 17 | "What's normal for the coming months" card — based on history, **not a forecast** |
+| 18 | **Next-week fire chance** per 5 km cell: the science team's model (`/api/forecast`), labelled "model estimate, experimental". The only forecast in the app |
 
 **Extras (only after the MVP works):** day-by-day calendar, fire-season shift over the years, night fires and fire strength, chatbot answering from NASA data, Portuguese/English switch, a second country.
 

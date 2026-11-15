@@ -1,4 +1,4 @@
-"""Brazil Fire Calendar API - implements docs/api-contract.md (v0.1).
+"""Brazil Fire Calendar API - implements docs/api-contract.md (v0.2).
 
 Run from the repo root (loads ~25 M fire-days in memory, takes a few seconds):
     .venv/Scripts/python -m uvicorn main:app --app-dir infra/api --port 8000
@@ -14,7 +14,7 @@ import threading
 import time
 from collections import OrderedDict
 from contextlib import asynccontextmanager
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 import numpy as np
@@ -31,10 +31,11 @@ sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE.parent / "pipeline"))
 from _common import data_dir, load_env  # noqa: E402
 from analysis import FIRST_YEAR, SAT_PERIODS, SATELLITES, build_analysis, days_in_month  # noqa: E402
+from forecast import FIRST_REF, Forecaster, find_model_dir  # noqa: E402
 from presets import PRESETS, box  # noqa: E402
 from store import Store  # noqa: E402
 
-CONTRACT_VERSION = "0.1"
+CONTRACT_VERSION = "0.2"
 MAX_POINTS = 1000
 MIN_AREA_KM2 = 4.0    # the data is on a ~1.1 km grid: smaller areas may contain no grid cell at all
 CACHE_SIZE = 256      # analysis answers kept in memory (presets and recently viewed areas)
@@ -58,17 +59,41 @@ def _cache_put(key: str, value: dict) -> None:
             _cache.popitem(last=False)
 
 
-def _warm_cache() -> None:
-    """Compute the preset areas once at startup, so they answer instantly (even all of Brazil)."""
+def _load_forecast() -> None:
+    """Load the science team's next-week model. If it fails, every other endpoint keeps working."""
+    global FORECAST, FORECAST_STATE
     started = time.monotonic()
-    for preset in PRESETS:
-        try:
-            run_analysis(AreaRequest(area=preset["area"]))
-        except Exception as exc:  # warming must never break the API
-            print(f"cache warm-up failed for {preset['id']}: {exc}", flush=True)
+    folder = find_model_dir()
+    if folder is None:
+        FORECAST_STATE = "missing"
+        print("Forecast model not found (science/forecast): /api/forecast is off.", flush=True)
+        return
+    try:
+        FORECAST = Forecaster(folder)
+        FORECAST_STATE = "ready"
+        print(f"Forecast model loaded in {time.monotonic() - started:.0f} s", flush=True)
+    except Exception as exc:
+        FORECAST_STATE = "failed"
+        print(f"Forecast model failed to load: {type(exc).__name__}: {exc}", flush=True)
+
+
+def _warm_cache() -> None:
+    """Load the forecast model, then compute the preset areas once, so they answer instantly (even all of Brazil)."""
+    _load_forecast()
+    started = time.monotonic()
+    for run, body in ((run_analysis, AreaRequest), (run_forecast, ForecastRequest)):
+        for preset in PRESETS:
+            try:
+                run(body(area=preset["area"]))
+            except Exception as exc:  # warming must never break the API
+                print(f"cache warm-up failed for {preset['id']} ({run.__name__}): {exc}", flush=True)
     print(f"Presets pre-computed in {time.monotonic() - started:.0f} s", flush=True)
+
+
 BRAZIL = shape(box(-74.0, -33.8, -34.8, 5.3))
 STORE: Store | None = None
+FORECAST: Forecaster | None = None
+FORECAST_STATE = "loading"  # loading -> ready | missing | failed
 
 
 class ApiError(Exception):
@@ -124,6 +149,12 @@ class HotspotsRequest(BaseModel):
     year: int
     month: int
     limit: int = 5000
+
+
+class ForecastRequest(BaseModel):
+    area: dict
+    ref_date: date | None = None
+    limit: int = 2000
 
 
 def parse_area(area: dict):
@@ -209,6 +240,35 @@ def _compute_analysis(geom, start: date, end: date, ref: date) -> dict:
                           data_updated=STORE.data_updated, reliability=reliability, warning=warning)
 
 
+def run_forecast(req: ForecastRequest) -> dict:
+    if FORECAST is None:
+        message = ("The forecast model is still loading, try again in a few seconds." if FORECAST_STATE == "loading"
+                   else "The forecast model is not available on this server.")
+        raise ApiError("FORECAST_UNAVAILABLE", message, 503)
+    geom = parse_area(req.area)
+    latest = STORE.last_day - timedelta(days=1)  # the last day of data is still incomplete
+    ref = min(req.ref_date or latest, latest)
+    if ref < FIRST_REF:
+        raise ApiError("INVALID_DATES", f"ref_date must be {FIRST_REF.isoformat()} or later (NOAA-20 data).")
+    limit = max(1, min(req.limit, 20_000))
+    key = json.dumps({"forecast": req.area, "ref": ref.isoformat(), "limit": limit,
+                      "data": STORE.data_updated}, sort_keys=True)
+    cached = _cache_get(key)
+    if cached is not None:
+        return cached
+    cur = STORE.con.cursor()
+    try:
+        result = FORECAST.run(STORE, cur, geom, ref, limit)
+    finally:
+        cur.close()
+    if not geom.intersects(BRAZIL):
+        result["notes"].insert(0, "This area is outside the region we cover (Brazil).")
+    result = {"query": {"ref_date": ref.isoformat(), "area_km2": round(area_km2(geom), 1)},
+              "data_updated": STORE.data_updated, **{k: v for k, v in result.items() if k != "ref_date"}}
+    _cache_put(key, result)
+    return result
+
+
 def _csv(df, filename: str, truncated: bool = False) -> Response:
     headers = {"Content-Disposition": f'attachment; filename="{filename}"'}
     if truncated:
@@ -232,12 +292,18 @@ def status():
         "final_until": final.isoformat() if final else None,
         "coverage": [{"satellite": s, "from": SAT_PERIODS[s][0].isoformat(),
                       "to": SAT_PERIODS[s][1].isoformat() if SAT_PERIODS[s][1] else None} for s in SATELLITES],
+        "forecast_available": FORECAST is not None,
     }
 
 
 @app.post("/api/analysis")
 def analysis(req: AreaRequest):
     return run_analysis(req)
+
+
+@app.post("/api/forecast")
+def forecast(req: ForecastRequest):
+    return run_forecast(req)
 
 
 @app.post("/api/hotspots")

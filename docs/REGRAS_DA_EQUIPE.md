@@ -13,7 +13,7 @@ Construir um site que transforma mais de 20 anos de focos de calor da NASA no Br
 1. As **17 funcionalidades do MVP** no [README](../README.md#mvp-features) são o trabalho. Nada além disso até todas funcionarem.
 2. **Extras** só depois que o checkpoint de domingo às 12h for cumprido.
 3. **Congelamento de funcionalidades: domingo às 15h.** Depois disso: só correções, acabamento, vídeo e envio.
-4. **Não vamos fazer:** previsões, dados que não sejam da NASA, outros países (exceto como extra no final).
+4. **Não vamos fazer:** previsões (uma exceção: o modelo da próxima semana da equipe de ciência, `/api/forecast`, sempre marcado como "estimativa do modelo, experimental"), dados que não sejam da NASA, outros países (exceto como extra no final).
 5. Se duas regras entrarem em conflito, **o prazo vence**: entreguem o MVP.
 
 ## 3. Regras de dados

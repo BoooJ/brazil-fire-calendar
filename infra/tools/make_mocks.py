@@ -26,7 +26,7 @@ FAKE_NOTE = (
     "FAKE DATA - for website development only. "
     "Shapes follow docs/api-contract.md; every number is invented."
 )
-CONTRACT_VERSION = "0.1"
+CONTRACT_VERSION = "0.2"
 DATA_UPDATED = "2026-11-14T15:20:00Z"
 TODAY = date(2026, 11, 14)
 FINAL_UNTIL = date(2026, 5, 31)  # after this: NASA near-real-time data -> "provisional"
@@ -310,6 +310,54 @@ def make_hotspots(rng: random.Random, year: int, month: int, total: int, n: int 
             "truncated": total > n, "features": features}
 
 
+def make_forecast(rng: random.Random, n: int = 300, total: int = 7774) -> dict:
+    """Fake /api/forecast answer for the Pantanal (contract v0.2): 5 km cells, highest chance first."""
+    w, s, e, nn = PANTANAL_BOX
+    cell = 0.05
+    centers = [(rng.uniform(w + 0.3, e - 0.3), rng.uniform(s + 0.3, nn - 0.3)) for _ in range(12)]
+    seen, features = set(), []
+    while len(features) < n:
+        cx, cy = rng.choice(centers)
+        ix, iy = math.floor(rng.gauss(cx, 0.25) / cell), math.floor(rng.gauss(cy, 0.25) / cell)
+        if (ix, iy) in seen:
+            continue
+        seen.add((ix, iy))
+        prob = min(0.95, rng.betavariate(1.2, 12.0) * 3)
+        features.append({
+            "type": "Feature",
+            "geometry": {"type": "Point", "coordinates": [round((ix + 0.5) * cell, 3), round((iy + 0.5) * cell, 3)]},
+            "properties": {"probability": round(prob, 3),
+                           "intensity_if_fire": rng.choices(["low", "medium", "high"], weights=[2, 5, 3])[0]},
+        })
+    features.sort(key=lambda f: -f["properties"]["probability"])
+    expected = round(sum(f["properties"]["probability"] for f in features) + rng.uniform(10, 30), 1)
+    briefing = (f"For 14 Nov - 20 Nov 2026, the model expects fire in about {expected:,.0f} of the {total:,} cells "
+                f"(5 km) of this area that have burned before ({expected / total * 100:.1f} %). The highest chance "
+                f"in one cell is {features[0]['properties']['probability'] * 100:.0f} %. If fires happen, their "
+                "intensity would most likely be high. Based on 519 NASA FIRMS VIIRS NOAA-20 detections here in the "
+                "28 days up to 13 Nov 2026. Model estimate (experimental), not an official fire warning.")
+    return {
+        "_mock": FAKE_NOTE,
+        "query": {"ref_date": "2026-11-13", "area_km2": round(box_area_km2(*PANTANAL_BOX), 1)},
+        "data_updated": DATA_UPDATED,
+        "based_on": {"satellite": "viirs_noaa20", "from": "2026-10-17", "to": "2026-11-13"},
+        "period": {"from": "2026-11-14", "to": "2026-11-20"},
+        "label": "Model estimate (experimental), not an official fire warning.",
+        "cell_size_km": 5,
+        "summary": {"cells": total, "expected_cells_with_fire": expected,
+                    "expected_share_pct": round(expected / total * 100, 2),
+                    "max_probability": features[0]["properties"]["probability"],
+                    "intensity_if_fire": "high", "recent_detections": 519},
+        "briefing": briefing,
+        "reliability": {"auc": 0.87, "baseline_auc": 0.76, "test_years": [2023, 2024, 2025],
+                        "note": "Tested on 2023-2025, years the model never saw: AUC 0.87 (1 = perfect, "
+                                "0.5 = coin flip). Using only the usual pattern for that week of the year gives 0.76."},
+        "total": total, "returned": n, "truncated": total > n,
+        "cells": {"type": "FeatureCollection", "features": features},
+        "notes": [],
+    }
+
+
 # ---------------------------------------------------------------- writers
 
 def write_json(name: str, data: dict) -> None:
@@ -359,6 +407,7 @@ def main() -> None:
              "to": SAT_PERIODS[s][1].isoformat() if SAT_PERIODS[s][1] else None}
             for s in SATELLITES
         ],
+        "forecast_available": True,
     })
 
     now = build_analysis(fire_days, ratios, date(FIRST_YEAR, 1, 1), TODAY, TODAY, area)
@@ -374,6 +423,8 @@ def main() -> None:
     geo = make_hotspots(rng, 2020, 9, total)
     write_json("hotspots.pantanal.2020-09.geojson", geo)
     write_hotspots_csv("hotspots.pantanal.2020-09.csv", geo)
+
+    write_json("forecast.pantanal.json", make_forecast(random.Random(SEED + 1)))
 
     for p in sorted(OUT.iterdir()):
         print(f"wrote {p.relative_to(ROOT)}  ({p.stat().st_size:,} bytes)")
