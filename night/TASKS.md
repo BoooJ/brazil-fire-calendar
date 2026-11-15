@@ -300,3 +300,5 @@ Global rules for this block:
   - The colour steps sit in one `.map-legend-scale` group that wraps as a whole (both the forecast and the fire-strength legend). Checked 375 / 1366 / 1440.
 - [x] Hero link "Next week: model estimate ↓" also showed for reference dates before 29 Apr 2018, where the panel can only say there is no estimate
   - The link hides for those dates (`FIRST_FORECAST_DAY` exported from ForecastPanel). Checked today / 2010 / 2019.
+- [x] 320px phones (iPhone SE 1st gen, small Androids): "Today / Replay 14 Sep 2020 / Other day" was 348px wide, so the whole page scrolled sideways
+  - Under 361px the date and view switches use 9px side padding and the small text size. No page overflow at 320 (gate, sheet, detailed view; the heatmap keeps its own inner scroll). 375+ unchanged.

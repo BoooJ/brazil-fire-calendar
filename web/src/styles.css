@@ -452,6 +452,7 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
 .controls-row { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: flex-end; }
 .controls .seg { max-width: 100%; }
 .controls .seg button { padding: 0 13px; white-space: nowrap; }
+@media (max-width: 360px) { .controls .seg button { padding: 0 9px; font-size: var(--t-sm); } } /* 320px phones: "Replay 14 Sep 2020" fits without a sideways scroll */
 .controls-fields label { display: grid; gap: 6px; font-size: var(--t-sm); font-weight: 600; color: var(--ink-2); }
 .controls-fields input, .controls-fields select { min-height: 44px; padding: 0 12px; border-radius: var(--r-md); border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); font-size: var(--t-md); font-variant-numeric: tabular-nums; }
 
