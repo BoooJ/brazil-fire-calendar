@@ -308,3 +308,5 @@ Global rules for this block:
   - When a month's hotspots arrive and the month card sits on the right of the map (desktop), MapView fits the area in the space left of the card (at least 200px of map). Phones/tablets unchanged. Checked 1440 (Sep 2020 replay).
 - [x] web/CLAUDE.md: MapView's zoom to the forecast cells and fit beside the month card
   - One table cell updated (needs the usual quick human review of CLAUDE.md changes).
+- [x] Quick view counts legend on 320px phones: the last step "1.3k+" wrapped alone onto its own line
+  - Under 361px the five count steps sit in a 3-column grid (3 + 2, aligned). vs Average legend and 375+ unchanged.

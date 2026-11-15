@@ -339,7 +339,7 @@ function Legend({ mode, thresholds, period }: { mode: Mode; thresholds: number[]
     <div className="legend" aria-label="Legend">
       <div className="legend-row">
         <span className="legend-title">{mode === 'counts' ? 'How much burned in the month' : `Compared with the ${period} average`}</span>
-        <ul>
+        <ul className={mode === 'counts' ? 'is-counts' : undefined}>
           {(mode === 'counts' ? countLabels : VS_LABELS).map((l, i) => (
             <li key={l}><span className={`day mini ${mode === 'counts' ? 'lv' : 'vs'}${i}`} />{mode === 'vs' && (i < 2 ? '▼ ' : i > 2 ? '▲ ' : '')}{l}</li>
           ))}

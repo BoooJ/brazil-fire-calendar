@@ -259,6 +259,7 @@ strong { font-weight: 650; }
 .legend-title { display: block; font-weight: 650; color: var(--sheet-ink); margin-bottom: 6px; }
 .legend ul { display: flex; flex-wrap: wrap; gap: 6px 14px; }
 .legend li { display: inline-flex; align-items: center; gap: 6px; }
+@media (max-width: 360px) { .legend ul.is-counts { display: grid; grid-template-columns: repeat(3, max-content); } } /* 320px: 3 + 2 steps, not 4 + "1.3k+" alone */
 .legend-states-phone { display: none; }
 .legend-states-phone summary { cursor: pointer; font-weight: 600; color: var(--sheet-ink); min-height: 32px; display: flex; align-items: center; }
 .legend-states-phone[open] summary { margin-bottom: var(--s-2); }
