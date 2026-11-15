@@ -30,7 +30,6 @@ function heat(count: number, max: number): { background: string; color: string }
   return { background: `rgb(${rgb.join(' ')})`, color: t > 0.72 ? '#14100c' : '#f6f1e8' };
 }
 
-const short = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n));
 const pct = (p: number | null) => (p == null ? '–' : `${p > 0 ? '▲' : p < 0 ? '▼' : ''} ${Math.abs(Math.round(p))}%`);
 const tone = (p: number | null) => (p == null || p === 0 ? '' : p > 0 ? 'bfc-up' : 'bfc-down');
 
@@ -46,11 +45,8 @@ function calendarOf(show: Showcase) {
 
 function Cell({ c, max }: { c: CalendarItem | undefined; max: number }) {
   if (!c || c.count == null) return <i className="bfc-cal__c is-empty" />;
-  return (
-    <i className={'bfc-cal__c' + (c.provisional ? ' is-prov' : '') + (c.partial ? ' is-part' : '')} style={heat(c.count, max)}>
-      {short(c.count)}
-    </i>
-  );
+  // colour only: the one-year strip is too small for numbers
+  return <i className={'bfc-cal__c' + (c.provisional ? ' is-prov' : '') + (c.partial ? ' is-part' : '')} style={heat(c.count, max)} />;
 }
 
 function CalendarRows({ show, years }: { show: Show; years: number[] }) {

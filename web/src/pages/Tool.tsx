@@ -233,7 +233,7 @@ export default function Tool() {
       </header>
 
       <div className="tool-grid">
-        <div className="globe-wrap">
+        <div className="globe-wrap" role="region" aria-label="Globe and map">
           <Globe
             center={globeCenter}
             zoom={globeZoom}

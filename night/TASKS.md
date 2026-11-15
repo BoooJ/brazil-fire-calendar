@@ -174,3 +174,5 @@ Global rules for this block:
   - Follow-up: with the 2027 row the how-it-works card shows 5 past years (was 6) and the app frame 8 (was 10), so both keep their height.
 - [x] Landing at 1366×768: statement (807), tool (875), method (777) and questions (816) are taller than one screen; at 820×1180 #how is 1195 and card 1 is clipped. Tighten so each fits (measured before tonight's changes too)
   - Short laptop screens (≥1280 wide, <860 high): section padding 104/48, app frame 49svh, tighter FAQ rows → every section is exactly 768. Tablet folder images 222px → #how is 1180. 1440×900 unchanged.
+- [x] axe-core pass (landing, gate, result): globe/map stage outside any landmark; hidden 0px numbers in the landing one-year strip flagged for contrast
+  - Globe stage is a labelled region ("Globe and map"); the strip's bricks carry no text (colour only, the strip is aria-hidden). axe now reports no violations on the three screens.
