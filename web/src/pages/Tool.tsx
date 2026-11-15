@@ -207,8 +207,12 @@ export default function Tool() {
   }, [area, picked]);
   const globeZoom = !area ? 1.5 : points.length ? zoomForRadius(area.radiusDeg) : zoomForRadius(area.radiusDeg, 1.5, 3);
   const globePoints = useMemo<[number, number][]>(
-    () => (area ? points : picked && isFinite(picked.lon) && isFinite(picked.lat) ? [[picked.lon, picked.lat]] : []),
-    [area, points, picked],
+    () => (area ? points : []),
+    [area, points],
+  );
+  const globePick = useMemo<[number, number] | null>(
+    () => (!area && picked && isFinite(picked.lon) && isFinite(picked.lat) ? [picked.lon, picked.lat] : null),
+    [area, picked],
   );
 
   const data = load.kind === 'ok' ? load.data : null;
@@ -239,6 +243,7 @@ export default function Tool() {
             zoom={globeZoom}
             area={area?.polygon ?? null}
             points={globePoints}
+            pick={globePick}
             onPick={area ? undefined : (lon, lat) => setPicked({ lon, lat })}
             originY={selected && wide ? 0.3 : 0.5}
             label={area ? `Globe centred on ${area.label}, Brazil highlighted` : 'Globe with Brazil highlighted. Click to choose a point.'}

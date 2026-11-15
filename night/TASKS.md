@@ -237,3 +237,5 @@ Global rules for this block:
   - Every "1 km" and "375 m" in the tool and landing text now uses a no-break space. Landing sections unchanged in height at the four sizes.
 - [x] Location step on phones: tapping the globe filled the point, but "Show my fire calendar" was three screens down, so nothing seemed to happen
   - Under 900px, once a valid point inside Brazil is picked, the button is sticky at the bottom of the screen (with a dark ring so it lifts off the content) until the user reaches its place in the steps. Desktop unchanged.
+- [x] Location step: the point picked on the globe was a 2px red dot (same as a hotspot), hard to see on light Brazil
+  - Globe takes an optional `pick` and draws it as an orange dot with a white edge and a soft halo; hotspot dots unchanged.
