@@ -1,37 +1,30 @@
-// The burning calendar, GitHub-contributions style: one row per year, a rounded brick per month.
-// Colour shows intensity (filled = happened, dotted = typical); the numbers are in the tooltip and the month card.
-// The detailed view draws the same months as a dense heatmap: see BurningCalendar.tsx.
+// The fire calendar, GitHub-contributions style: one row per year, a rounded brick per month.
+// Colour alone shows intensity (filled = happened, dashed outline = typical, not a forecast). No numbers in the grid:
+// hover names the month, a click opens a small card anchored to the brick, with a link to the map.
+// The detailed view draws the same months as a dense heatmap with the numbers: see BurningCalendar.tsx.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Analysis, CalendarItem } from '../types';
-import { MON, MONTHS, compact, num, pctLong } from '../format';
+import { MON, MONTHS, compact, num, pctLong, vsTypical } from '../format';
+import { LEVEL_WORDS, levelWord, makeCountLevels, vsLevel } from '../levels';
 
 export type Mode = 'counts' | 'vs';
 
-/** 0 = unmarked … 4 = highest. Thresholds are quantiles of this area's own months (display only). */
-function makeCountLevels(items: CalendarItem[]) {
-  const v = items.map((i) => i.count).filter((c): c is number => c != null && c > 0).sort((a, b) => a - b);
-  const q = (p: number) => (v.length ? v[Math.min(v.length - 1, Math.floor(p * v.length))] : Infinity);
-  const t = [q(0.5), q(0.75), q(0.9), q(0.97)];
-  return {
-    thresholds: t,
-    level: (c: number | null) => (c == null ? 0 : c >= t[3] ? 4 : c >= t[2] ? 3 : c >= t[1] ? 2 : c >= t[0] ? 1 : 0),
-  };
-}
-
-/** -2 … +2 for the diverging scale. */
-const vsLevel = (p: number | null) => (p == null ? 0 : p <= -50 ? -2 : p <= -20 ? -1 : p < 20 ? 0 : p < 100 ? 1 : 2);
-const VS_LABELS = ['≤ −50%', '−50 to −20%', 'near average (±20%)', '+20 to +100%', '≥ +100%'];
+const VS_LABELS = ['−50%', '−20%', 'typical', '+20%', '+100%'];
+/** years shown before "See more" */
+const FIRST = 3;
 
 interface Props {
   data: Analysis;
   selected: CalendarItem | null;
   onSelect: (item: CalendarItem) => void;
+  /** opens that month's hotspots on the map */
+  onOpenMap: (item: CalendarItem) => void;
   mode: Mode;
   onMode: (m: Mode) => void;
   onCsv: () => void;
 }
 
-export default function FireCalendar({ data, selected, onSelect, mode, onMode, onCsv }: Props) {
+export default function FireCalendar({ data, selected, onSelect, onOpenMap, mode, onMode, onCsv }: Props) {
   const levels = useMemo(() => makeCountLevels(data.calendar), [data.calendar]);
   // typical bricks: coloured by size in Counts; in vs Average they ARE the average, so they stay neutral
   const typLv = (mean: number | null | undefined) => (mode === 'counts' ? levels.level(mean ?? null) : 0);
@@ -69,8 +62,8 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
     if (!pop) return;
     const placePop = () => {
       const r = pop.el.getBoundingClientRect();
-      const below = r.bottom + 220 < window.innerHeight;
-      setPopPos({ left: Math.min(Math.max(r.left + r.width / 2, 150), window.innerWidth - 150), top: below ? r.bottom + 10 : r.top - 10, below });
+      const below = r.bottom + 250 < window.innerHeight;
+      setPopPos({ left: Math.min(Math.max(r.left + r.width / 2, 158), window.innerWidth - 158), top: below ? r.bottom + 10 : r.top - 10, below });
     };
     placePop();
     const close = (back: boolean) => {
@@ -129,7 +122,7 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
   }, [data.calendar]);
 
   // the newest three years first; more on request (all the rows stay in the API answer and the CSV)
-  const [shown, setShown] = useState(3);
+  const [shown, setShown] = useState(FIRST);
   const visibleYears = years.slice(0, shown);
 
   // One Tab stop for the whole grid (roving tabindex): the brick last focused, else this month, else the newest.
@@ -141,7 +134,6 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
     return focusKey && keys.includes(focusKey) ? focusKey : keys.includes(nowKey) ? nowKey : keys[0];
   }, [visibleYears, byKey, focusKey, data.cards.ref_year, data.cards.ref_month]);
 
-  const yearTotals = useMemo(() => new Map(data.yearly.map((y) => [y.year, y])), [data.yearly]);
   const avg = useMemo(() => new Map(data.average_by_month.map((a) => [a.month, a])), [data.average_by_month]);
   const { ref_year, ref_month } = data.cards;
   const period = data.average_period ? `${data.average_period.from}–${data.average_period.to}` : 'no complete year yet';
@@ -158,29 +150,40 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
   };
 
   const describe = (i: CalendarItem) =>
-    `${MONTHS[i.month - 1]} ${i.year}: ${num(i.count)} (corrected count), ${pctLong(i.vs_avg_pct)}` +
-    (i.rank != null ? `, rank ${i.rank} of ${i.of_years}` : '') +
+    `${MONTHS[i.month - 1]} ${i.year}: ${i.count ? `fire detected, ${levelWord(levels, i.count).toLowerCase()}, ${pctLong(i.vs_avg_pct)}` : 'no fire detected'}` +
     (i.partial ? `, first ${i.days_covered} days only` : '') +
     (i.provisional ? ', provisional' : '') +
     (i.uncertain ? ', uncertain' : '');
+
+  const ahead = !data.calendar.some((c) => c.year > ref_year);
+  const next = ref_year + 1;
+  const typicalCell = (label: string, idx: number) => {
+    const a = avg.get(idx + 1);
+    const lv = levels.level(a?.mean);
+    return (
+      <div className="cell" key={idx}>
+        <span className={`day typical lv${typLv(a?.mean)}`} role="img"
+          aria-label={`${label}: usually ${LEVEL_WORDS[lv].toLowerCase()} (typical ${period}, not a forecast)`}
+          onPointerEnter={onEnterTyp(label, a?.mean)} onPointerLeave={hideTip} />
+      </div>
+    );
+  };
 
   return (
     <section className="cal" aria-labelledby="cal-title">
       <div className="cal-head">
         <div>
-          <h2 id="cal-title">Burning calendar</h2>
-          <p className="muted">Every month since {years[years.length - 1]}. Tap a month for details.</p>
+          <h2 id="cal-title">Fire calendar</h2>
+          <p className="muted">One square per month. {mode === 'counts' ? 'Darker means more fire.' : 'Orange is above typical, purple below.'}</p>
         </div>
         <div className="tools">
-          <div className="seg seg-dark" role="radiogroup" aria-label="Calendar mode">
-            <button role="radio" aria-checked={mode === 'counts'} className={mode === 'counts' ? 'on' : ''} onClick={() => onMode('counts')}>Counts</button>
-            <button role="radio" aria-checked={mode === 'vs'} className={mode === 'vs' ? 'on' : ''} onClick={() => onMode('vs')}>vs Average</button>
+          <div className="seg seg-small" role="radiogroup" aria-label="What the colour shows">
+            <button role="radio" aria-checked={mode === 'counts'} className={mode === 'counts' ? 'on' : ''} onClick={() => onMode('counts')}>Intensity</button>
+            <button role="radio" aria-checked={mode === 'vs'} className={mode === 'vs' ? 'on' : ''} onClick={() => onMode('vs')}>vs typical</button>
           </div>
-          <button className="btn btn-ghost" onClick={onCsv} title="Download the calendar as a CSV file" aria-label="Download the calendar as a CSV file">CSV</button>
+          <button className="btn btn-ghost btn-small" onClick={onCsv} title="Download the calendar as a CSV file" aria-label="Download the calendar as a CSV file">CSV</button>
         </div>
       </div>
-
-      <Legend mode={mode} thresholds={levels.thresholds} period={period} />
 
       {/* Bricks are laid out per period: 12 months now. Weekly bricks need weekly values from the API (we never
           build weeks from hotspots in the browser): set data-period="week" and --n to 52/53 once they exist. */}
@@ -189,180 +192,121 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
         <div className="yr yr-colhead" aria-hidden="true">
           <div className="yr-label" />
           <div className="yr-months">{MON.map((m) => <span key={m} data-i={m[0]}>{m}</span>)}</div>
-          <div className="yr-total">Year</div>
         </div>
 
-        {/* The average row. While the API has no months after the reference year it doubles as "one year forward":
-            next year's typical months (history, not a forecast), so the same averages are not drawn twice. */}
-        {(() => {
-          const ahead = !data.calendar.some((c) => c.year > ref_year);
-          const next = ref_year + 1;
-          return (
-            <>
-              <div className={`yr yr-typical${ahead ? ' yr-ahead' : ''}`}>
-                <div className="yr-label">{ahead ? <>{next}<small>typical</small></> : <>Typical<small>{period}</small></>}</div>
-                <div className="yr-months">
-                  {MON.map((m, idx) => {
-                    const a = avg.get(idx + 1);
-                    const text = ahead
-                      ? `${MONTHS[idx]} ${next} is usually around ${num(a?.mean)} (typical ${period}; ${data.next_months_label})`
-                      : `${MONTHS[idx]}, typical ${period}: ${num(a?.mean)} (history, not a forecast)`;
-                    return (
-                      <div className="cell" key={m}>
-                        <span className={`day typical lv${typLv(a?.mean)}`} role="img" aria-label={text}
-                          onPointerEnter={onEnterTyp(ahead ? `${MONTHS[idx]} ${next}` : `${MONTHS[idx]}, typical`, a?.mean)} onPointerLeave={hideTip} />
-                        <span className="cell-mon" aria-hidden="true">{m}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-                <div className="yr-total muted" title={ahead ? data.next_months_label : undefined}>avg</div>
-              </div>
-              {ahead && <p className="cal-ahead-note">Dotted bricks: a typical year (the {period} average) for {next} and the rest of {ref_year}. {data.next_months_label}.</p>}
-            </>
-          );
-        })()}
-        {visibleYears.map((y) => {
-          const total = yearTotals.get(y);
-          return (
-            <div className="yr" key={y}>
-              <div className="yr-label">{y}</div>
-              <div className="yr-months">
-                {MON.map((m, idx) => {
-                  const item = byKey.get(`${y}-${idx + 1}`);
-                  if (!item) {
-                    // months after the reference date: show what is typical, clearly as history
-                    const future = y > ref_year || (y === ref_year && idx + 1 > ref_month);
-                    const a = avg.get(idx + 1);
-                    return (
-                      <div className="cell" key={m}>
-                        {future && y === ref_year ? (
-                          <span className={`day typical lv${typLv(a?.mean)}`} role="img"
-                            aria-label={`${MONTHS[idx]} ${y} is usually around ${num(a?.mean)} (typical ${period}, not a forecast)`}
-                            onPointerEnter={onEnterTyp(`${MONTHS[idx]} ${y}`, a?.mean)} onPointerLeave={hideTip} />
-                        ) : (
-                          <span className="day empty" aria-hidden="true" />
-                        )}
-                        <span className="cell-mon" aria-hidden="true">{m}</span>
-                      </div>
-                    );
-                  }
-                  const isNow = item.year === ref_year && item.month === ref_month;
-                  return (
-                    <div className="cell" key={m}>
-                      {isNow && <span className="now-tag">{item.partial ? 'SO FAR' : 'NOW'}</span>}
-                      <button className={cellClass(item)} aria-label={describe(item)} aria-haspopup="dialog" aria-expanded={pop?.item === item}
-                        tabIndex={`${y}-${idx + 1}` === stopKey ? 0 : -1}
-                        onClick={(e) => { hideTip(); setPop(pop?.item === item ? null : { item, el: e.currentTarget }); }}
-                        onPointerEnter={onEnter(item)} onPointerLeave={hideTip}
-                        onFocus={(e) => { setFocusKey(`${y}-${idx + 1}`); onFocusTip(item)(e); }} onBlur={hideTip} />
-                      <span className="cell-mon" aria-hidden="true">{m}</span>
-                    </div>
-                  );
-                })}
-              </div>
-              <div className="yr-total" title={total?.complete === false ? 'Year not complete' : undefined}
-                role="img" aria-label={`${y} total: ${num(total?.count)}${total?.complete === false ? ', year not complete' : ''}`}>
-                {compact(total?.count)}
-                {total && !total.complete && <span aria-hidden="true">*</span>}
-              </div>
+        {/* one year forward: next year's months as they usually are (history, not a forecast) */}
+        {ahead && data.average_period && (
+          <div className="yr yr-ahead">
+            <div className="yr-label">{next}<small>typical</small></div>
+            <div className="yr-months">{MON.map((_, idx) => typicalCell(`${MONTHS[idx]} ${next}`, idx))}</div>
+          </div>
+        )}
+        {visibleYears.map((y) => (
+          <div className="yr" key={y}>
+            <div className="yr-label">{y}</div>
+            <div className="yr-months">
+              {MON.map((m, idx) => {
+                const item = byKey.get(`${y}-${idx + 1}`);
+                if (!item) {
+                  // the rest of this year: what is typical, clearly as history
+                  const future = y === ref_year && idx + 1 > ref_month;
+                  return future && data.average_period ? typicalCell(`${MONTHS[idx]} ${y}`, idx) : <div className="cell" key={m}><span className="day empty" aria-hidden="true" /></div>;
+                }
+                return (
+                  <div className="cell" key={m}>
+                    <button className={cellClass(item)} aria-label={describe(item)} aria-haspopup="dialog" aria-expanded={pop?.item === item}
+                      tabIndex={`${y}-${idx + 1}` === stopKey ? 0 : -1}
+                      onClick={(e) => { hideTip(); setPop(pop?.item === item ? null : { item, el: e.currentTarget }); }}
+                      onPointerEnter={onEnter(item)} onPointerLeave={hideTip}
+                      onFocus={(e) => { setFocusKey(`${y}-${idx + 1}`); onFocusTip(item)(e); }} onBlur={hideTip} />
+                  </div>
+                );
+              })}
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
+
+      <div className="cal-foot">
+        <div className="cal-more">
+          {shown < years.length && (
+            <button className="btn btn-ghost btn-small" onClick={() => setShown((n) => Math.min(years.length, n + 10))} aria-label={`See more years (${visibleYears.length} of ${years.length} shown)`}>See more</button>
+          )}
+          {shown > FIRST && <button className="btn btn-ghost btn-small" onClick={() => setShown(FIRST)}>See less</button>}
+        </div>
+        <Legend mode={mode} thresholds={levels.thresholds} />
+      </div>
+      <ul className="cal-keys">
+        <li><span className={`day mini typical ${mode === 'counts' ? 'lv2' : 'lv0'}`} />Typical for that month, not a forecast</li>
+        <li><span className="day mini lv2 is-prov" />Provisional, may still change</li>
+        <li><span className="day mini lv2 is-unc" />Uncertain, very few fires</li>
+        <li><span className="day mini lv0 is-now" />This month</li>
+      </ul>
+
       {tip && (
         <div className="cal-tip" role="presentation" aria-hidden="true"
-          style={{ left: Math.min(Math.max(tip.x, 128), window.innerWidth - 128) /* half the tip + 8px from the screen edge */, top: tip.y }}>
+          style={{ left: Math.min(Math.max(tip.x, 110), window.innerWidth - 110) /* half the tip + 8px from the screen edge */, top: tip.y }}>
           {tip.item ? (
             <>
-              <b>{MONTHS[tip.item.month - 1]} {tip.item.year}</b>
-              <span className="cal-tip-big">{pctLong(tip.item.vs_avg_pct)}</span>
-              <span>Corrected count {num(tip.item.count)}</span>
-              {(tip.item.partial || tip.item.provisional || tip.item.uncertain) && (
-                <span className="cal-tip-flags">
-                  {[tip.item.partial && `first ${tip.item.days_covered} days only`, tip.item.provisional && 'provisional', tip.item.uncertain && 'uncertain']
-                    .filter(Boolean).join(' · ')}
-                </span>
-              )}
-              <span className="cal-tip-hint">Click for details and the map</span>
+              <b>{MON[tip.item.month - 1]} {tip.item.year} · {levelWord(levels, tip.item.count)}</b>
+              {!!tip.item.count && <span>{vsTypical(tip.item.vs_avg_pct)}</span>}
             </>
           ) : tip.typ && (
             <>
               <b>{tip.typ.label}</b>
-              <span className="cal-tip-big">usually ≈ {num(tip.typ.mean)}</span>
-              <span>Typical month, {period} average</span>
-              <span className="cal-tip-hint">History, not a forecast</span>
+              <span>Usually {LEVEL_WORDS[levels.level(tip.typ.mean)].toLowerCase()} · not a forecast</span>
             </>
           )}
         </div>
       )}
-      {years.length > 3 && (
-        <div className="cal-foot">
-          {shown < years.length && (
-            <button className="btn btn-ghost" onClick={() => setShown((n) => Math.min(years.length, n + 10))} aria-label="Show more years in the calendar">
-              Show more years <span className="muted">({Math.min(10, years.length - shown)} more)</span>
-            </button>
-          )}
-          {shown > 3 && <button className="btn btn-ghost" onClick={() => setShown(3)}>Show less</button>}
-          <span className="muted">{visibleYears.length} of {years.length} years</span>
-        </div>
-      )}
       {pop && popPos && (() => {
         const i = pop.item;
-        const typical = avg.get(i.month)?.mean;
-        const status = [i.partial && `month in progress (first ${i.days_covered} days)`, i.provisional && 'provisional, may still change', i.uncertain && 'uncertain: few fires']
-          .filter(Boolean).join(' · ') || 'final data';
+        const month = MONTHS[i.month - 1];
+        const flags = [
+          i.partial && `Month in progress: the first ${i.days_covered} days, compared with the same days in other years.`,
+          i.provisional && 'Provisional: recent data that NASA may still revise.',
+          i.uncertain && 'Uncertain: very few fires, so the comparison is shaky.',
+        ].filter(Boolean) as string[];
+        const shut = (focus = true) => { setPop(null); if (focus) pop.el.focus({ preventScroll: true }); };
         return (
-          <div ref={popRef} className={'cal-pop' + (popPos.below ? ' is-below' : ' is-above')} role="dialog" aria-label={`${MONTHS[i.month - 1]} ${i.year}`}
+          <div ref={popRef} className={'cal-pop' + (popPos.below ? ' is-below' : ' is-above')} role="dialog" aria-label={`${month} ${i.year}`}
             style={{ left: popPos.left, top: popPos.top }}>
-            <b className="cal-pop-title">{MONTHS[i.month - 1]} {i.year}</b>
-            <p className="cal-pop-main">{i.count ? <>Fire detected<br /><b>{num(i.count)}</b> corrected count</> : 'No fire detected this month'}</p>
-            <p>{i.vs_avg_pct == null ? 'No typical month to compare with' : <>{pctLong(i.vs_avg_pct)}</>}{typical != null && <> · typical {num(typical)}</>}</p>
-            <p className="cal-pop-flag">{status}</p>
+            <p className="cal-pop-title">{month} {i.year}</p>
+            <p className="cal-pop-main">
+              <span className={`day mini ${mode === 'counts' ? `lv${levels.level(i.count)}` : `vs${vsLevel(i.vs_avg_pct) + 2}`}`} aria-hidden="true" />
+              {i.count ? <>Fire detected · <b>{levelWord(levels, i.count)}</b></> : 'No fire detected'}
+            </p>
+            {!!i.count && <p>{i.vs_avg_pct == null ? `No typical ${month} to compare with yet.` : <>{vsTypical(i.vs_avg_pct)} for {month}.</>}</p>}
+            {flags.length ? flags.map((f) => <p className="cal-pop-flag" key={f}>{f}</p>) : <p className="cal-pop-flag">Final data.</p>}
             <div className="cal-pop-act">
-              <button className="btn btn-fire" onClick={() => { pop.el.focus({ preventScroll: true }); setPop(null); onSelect(i); }}>Details and map</button>
-              <button className="btn btn-ghost" onClick={() => { setPop(null); pop.el.focus({ preventScroll: true }); }}>Close</button>
+              <button className="btn btn-dark btn-small" onClick={() => { shut(); onOpenMap(i); }}>Open on the map</button>
+              <button className="btn btn-ghost btn-small" onClick={() => { shut(); onSelect(i); }}>Details</button>
             </div>
           </div>
         );
       })()}
-      <p className="fineprint">
-        {mode === 'counts'
-          ? 'Colour shows how much burned: the corrected count of 1 km squares with fire each day (NOAA-20 scale; see Detailed view).'
-          : `Colour shows each month against the same month in the ${period} average: orange above, purple below.`}
-        {' '}Year totals on the right, * year not complete. Typical = the {period} average.
-      </p>
     </section>
   );
 }
 
-function Legend({ mode, thresholds, period }: { mode: Mode; thresholds: number[]; period: string }) {
+/** GitHub-style: Less ▢▢▢▢▢ More, with the value where each colour starts. */
+function Legend({ mode, thresholds }: { mode: Mode; thresholds: number[] }) {
   const t = thresholds.map((x) => (isFinite(x) ? compact(x) : '–'));
-  const countLabels = [`under ${t[0]}`, `${t[0]}+`, `${t[1]}+`, `${t[2]}+`, `${t[3]}+`];
-  const marks = (
-    <ul>
-      <li><span className={`day mini typical ${mode === 'counts' ? 'lv2' : 'lv0'}`} />Typical (history, not a forecast)</li>
-      <li><span className="day mini lv2 is-prov" />Provisional: may still change</li>
-      <li><span className="day mini lv2 is-unc" />Uncertain: few fires</li>
-      <li><span className="day mini is-now" />Month in progress</li>
-    </ul>
-  );
+  const values = mode === 'counts' ? ['0', ...t] : VS_LABELS;
   return (
-    <div className="legend" aria-label="Legend">
-      <div className="legend-row">
-        <span className="legend-title">{mode === 'counts' ? 'How much burned in the month' : `Compared with the ${period} average`}</span>
-        <ul className={mode === 'counts' ? 'is-counts' : undefined}>
-          {(mode === 'counts' ? countLabels : VS_LABELS).map((l, i) => (
-            <li key={l}><span className={`day mini ${mode === 'counts' ? 'lv' : 'vs'}${i}`} />{mode === 'vs' && (i < 2 ? '▼ ' : i > 2 ? '▲ ' : '')}{l}</li>
-          ))}
-        </ul>
-      </div>
-      <div className="legend-row legend-states">{marks}</div>
-      {/* phones: the same keys folded away, so the bricks come sooner */}
-      <details className="legend-states-phone">
-        <summary>What the marks mean</summary>
-        {marks}
-      </details>
+    <div className="legend" role="img"
+      aria-label={mode === 'counts'
+        ? `Colour scale, less to more fire. The five colours start at ${values.join(', ')} satellite-adjusted fire detections in the month.`
+        : 'Colour scale: purple is below a typical month, grey is typical, orange is above.'}>
+      <span className="legend-end">{mode === 'counts' ? 'Less' : 'Below'}</span>
+      <ol>
+        {values.map((v, i) => (
+          <li key={i} title={mode === 'counts' ? `${LEVEL_WORDS[i]}: from ${v} satellite-adjusted fire detections in the month (${num(isFinite(thresholds[i - 1]) ? thresholds[i - 1] : 0)}+)` : v}>
+            <span className={`day mini ${mode === 'counts' ? 'lv' : 'vs'}${i}`} /><small>{v}</small>
+          </li>
+        ))}
+      </ol>
+      <span className="legend-end">{mode === 'counts' ? 'More' : 'Above'}</span>
     </div>
   );
 }

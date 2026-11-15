@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { CalendarItem, Coverage, SatelliteKey } from '../types';
 import { SATELLITES, SAT_NAMES } from '../types';
-import { MONTHS, coverageNote, num, pctLong } from '../format';
+import { MONTHS, coverageNote, num, ordinal, pctLong } from '../format';
 import ErrorNote from './ErrorNote';
 import { useClosing } from './useClosing';
 
@@ -48,17 +48,18 @@ export default function MonthDetail({ item, map, onShowMap, onCsv, onClose, cove
   return (
     <div className={'detail' + (closing ? ' is-closing' : '') + (map.kind === 'shown' ? ' has-map' : '')} role="dialog" aria-label={`${MONTHS[item.month - 1]} ${item.year}`}>
       <button ref={closeRef} className="detail-close" onClick={close} aria-label="Close details">×</button>
-      <p className="eyebrow dark">
+      <p className="eyebrow">
         {MONTHS[item.month - 1]} {item.year}
         {item.partial && ` · first ${item.days_covered} days`}
       </p>
       <p className="detail-big">
-        {num(item.count)} <span>corrected count</span>
+        {num(item.count)} <span>fire-days</span>
       </p>
       <p className="detail-line">
         {pctLong(item.vs_avg_pct)}
-        {item.rank != null && <> · <span className="nobr">rank {item.rank} of {item.of_years} years</span></>}
+        {item.rank != null && <> · <span className="nobr">{item.rank === 1 ? 'the most active' : `${ordinal(item.rank)} most active`} {MONTHS[item.month - 1]} of {item.of_years}</span></>}
       </p>
+      <p className="fineprint detail-unit">A fire-day is a 1 km square where a satellite saw fire on one day, adjusted so every satellite counts alike.</p>
       {(item.provisional || item.uncertain || item.partial) && (
         <ul className="flags">
           {item.partial && <li>Month not finished: compared with the same days in other years.</li>}
@@ -74,7 +75,7 @@ export default function MonthDetail({ item, map, onShowMap, onCsv, onClose, cove
           </div>
         ))}
       </dl>
-      <p className="fineprint">Hotspots detected per satellite, before harmonization.</p>
+      <p className="fineprint">Raw detections per satellite, before we put them on one scale.</p>
 
       {map.kind === 'shown' ? (
         <p className="note">
