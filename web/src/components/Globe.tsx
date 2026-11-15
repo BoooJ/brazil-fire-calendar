@@ -1,9 +1,11 @@
-// Minimal globe: Brazil is lit, the rest of the world sits back in the dark.
-// Country outlines are Natural Earth (public domain) — decoration only, never used for numbers.
-import { useEffect, useRef } from 'react';
-import { geoOrthographic, geoPath, geoInterpolate, geoDistance, type GeoProjection } from 'd3-geo';
+// Minimal globe, flat and light: Brazil in white with its state borders, the rest of the world sits back.
+// Country outlines are Natural Earth (public domain), decoration only. State borders (states.ts) can also select the area.
+import { useEffect, useRef, useState } from 'react';
+import { geoOrthographic, geoPath, geoInterpolate, geoDistance, geoCentroid, type GeoProjection } from 'd3-geo';
 import { feature } from 'topojson-client';
-import type { FeatureCollection, Geometry, Polygon } from 'geojson';
+import type { FeatureCollection, Geometry } from 'geojson';
+import type { AreaGeometry } from '../types';
+import { STATE_BORDERS, stateAt, stateById, type StateFeature } from '../states';
 
 interface World {
   brazil: FeatureCollection<Geometry>;
@@ -26,27 +28,49 @@ export function loadWorld(): Promise<World> {
 
 export const BRAZIL_CENTER: [number, number] = [-53, -14];
 
+// Flat colours of the light theme (nothing shaded, no glow). Keep OCEAN in sync with --stage in styles.css.
+export const OCEAN = '#e9edf2';
+const LAND = '#f6f7f9';
+const LAND_EDGE = '#d9dde4';
+const BRAZIL = '#ffffff';
+const BRAZIL_EDGE = '#8b93a1';
+const STATE_EDGE = '#cfd4dc';
+const EMBER = '#d9480f';
+const EMBER_TINT = '#fbe3d6';
+const EMBER_HOVER = '#fff1e8';
+
 interface Props {
   center?: [number, number];
   zoom?: number; // 1 = whole globe fits the box
-  area?: Polygon | null;
+  area?: AreaGeometry | null;
+  /** the chosen state (its fill is tinted); other areas are outlined only */
+  selected?: string | null;
   points?: [number, number][];
   /** the point chosen on the location step: drawn as a clear marker, not as a hotspot dot */
   pick?: [number, number] | null;
   onPick?: (lon: number, lat: number) => void;
+  /** with this, the state under the pointer highlights and lifts, and a click (or tap) selects it */
+  onState?: (s: StateFeature) => void;
+  /** a state highlighted from outside (the list beside the globe) */
+  hover?: string | null;
+  onHover?: (id: string | null) => void;
   label: string;
   /** vertical position of the globe centre, as a fraction of the box height */
   originY?: number;
 }
 
-export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, points, pick, onPick, label, originY = 0.5 }: Props) {
+export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, selected, points, pick, onPick, onState, hover, onHover, label, originY = 0.5 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const world = useRef<World | null>(null);
   const view = useRef({ center, zoom });
   const proj = useRef<GeoProjection | null>(null);
-  const extras = useRef({ area, points, pick, originY });
-  extras.current = { area, points, pick, originY };
+  const extras = useRef({ area, selected, points, pick, originY });
+  extras.current = { area, selected, points, pick, originY };
   const raf = useRef(0);
+  // the lifted state: `t` runs 0 → 1 while it rises
+  const lift = useRef<{ id: string | null; t: number; raf: number }>({ id: null, t: 0, raf: 0 });
+  const [tip, setTip] = useState<{ name: string; x: number; y: number } | null>(null);
+  const still = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const draw = () => {
     const canvas = canvasRef.current;
@@ -71,44 +95,71 @@ export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, points
     proj.current = projection;
     const path = geoPath(projection, ctx);
 
-    // ocean + blue limb glow
-    ctx.save();
+    // the ocean: one flat disc
     ctx.beginPath();
     ctx.arc(cx, cy, R, 0, Math.PI * 2);
-    ctx.shadowColor = 'rgba(46, 72, 255, 0.95)';
-    ctx.shadowBlur = Math.min(70, R * 0.12);
-    ctx.fillStyle = '#01020a';
+    ctx.fillStyle = OCEAN;
     ctx.fill();
-    ctx.restore();
-    const atm = ctx.createRadialGradient(cx, cy, R * 0.9, cx, cy, R);
-    atm.addColorStop(0, 'rgba(30, 50, 255, 0)');
-    atm.addColorStop(1, 'rgba(30, 50, 255, 0.55)');
-    ctx.beginPath();
-    ctx.arc(cx, cy, R, 0, Math.PI * 2);
-    ctx.fillStyle = atm;
-    ctx.fill();
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = '#2f45ff';
-    ctx.stroke();
 
     if (world.current) {
       ctx.beginPath();
       path(world.current.others);
-      ctx.fillStyle = '#0a0d55';
+      ctx.fillStyle = LAND;
       ctx.fill();
-      ctx.lineWidth = 0.6;
-      ctx.strokeStyle = '#01020a';
+      ctx.lineWidth = 0.75;
+      ctx.strokeStyle = LAND_EDGE;
       ctx.stroke();
 
       ctx.beginPath();
       path(world.current.brazil);
-      ctx.fillStyle = '#bcc0cf';
+      ctx.fillStyle = BRAZIL;
       ctx.fill();
     }
 
-    const { area: a, points: pts } = extras.current;
+    const { area: a, points: pts, selected: sel } = extras.current;
+    const chosen = stateById(sel);
+    if (chosen) {
+      ctx.beginPath();
+      path(chosen);
+      ctx.fillStyle = EMBER_TINT;
+      ctx.fill();
+    }
+    // borders between the states, then the country's edge
+    ctx.beginPath();
+    path(STATE_BORDERS);
+    ctx.lineWidth = 0.75;
+    ctx.strokeStyle = STATE_EDGE;
+    ctx.stroke();
+    if (world.current) {
+      ctx.beginPath();
+      path(world.current.brazil);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = BRAZIL_EDGE;
+      ctx.stroke();
+    }
+
+    // the state under the pointer: raised a few pixels over a soft shadow
+    const up = stateById(lift.current.id);
+    if (up && up.properties.id !== sel) {
+      const t = lift.current.t;
+      ctx.save();
+      ctx.translate(0, -4 * t);
+      ctx.shadowColor = `rgba(29, 29, 31, ${0.22 * t})`;
+      ctx.shadowBlur = 14 * t;
+      ctx.shadowOffsetY = 7 * t;
+      ctx.beginPath();
+      path(up);
+      ctx.fillStyle = EMBER_HOVER;
+      ctx.fill();
+      ctx.shadowColor = 'transparent';
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = EMBER;
+      ctx.stroke();
+      ctx.restore();
+    }
+
     if (pts?.length) {
-      ctx.fillStyle = 'rgba(214, 31, 38, 0.8)';
+      ctx.fillStyle = 'rgba(194, 65, 12, 0.8)';
       const r = Math.max(1.6, Math.min(3.2, R / 900));
       for (const p of pts) {
         if (geoDistance(p, c) > Math.PI / 2) continue;
@@ -123,14 +174,13 @@ export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, points
     if (pk && geoDistance(pk, c) <= Math.PI / 2) {
       const xy = projection(pk);
       if (xy) {
-        // a soft halo, then an orange dot with a white edge: visible on light Brazil and on the dark ocean
         ctx.beginPath();
         ctx.arc(xy[0], xy[1], 13, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 106, 31, 0.22)';
+        ctx.fillStyle = 'rgba(217, 72, 15, 0.18)';
         ctx.fill();
         ctx.beginPath();
         ctx.arc(xy[0], xy[1], 5.5, 0, Math.PI * 2);
-        ctx.fillStyle = '#ff6a1f';
+        ctx.fillStyle = EMBER;
         ctx.fill();
         ctx.lineWidth = 2;
         ctx.strokeStyle = '#ffffff';
@@ -140,12 +190,10 @@ export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, points
     if (a) {
       // Drawn as a line (not a filled polygon) so ring winding order never matters.
       ctx.beginPath();
-      path({ type: 'MultiLineString', coordinates: a.coordinates });
-      ctx.lineWidth = 6;
-      ctx.strokeStyle = 'rgba(255, 106, 31, 0.25)';
-      ctx.stroke();
+      path({ type: 'MultiLineString', coordinates: a.type === 'Polygon' ? a.coordinates : a.coordinates.flat() });
+      ctx.lineJoin = 'round';
       ctx.lineWidth = 2;
-      ctx.strokeStyle = '#ff6a1f';
+      ctx.strokeStyle = EMBER;
       ctx.stroke();
     }
   };
@@ -164,6 +212,7 @@ export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, points
       alive = false;
       ro.disconnect();
       cancelAnimationFrame(raf.current);
+      cancelAnimationFrame(lift.current.raf);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -172,9 +221,8 @@ export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, points
   useEffect(() => {
     cancelAnimationFrame(raf.current);
     const from = { ...view.current };
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const same = from.center[0] === center[0] && from.center[1] === center[1] && from.zoom === zoom;
-    if (reduce || same) {
+    if (still() || same) {
       view.current = { center, zoom };
       draw();
       return;
@@ -196,27 +244,83 @@ export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, points
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [center[0], center[1], zoom]);
 
-  useEffect(draw, [area, points, pick, originY]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(draw, [area, selected, points, pick, originY]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const click = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!onPick || !proj.current) return;
+  // ---------- states: highlight, lift, select ----------
+  const raise = (id: string | null) => {
+    const l = lift.current;
+    if (l.id === id) return;
+    cancelAnimationFrame(l.raf);
+    l.id = id;
+    const s = stateById(id);
+    const xy = s && proj.current ? proj.current(geoCentroid(s)) : null;
+    setTip(s && xy ? { name: s.properties.name, x: xy[0], y: xy[1] } : null);
+    if (!id || still()) {
+      l.t = id ? 1 : 0;
+      draw();
+      return;
+    }
+    l.t = 0;
+    const t0 = performance.now();
+    const step = (now: number) => {
+      const t = Math.min(1, (now - t0) / 140);
+      l.t = 1 - Math.pow(1 - t, 3);
+      draw();
+      if (t < 1) l.raf = requestAnimationFrame(step);
+    };
+    l.raf = requestAnimationFrame(step);
+  };
+  useEffect(() => raise(hover ?? null), [hover]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const lonLat = (e: React.MouseEvent<HTMLCanvasElement>): [number, number] | null => {
+    if (!proj.current) return null;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     const [tx, ty] = proj.current.translate();
-    if (Math.hypot(x - tx, y - ty) > proj.current.scale()) return; // outside the globe
+    if (Math.hypot(x - tx, y - ty) > proj.current.scale()) return null; // outside the globe
     const ll = proj.current.invert?.([x, y]);
-    if (ll && isFinite(ll[0]) && isFinite(ll[1])) onPick(ll[0], ll[1]);
+    return ll && isFinite(ll[0]) && isFinite(ll[1]) ? [ll[0], ll[1]] : null;
+  };
+
+  const move = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!onState || e.pointerType !== 'mouse') return;
+    const ll = lonLat(e);
+    const id = (ll && stateAt(ll[0], ll[1])?.properties.id) || null;
+    if (id !== lift.current.id) {
+      raise(id);
+      onHover?.(id);
+    }
+  };
+  const leave = () => {
+    if (!onState || !lift.current.id) return;
+    raise(null);
+    onHover?.(null);
+  };
+
+  const click = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const ll = lonLat(e);
+    if (!ll) return;
+    if (onState) {
+      const s = stateAt(ll[0], ll[1]);
+      if (s) return onState(s);
+    }
+    onPick?.(ll[0], ll[1]);
   };
 
   return (
-    <canvas
-      ref={canvasRef}
-      className={'globe' + (onPick ? ' globe--pick' : '')}
-      role="img"
-      aria-label={label}
-      onClick={click}
-    />
+    <>
+      <canvas
+        ref={canvasRef}
+        className={'globe' + (onPick ? ' globe--pick' : '') + (tip && onState ? ' globe--state' : '')}
+        role="img"
+        aria-label={label}
+        onClick={click}
+        onPointerMove={move}
+        onPointerLeave={leave}
+      />
+      {tip && <span className="globe-tip" style={{ left: tip.x, top: tip.y }} aria-hidden="true">{tip.name}</span>}
+    </>
   );
 }
 
