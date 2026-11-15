@@ -4,9 +4,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Analysis, Status as ApiStatus } from '../types';
 import type { Area } from '../geo';
-import { anomalyPosition } from '../colors';
-import { MON, MONTHS, dateTime, headlineParts, rankLine, trendOf, vsTypical } from '../format';
-import { LEVEL_WORDS, USUALLY, makeCountLevels } from '../levels';
+import { MON, MONTHS, dateTime, headlineParts, num, rankLine, times, trendOf, vsTypicalShort } from '../format';
+import { LEVEL_WORDS, makeCountLevels } from '../levels';
 
 const still = () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -53,11 +52,15 @@ export default function StatusHero({ data, area, status, updating, onUpdate, onF
   const typical = avg.find((a) => a.month === c.ref_month)?.mean ?? null;
   const typicalLevel = levels.level(typical);
   const period = data.average_period ? `${data.average_period.from}–${data.average_period.to}` : null;
-  const days = c.partial ? `the first ${c.days_covered} days of ${month}` : `${month} ${c.ref_year}`;
+  // this week (the API's newest ISO week, usually still running); the month's count when there are no weeks
+  const week = data.calendar_weekly?.length ? data.calendar_weekly[data.calendar_weekly.length - 1] : null;
+  const fireNow = week ? !!week.count : !!c.count;
   // the quietest month of the typical year: the lowest of the API's twelve averages, read off as it is
   const quiet = avg.reduce<number | null>((best, a) => (a.mean == null ? best : best == null || a.mean < (avg.find((x) => x.month === best)?.mean ?? Infinity) ? a.month : best), null);
-  // where this month sits between half and double a typical one (log scale, display only)
-  const pos = anomalyPosition(c.count ? c.vs_avg_pct : null);
+  // where this month sits between "lower" and "higher": log scale, eased so it never sticks to an end (display only)
+  const pos = c.count && c.vs_avg_pct != null ? 50 + 50 * Math.tanh(Math.log2(Math.max(1 / 64, 1 + c.vs_avg_pct / 100)) / 2) : null;
+  const peak = c.peak_month == null ? null : MONTHS[c.peak_month - 1];
+  const season = seasonWords(month, typical == null ? null : typicalLevel, peak);
 
   // the headline is a few words and one number; the full sentence sits under it, small
   const p = c.vs_avg_pct;
@@ -67,11 +70,11 @@ export default function StatusHero({ data, area, status, updating, onUpdate, onF
   const big = !c.count ? 'No fire detected'
     : p == null ? 'Fire detected'
     : trend === 'flat' ? 'Fire activity is typical'
-    : <>Fire activity <span className="hero-mark" aria-hidden="true">{trend === 'up' ? '▲' : '▼'}</span><span className="sr-only">{trend === 'up' ? 'up ' : 'down '}</span>{p >= 200 ? `${(p / 100 + 1).toFixed(1)}×` : <><Roll n={Math.abs(Math.round(p))} />%</>}</>;
+    : <>Fire activity <span className="hero-mark" aria-hidden="true">{trend === 'up' ? '▲' : '▼'}</span><span className="sr-only">{trend === 'up' ? 'up ' : 'down '}</span>{p >= 200 ? `${times(p)}×` : <><Roll n={Math.abs(Math.round(p))} />%</>}</>;
 
   return (
     <section className="hero">
-      <p className="eyebrow">{area.label} · {month} {c.ref_year}{c.partial && `, first ${c.days_covered} days`}</p>
+      <p className="eyebrow">{area.label} · {month} {c.ref_year}</p>
       <h1 className={trend ? `is-${trend}` : undefined}>{big}</h1>
       <p className="hero-sub">
         {sub.charAt(0).toUpperCase() + sub.slice(1)}{period && !!c.count && p != null && <>, comparing the same days in {period}</>}.
@@ -81,21 +84,27 @@ export default function StatusHero({ data, area, status, updating, onUpdate, onF
       <dl className="answers">
         <div>
           <dt>Fire right now</dt>
-          <dd>{c.count ? 'Detected' : 'None detected'}</dd>
-          <dd className="answers-note">Satellites {c.count ? 'saw fire here' : 'saw no fire here'} in {days}.</dd>
-        </div>
-        <div>
-          <dt>Against a typical {month}</dt>
-          <dd>{c.count ? vsTypical(c.vs_avg_pct).replace(' typical', '') : '–'}</dd>
-          <dd className="meter" aria-hidden="true">
-            <span className="meter-track"><i className="meter-mid" />{pos != null && <i className={`meter-dot is-${trend ?? 'flat'}`} style={{ left: `${((pos + 2) / 4) * 100}%` }} />}</span>
-            <span className="meter-ends"><span>half</span><span>typical</span><span>double</span></span>
+          <dd>{fireNow ? 'Detected' : week && c.count ? 'Not this week' : 'None detected'}</dd>
+          <dd className="answers-note">
+            {week
+              ? week.count
+                ? <>Satellites detected {num(week.count)} fire hotspot{week.count === 1 ? '' : 's'} here this week.</>
+                : c.count ? <>Satellites detected {num(c.count)} fire hotspot{c.count === 1 ? '' : 's'} here earlier in {month}.</> : <>Satellites saw no fire here this week.</>
+              : c.count ? <>Satellites detected {num(c.count)} fire hotspot{c.count === 1 ? '' : 's'} here this {month}.</> : <>Satellites saw no fire here this {month}.</>}
           </dd>
         </div>
         <div>
-          <dt>Is this the season?</dt>
-          <dd>{typical == null ? '–' : typicalLevel >= 2 ? 'Yes' : typicalLevel === 1 ? 'Edge of it' : 'No'}</dd>
-          <dd className="answers-note">{typical == null ? 'No typical year to compare with yet.' : <>{month} is {USUALLY[typicalLevel]}.</>}</dd>
+          <dt>Against a typical {month}</dt>
+          <dd>{c.count ? vsTypicalShort(c.vs_avg_pct) : '–'}</dd>
+          <dd className="meter" aria-hidden="true">
+            <span className="meter-track"><i className="meter-mid" />{pos != null && <i className={`meter-dot is-${trend ?? 'flat'}`} style={{ left: `${pos}%` }} />}</span>
+            <span className="meter-ends"><span>lower</span><span>typical</span><span>higher</span></span>
+          </dd>
+        </div>
+        <div className={`answers-season${typical == null ? '' : ` is-lv${typicalLevel}`}`}>
+          <dt>Fire season</dt>
+          <dd>{season.head}</dd>
+          <dd className="answers-note">{season.note}</dd>
         </div>
       </dl>
 
@@ -112,6 +121,16 @@ export default function StatusHero({ data, area, status, updating, onUpdate, onF
       <p className="hero-smoke">Smoke from fires can lower air quality nearby. We don’t measure air quality.</p>
     </section>
   );
+}
+
+/** The "Fire season" answer, from this month's usual level here (the API's averages, put into words). */
+function seasonWords(month: string, lv: number | null, peak: string | null): { head: string; note: string } {
+  if (lv == null) return { head: 'Not known yet', note: 'No typical year to compare with yet.' };
+  const peaks = peak == null ? '' : peak === month ? ` ${month} is usually the peak.` : ` The season usually peaks in ${peak}.`;
+  if (lv >= 4) return { head: `${month} is the height of the fire season`, note: `Usually the busiest time of the year for fire here.${peaks}` };
+  if (lv >= 2) return { head: `${month} is in the fire season`, note: `Fires are common here at this time of year.${peaks}` };
+  if (lv === 1) return { head: `${month} is at the edge of the fire season`, note: `Usually only a little fire here at this time of year.${peaks}` };
+  return { head: `${month} is outside the fire season`, note: `Usually calm here: fire is rare at this time of year.${peaks}` };
 }
 
 /** A typical year here: the API's twelve monthly averages as bars. Hover (or focus) lights one and dims the rest. */

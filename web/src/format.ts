@@ -25,9 +25,23 @@ export function pctShort(p: number | null | undefined): string {
 }
 
 /** Plain words for the quick view: "▲ 31% above typical", "● close to typical", "▲ 7.0× typical" */
+/** 3.6 -> "3.6", 3.0 -> "3": how many times a typical month (from the API's %), one decimal, no trailing ".0" */
+export function times(p: number): string {
+  return (p / 100 + 1).toFixed(1).replace(/\.0$/, '');
+}
+
+/** The first screen's "Against a typical month" answer: "▲ 3.6 times higher", "▲ 45% higher", "▼ 52% lower". */
+export function vsTypicalShort(p: number | null | undefined): string {
+  if (p == null) return '–';
+  if (p >= 200) return `▲ ${times(p)} times higher`;
+  if (p >= 20) return `▲ ${Math.round(p)}% higher`;
+  if (p <= -20) return `▼ ${Math.abs(Math.round(p))}% lower`;
+  return '● Close to typical';
+}
+
 export function vsTypical(p: number | null | undefined): string {
   if (p == null) return 'nothing to compare with yet';
-  if (p >= 200) return `▲ ${(p / 100 + 1).toFixed(1)}× typical`;
+  if (p >= 200) return `▲ ${times(p)}× typical`;
   if (p >= 20) return `▲ ${Math.round(p)}% above typical`;
   if (p <= -20) return `▼ ${Math.abs(Math.round(p))}% below typical`;
   return '● close to typical';
@@ -37,7 +51,7 @@ export function pctLong(p: number | null | undefined): string {
   if (p == null) return 'no average to compare with';
   const r = Math.round(p);
   if (r === 0) return 'equal to the average';
-  if (p >= 200) return `▲ ${(p / 100 + 1).toFixed(1)}× the average`;
+  if (p >= 200) return `▲ ${times(p)}× the average`;
   // within ±20% the legends call it "near average": a neutral ● instead of an arrow (same band as trendOf)
   const mark = p >= 20 ? '▲' : p <= -20 ? '▼' : '●';
   return r > 0 ? `${mark} ${r}% above average` : `${mark} ${Math.abs(r)}% below average`;
@@ -88,7 +102,7 @@ export function headlineParts(c: Cards): { lead: string; strong: string; tail: s
   const p = c.vs_avg_pct;
   if (!c.count) return { lead: '', strong: 'No fire detected', tail: c.partial ? `here so far this ${month}` : `here in ${month} ${c.ref_year}` };
   if (p == null) return { lead: '', strong: 'Fire was detected', tail: `here in ${month}, with no earlier year to compare` };
-  if (p >= 200) return { lead: 'Fire activity is', strong: `${(p / 100 + 1).toFixed(1)}×`, tail: `a typical ${month}` };
+  if (p >= 200) return { lead: 'Fire activity is', strong: `${times(p)} times`, tail: `a typical ${month}` };
   if (p >= 20) return { lead: 'Fire activity is', strong: `${Math.round(p)}% higher`, tail: `than a typical ${month}`, n: Math.round(p) };
   if (p <= -20) return { lead: 'Fire activity is', strong: `${Math.abs(Math.round(p))}% lower`, tail: `than a typical ${month}`, n: Math.abs(Math.round(p)) };
   return { lead: 'Fire activity is', strong: 'close to', tail: `a typical ${month}` };

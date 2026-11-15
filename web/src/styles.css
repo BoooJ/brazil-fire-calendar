@@ -231,6 +231,13 @@ abbr { text-decoration: none; }
 .answers dd:first-of-type { font-size: var(--t-2xl); font-weight: 600; letter-spacing: -0.02em; line-height: 1.17; margin-top: var(--s-2); font-variant-numeric: tabular-nums; }
 .answers-note { font-size: var(--t-sm); line-height: 1.4; color: var(--ink-2); margin-top: auto; padding-top: var(--s-2); }
 .meter { margin-top: var(--s-3); }
+/* "Fire season": a faint tint of the month's usual level (the calendar's colours); calm months take the vs scale's lavender */
+.answers > .answers-season dd:first-of-type { font-size: var(--t-xl); line-height: 1.25; }
+.answers > .answers-season.is-lv0 { background: color-mix(in srgb, var(--vs1) 16%, var(--card)); border-color: color-mix(in srgb, var(--vs1) 40%, var(--line)); }
+.answers > .answers-season.is-lv1 { background: color-mix(in srgb, var(--lv1) 18%, var(--card)); border-color: color-mix(in srgb, var(--lv1) 45%, var(--line)); }
+.answers > .answers-season.is-lv2 { background: color-mix(in srgb, var(--lv2) 16%, var(--card)); border-color: color-mix(in srgb, var(--lv2) 40%, var(--line)); }
+.answers > .answers-season.is-lv3 { background: color-mix(in srgb, var(--lv3) 13%, var(--card)); border-color: color-mix(in srgb, var(--lv3) 35%, var(--line)); }
+.answers > .answers-season.is-lv4 { background: color-mix(in srgb, var(--lv4) 10%, var(--card)); border-color: color-mix(in srgb, var(--lv4) 30%, var(--line)); }
 .meter-track { position: relative; display: block; height: 6px; border-radius: 3px; background: var(--line); }
 .meter-mid { position: absolute; left: 50%; top: -3px; width: 2px; height: 12px; margin-left: -1px; border-radius: 1px; background: var(--edge); }
 .meter-dot { position: absolute; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--ink); border: 2px solid var(--card); transition: left 0.7s var(--ease); }
@@ -598,6 +605,8 @@ button.day:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px;
   .answers > div { display: grid; grid-template-columns: 1fr auto; align-items: baseline; column-gap: var(--s-3); padding: var(--s-4); }
   .answers dd:first-of-type { margin: 0; font-size: var(--t-xl); text-align: right; }
   .answers .meter, .answers-note { grid-column: 1 / -1; }
+  .answers > .answers-season { display: flex; }
+  .answers > .answers-season dd:first-of-type { text-align: left; font-size: var(--t-lg); }
   .season { padding: var(--s-4); }
   .season-bars { gap: 3px; }
   .season-mon span { display: none; }
