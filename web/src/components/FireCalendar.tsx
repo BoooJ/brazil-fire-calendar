@@ -97,6 +97,10 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
     return { years: [...ys].sort((a, b) => b - a), byKey };
   }, [data.calendar]);
 
+  // the newest three years first; more on request (all the rows stay in the API answer and the CSV)
+  const [shown, setShown] = useState(3);
+  const visibleYears = years.slice(0, shown);
+
   const yearTotals = useMemo(() => new Map(data.yearly.map((y) => [y.year, y])), [data.yearly]);
   const avg = useMemo(() => new Map(data.average_by_month.map((a) => [a.month, a])), [data.average_by_month]);
   const { ref_year, ref_month } = data.cards;
@@ -164,7 +168,7 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
           <div className="yr-total muted">avg</div>
         </div>
 
-        {years.map((y) => {
+        {visibleYears.map((y) => {
           const total = yearTotals.get(y);
           return (
             <div className="yr" key={y}>
@@ -223,6 +227,17 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
             </span>
           )}
           <span className="cal-tip-hint">Click for details and the map</span>
+        </div>
+      )}
+      {years.length > 3 && (
+        <div className="cal-foot">
+          {shown < years.length && (
+            <button className="btn btn-ghost" onClick={() => setShown((n) => Math.min(years.length, n + 10))} aria-label="Show more years in the calendar">
+              Show more years <span className="muted">({Math.min(10, years.length - shown)} more)</span>
+            </button>
+          )}
+          {shown > 3 && <button className="btn btn-ghost" onClick={() => setShown(3)}>Show less</button>}
+          <span className="muted">{visibleYears.length} of {years.length} years</span>
         </div>
       )}
       {pop && popPos && (() => {
