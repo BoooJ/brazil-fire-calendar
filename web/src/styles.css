@@ -596,3 +596,9 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
 .cal-pop-act { display: flex; gap: 8px; margin-top: 8px; }
 .cal-pop-act .btn { min-height: 36px; padding: 0 14px; font-size: var(--t-sm); }
 @keyframes pop-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* phones: once a point is picked (often by tapping the globe at the top), "Show my fire calendar" stays pinned to the
+   bottom of the screen until the user scrolls to its place in the steps */
+@media (max-width: 899px) {
+  .gate .gate-go--ready { position: sticky; bottom: max(12px, env(safe-area-inset-bottom)); z-index: 4; box-shadow: 0 0 0 6px var(--bg), 0 10px 28px rgba(0, 0, 0, 0.5); }
+}

@@ -125,7 +125,7 @@ export default function LocationGate({ presets, picked, onPickedChange, onDone, 
         </p>
       )}
 
-      <button ref={goRef} className="btn btn-fire btn-wide" disabled={!valid || outside}
+      <button ref={goRef} className={'btn btn-fire btn-wide' + (valid && !outside ? ' gate-go--ready' : '')} disabled={!valid || outside}
         onClick={() => onDone(circleArea(picked!.lon, picked!.lat, radius))}>
         {valid ? 'Show my fire calendar' : 'Tap the globe or type a point first'}
       </button>

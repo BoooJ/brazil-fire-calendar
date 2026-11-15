@@ -235,3 +235,5 @@ Global rules for this block:
   - `.modal p.fineprint` is 13px fine print with 16px above it.
 - [x] "375 m" / "1 km" broke across lines on phones (landing FAQ: "VIIRS 375 / m hotspots")
   - Every "1 km" and "375 m" in the tool and landing text now uses a no-break space. Landing sections unchanged in height at the four sizes.
+- [x] Location step on phones: tapping the globe filled the point, but "Show my fire calendar" was three screens down, so nothing seemed to happen
+  - Under 900px, once a valid point inside Brazil is picked, the button is sticky at the bottom of the screen (with a dark ring so it lifts off the content) until the user reaches its place in the steps. Desktop unchanged.
