@@ -146,3 +146,11 @@ Global rules for this block:
   - ~25 unused .bfc-win / .bfc-kpi / .bfc-yr rules deleted; the app frame stats keep their own rules.
 - [x] Calendar fine print said "colour shows how much burned" in vs Average mode too
   - Now mode-dependent: vs Average explains orange above / purple below the average.
+
+## Found on the 04:55 run
+
+- [x] Calendar drew the same averages twice ("Typical" row and "2027 typical" row, identical bricks)
+  - One row now: while the API has no months after the reference year it is labelled "2027 · typical" (the average row, total "avg"), with the note under it; otherwise it is the plain "Typical" row. web/CLAUDE.md's "average row" is still there.
+- [ ] Location step: the disabled "Show my fire calendar" button is dark brown with dark text (hard to read, looks broken); give it a calm disabled look and a hint of what is missing
+- [ ] Phone (375px): the three "coming months" cards are cramped (words wrap to 1–2 per line); stack them as rows under 600px
+- [ ] Desktop globe edge fade still shows vertical banding over the light Brazil fill at 1366×768; check and soften

@@ -171,44 +171,35 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
           <div className="yr-total">Year</div>
         </div>
 
-        {/* typical year = the average row */}
-        <div className="yr yr-typical">
-          <div className="yr-label">Typical<small>{period}</small></div>
-          <div className="yr-months">
-            {MON.map((m, idx) => {
-              const a = avg.get(idx + 1);
-              return (
-                <div className="cell" key={m}>
-                  <span className={`day typical lv${levels.level(a?.mean ?? null)}`} role="img"
-                    aria-label={`${MONTHS[idx]}, typical ${period}: ${num(a?.mean)} (history, not a forecast)`}
-                    title={`${MONTHS[idx]}, typical ${period}: ${num(a?.mean)} (history, not a forecast)`} />
-                  <span className="cell-mon" aria-hidden="true">{m}</span>
+        {/* The average row. While the API has no months after the reference year it doubles as "one year forward":
+            next year's typical months (history, not a forecast), so the same averages are not drawn twice. */}
+        {(() => {
+          const ahead = !data.calendar.some((c) => c.year > ref_year);
+          const next = ref_year + 1;
+          return (
+            <>
+              <div className={`yr yr-typical${ahead ? ' yr-ahead' : ''}`}>
+                <div className="yr-label">{ahead ? <>{next}<small>typical</small></> : <>Typical<small>{period}</small></>}</div>
+                <div className="yr-months">
+                  {MON.map((m, idx) => {
+                    const a = avg.get(idx + 1);
+                    const text = ahead
+                      ? `${MONTHS[idx]} ${next} is usually around ${num(a?.mean)} (typical ${period}; ${data.next_months_label})`
+                      : `${MONTHS[idx]}, typical ${period}: ${num(a?.mean)} (history, not a forecast)`;
+                    return (
+                      <div className="cell" key={m}>
+                        <span className={`day typical lv${levels.level(a?.mean ?? null)}`} role="img" aria-label={text} title={text} />
+                        <span className="cell-mon" aria-hidden="true">{m}</span>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
-          </div>
-          <div className="yr-total muted">avg</div>
-        </div>
-
-        {/* one year forward: what is typical for each month of next year (history, not a forecast) */}
-        {!data.calendar.some((c) => c.year > ref_year) && (
-          <div className="yr yr-ahead">
-            <div className="yr-label">{ref_year + 1}<small>typical</small></div>
-            <div className="yr-months">
-              {MON.map((m, idx) => {
-                const a = avg.get(idx + 1);
-                const text = `${MONTHS[idx]} ${ref_year + 1} is usually around ${num(a?.mean)} (typical ${period}; ${data.next_months_label})`;
-                return (
-                  <div className="cell" key={m}>
-                    <span className={`day typical lv${levels.level(a?.mean ?? null)}`} role="img" aria-label={text} title={text} />
-                  </div>
-                );
-              })}
-            </div>
-            <div className="yr-total muted" title={data.next_months_label}>typ.</div>
-          </div>
-        )}
-        {!data.calendar.some((c) => c.year > ref_year) && <p className="cal-ahead-note">{ref_year + 1} and the rest of {ref_year} show typical months. {data.next_months_label}.</p>}
+                <div className="yr-total muted" title={ahead ? data.next_months_label : undefined}>avg</div>
+              </div>
+              {ahead && <p className="cal-ahead-note">{next} and the rest of {ref_year} show the {period} average. {data.next_months_label}.</p>}
+            </>
+          );
+        })()}
         {visibleYears.map((y) => {
           const total = yearTotals.get(y);
           return (

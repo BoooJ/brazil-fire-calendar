@@ -518,13 +518,14 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
   .yr-label small { display: none; }
   .day { border-radius: 4px; }
   .yr-colhead .yr-months span { font-size: 0; }
-  .cal-ahead-note { margin-left: 0; }
+  .cal-ahead-note { padding-left: 0; }
   .yr-colhead .yr-months span::before { content: attr(data-i); font-size: var(--t-2xs); }
   .yr-label { font-size: var(--t-xs); }
 }
 .yr-ahead .yr-label { color: var(--sheet-ink-2); }
 .yr-ahead + .yr { margin-top: 2px; }
-.cal-ahead-note { margin: 2px 0 6px 68px; font-size: var(--t-xs); color: var(--sheet-ink-2); }
+.cal-ahead-note { margin: 2px 0 4px; padding: 0 0 8px 68px; border-bottom: 1px solid var(--sheet-line); font-size: var(--t-xs); color: var(--sheet-ink-2); }
+.yr-typical.yr-ahead { padding-bottom: 0; margin-bottom: 0; border-bottom: 0; }
 /* the month's small card, anchored to its brick */
 .cal-pop { position: fixed; z-index: 31; width: 280px; transform: translate(-50%, 0); padding: 14px 16px; border-radius: var(--r-lg); background: var(--sheet); color: var(--sheet-ink); border: 1px solid var(--sheet-border); box-shadow: 0 12px 32px rgba(20, 21, 26, 0.22); font-size: var(--t-sm); line-height: 1.4; display: grid; gap: 4px; font-variant-numeric: tabular-nums; animation: pop-in 0.14s ease-out; }
 .cal-pop.is-above { transform: translate(-50%, -100%); }
