@@ -205,7 +205,7 @@ button.day:hover { transform: scale(1.08); }
 .day.typical.lv4 { border-color: var(--lv4d); color: var(--lv4d); }
 /* provisional = hatched, uncertain = faded + dashed, now = grey halo */
 .day.is-prov { background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0 3px, transparent 3px 7px); }
-.day.is-unc { opacity: 0.55; border: 2px dashed #6a6d7c; }
+.day.is-unc { opacity: 0.6; border: 2px dashed #6a6d7c; }
 .day.is-now { box-shadow: 0 0 0 6px #e6e6ec; }
 .day.is-sel { outline: 3px solid var(--sheet-ink); outline-offset: 2px; }
 .day.mini { width: 16px; height: 16px; flex: none; font-size: 0; }
@@ -305,7 +305,7 @@ button.day:hover { transform: scale(1.08); }
 .swatch { width: 18px; height: 14px; border-radius: 3px; background: #e45a31; }
 .swatch-nofire { background: #1b1f2a; box-shadow: inset 0 0 0 1px #333b4d; }
 .swatch-provisional { background: repeating-linear-gradient(-45deg, #e45a31 0 3px, rgba(13, 16, 23, 0.75) 3px 5px); }
-.swatch-uncertain { background: radial-gradient(circle, rgba(13, 16, 23, 0.8) 1.2px, transparent 1.4px) 0 0 / 5px 5px, #e45a31; opacity: 0.8; }
+.swatch-uncertain { background: radial-gradient(circle, rgba(13, 16, 23, 0.8) 1.2px, transparent 1.4px) 0 0 / 5px 5px, #e45a31; opacity: 0.6; }
 .swatch-partial { opacity: 0.5; }
 
 .sheet-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--sheet-line); font-size: 13px; color: var(--sheet-ink-2); }

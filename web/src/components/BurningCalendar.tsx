@@ -49,7 +49,7 @@ export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningC
       return {
         value: [c.month - 1, rowOf(c.year), v === null ? '-' : v],
         itemStyle: {
-          opacity: c.partial ? 0.5 : c.uncertain ? 0.75 : 1,
+          opacity: c.partial ? 0.5 : c.uncertain ? 0.6 : 1,
           borderColor: isSel ? '#ffffff' : CHART_BG,
           borderWidth: isSel ? 2.5 : compact ? 1 : 2,
           decal: c.provisional
@@ -100,7 +100,7 @@ export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningC
         const flags = [
           c.partial ? `◐ Partial: first ${c.days_covered} days` : '',
           c.provisional ? '▨ Provisional (near-real-time data)' : '',
-          c.uncertain ? '⁙ Uncertain (few fires or high error)' : '',
+          c.uncertain ? '⁙ Uncertain (few fires or a large conversion error)' : '',
         ].filter(Boolean);
         const det = SATELLITES.map((s) =>
           c.detected[s] == null
@@ -204,9 +204,9 @@ export function HeatmapLegend({ mode, maxCount }: { mode: Mode; maxCount: number
       </div>
       <ul className="hm-keys">
         <li><span className="swatch swatch-nofire" />No fires</li>
-        <li><span className="swatch swatch-provisional" />Provisional</li>
-        <li><span className="swatch swatch-uncertain" />Uncertain</li>
-        <li><span className="swatch swatch-partial" />Partial month</li>
+        <li><span className="swatch swatch-provisional" />Provisional (hatched)</li>
+        <li><span className="swatch swatch-uncertain" />Uncertain (faded, dotted)</li>
+        <li><span className="swatch swatch-partial" />Partial: month in progress</li>
       </ul>
     </div>
   );

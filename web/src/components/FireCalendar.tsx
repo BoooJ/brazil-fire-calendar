@@ -180,9 +180,9 @@ function Legend({ mode, thresholds, period }: { mode: Mode; thresholds: number[]
       <div className="legend-row">
         <ul>
           <li><span className="day mini typical lv2" />Typical for that month (history, not a forecast)</li>
-          <li><span className="day mini lv2 is-prov" />Provisional: recent data, may still change</li>
-          <li><span className="day mini lv2 is-unc" />Uncertain: less reliable</li>
-          <li><span className="day mini is-now" />Month in progress</li>
+          <li><span className="day mini lv2 is-prov" />Provisional (hatched): near-real-time data, may still change</li>
+          <li><span className="day mini lv2 is-unc" />Uncertain (faded): few fires or a large conversion error</li>
+          <li><span className="day mini is-now" />Partial: month in progress, compared day for day</li>
         </ul>
       </div>
     </div>

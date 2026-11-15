@@ -14,7 +14,8 @@
   - New components/ErrorNote.tsx (page + inline sizes, retry) used for the analysis error and the month's map error.
 - [x] Truncated hotspots: visible "showing 300 of N" badge on the map, readable on mobile
   - Map caption now carries an orange "showing 300 of N" badge (fits at 375px); tooltip says the CSV has every hotspot.
-- [ ] Provisional / uncertain / partial cells: make the hatching/fading consistent between FireCalendar and BurningCalendar and explain it in the legend
+- [x] Provisional / uncertain / partial cells: make the hatching/fading consistent between FireCalendar and BurningCalendar and explain it in the legend
+  - Same wording in both legends (hatched / faded / month in progress), same 0.6 fade for uncertain cells, tooltip text aligned.
 - [ ] Legends: show values for every colour step; vs Average legend with ▲/▼ and a neutral middle
 - [ ] Keyboard: every interactive element reachable with Tab, visible :focus-visible ring using a design token, Escape closes dialogs/popups
 - [ ] ARIA: labels for icon-only buttons, the calendar grid cells announce month, year and count
