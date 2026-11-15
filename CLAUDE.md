@@ -121,7 +121,7 @@ cd web && npm run build                # type-check + production build
 - [ ] Daily update from the FIRMS API. By hand for now: `01c_download_recent.py`, steps 3–4, then the data update in `infra/deploy/README.md` (last run: data updated 2026-11-15 04:18 UTC)
 - [x] Next-week fire chance: science model in `science/forecast/`, served by `POST /api/forecast` (contract v0.2, mock `web/mocks/forecast.pantanal.json`). Website panel: done (PR #9)
 - [x] API deployed online: https://fire-api.37-187-37-74.sslip.io (OVH VPS, Docker + Caddy; see `infra/deploy/README.md`)
-- [x] Website deployed online: https://fire.37-187-37-74.sslip.io (static build served by the VPS's Caddy). **Pushing or merging to GitHub does not update it:** after each merge to `main`, redeploy by hand (about 1 minute, steps in `infra/deploy/README.md`). Last deploy: 2026-11-15, `main` after PR #9
+- [x] Website deployed online: https://fire.37-187-37-74.sslip.io (static build served by the VPS's Caddy). **Every merge to `main` that changes `web/` redeploys it automatically** in 1–2 minutes (GitHub Action `.github/workflows/deploy-web.yml`; other branches change nothing online). Details and the by-hand fallback: `infra/deploy/README.md`
 
 ## Maintaining this file
 

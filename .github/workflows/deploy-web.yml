@@ -1,0 +1,82 @@
+# Builds the website and puts it online (https://fire.37-187-37-74.sslip.io)
+# every time a change under web/ lands on main. About 1-2 minutes.
+# Re-run by hand: GitHub > Actions > "Deploy website" > Run workflow (on main).
+#
+# The SSH key (secret VPS_DEPLOY_KEY, environment "website", usable from main only)
+# is locked on the VPS to `rrsync -wo /var/www/brazil-fire-site`: it can only upload
+# files into the website folder. No shell, no sudo, no API. See infra/deploy/README.md.
+name: Deploy website
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'web/**'
+      - '!web/**/*.md'
+      - '!web/mocks/**'
+      - '.github/workflows/deploy-web.yml'
+  workflow_dispatch:
+
+# One deploy at a time; a newer push waits for the running one, then deploys the latest.
+concurrency:
+  group: deploy-web
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  SITE_URL: https://fire.37-187-37-74.sslip.io
+  VPS_HOST: vps-c33c493b.vps.ovh.net
+  # Public host key of the VPS (check: ssh-keyscan -t ed25519 vps-c33c493b.vps.ovh.net)
+  VPS_HOST_KEY: vps-c33c493b.vps.ovh.net ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG2mNkNmWynFMsWY7AOOGBrmKEbipkAOdPG2F5V3ksRL
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: website
+      url: https://fire.37-187-37-74.sslip.io
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install
+        working-directory: web
+        run: npm ci
+
+      - name: Build (type-check + production bundle)
+        working-directory: web
+        env:
+          VITE_API_BASE_URL: https://fire-api.37-187-37-74.sslip.io
+        run: npm run build
+
+      - name: Upload to the VPS
+        env:
+          VPS_DEPLOY_KEY: ${{ secrets.VPS_DEPLOY_KEY }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$VPS_DEPLOY_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$VPS_HOST_KEY" > ~/.ssh/known_hosts
+          # --delay-updates + --delete-after: new files go live together at the end,
+          # old bundles are removed last, so visitors never see a half-updated site.
+          rsync -rltz --checksum --chmod=D755,F644 --delete-after --delay-updates --stats \
+            -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes" \
+            web/dist/ "ubuntu@${VPS_HOST}:"
+          rm -f ~/.ssh/deploy_key
+
+      - name: Check the live site serves this build
+        run: |
+          bundle=$(grep -o '_app/index-[^"]*\.js' web/dist/index.html)
+          curl -fsS "$SITE_URL/" | grep -qF "$bundle"
+          curl -fsS -o /dev/null "$SITE_URL/$bundle"
+          echo "Live: $SITE_URL serves $bundle"
