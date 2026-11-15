@@ -217,6 +217,9 @@ strong { font-weight: 650; }
 .hero-context b { color: var(--ink); font-weight: 600; }
 .hero-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: var(--t-sm); color: var(--ink-2); margin-top: 14px; }
 .hero-meta .tag { margin: 0; }
+.hero-meta-upd { display: inline-flex; align-items: center; gap: 10px; white-space: nowrap; }
+.show-phone { display: none; }
+@media (max-width: 599px) { .hide-phone { display: none; } .show-phone { display: inline; } }
 
 /* ---------- white sheet ---------- */
 .sheet { background: var(--sheet); color: var(--sheet-ink); border-radius: var(--r-3xl) var(--r-3xl) 0 0; margin: 0 -16px; padding: 24px 16px 140px; }

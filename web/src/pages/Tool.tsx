@@ -416,8 +416,11 @@ function Hero({ data, area, status, asOf, updating, onUpdate }: {
       <p className="hero-meta">
         {provisional && <span className="tag">Provisional</span>}
         {asOf && <span className="tag">As of {dateShort(data.query.ref_date)}</span>}
-        <span>Data updated {dateTime(status?.data_updated ?? data.data_updated)}</span>
-        <button className="textlink" onClick={onUpdate} disabled={updating}>{updating ? 'Updating…' : 'Update now'}</button>
+        {/* the time and its action wrap together, so "Update now" is never alone on a phone line */}
+        <span className="hero-meta-upd">
+          <span><span className="hide-phone">Data u</span><span className="show-phone">U</span>pdated {dateTime(status?.data_updated ?? data.data_updated)}</span>
+          <button className="textlink" onClick={onUpdate} disabled={updating}>{updating ? 'Updating…' : 'Update now'}</button>
+        </span>
       </p>
     </section>
   );
