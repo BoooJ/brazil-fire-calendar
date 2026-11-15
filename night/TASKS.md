@@ -345,3 +345,5 @@ Global rules for this block:
   - Says "Tap" on touch screens, "Click" with a mouse (Detailed.tsx subtitle only; other copy unchanged).
 - [x] Quick calendar tooltip at 375: on bricks near the left it touched the screen edge (left 0)
   - The tip's centre is kept 128px from each edge (was 120), so it stays 8px inside. Checked 320 / 375 / 1440.
+- [x] Detailed charts on phones: the chart cards clip overflow, so a tooltip near the card's edge (late months, recent years) could be cut off
+  - `confine: true` on the heatmap, typical-year and year-by-year tooltips: they stay inside the chart. Checked 375 (December cell: tooltip 28–336px inside the 16–359px card).

@@ -85,6 +85,7 @@ export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningC
     }));
 
     const tooltip: echarts.TooltipComponentOption = {
+      confine: true, // stays inside the card (overflow: hidden) at the heatmap's edges
       backgroundColor: 'rgba(16,19,27,0.97)',
       borderColor: '#3a4152',
       textStyle: { color: '#ece9e2', fontFamily: CHART_FONT, fontSize: 13 },

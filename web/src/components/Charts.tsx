@@ -11,6 +11,7 @@ const axisText = { color: '#9aa1b0', fontFamily: CHART_FONT, fontSize: 11 };
 const split = { lineStyle: { color: '#222736' } };
 const tooltipBase: echarts.TooltipComponentOption = {
   trigger: 'axis',
+  confine: true, // the chart card clips overflow: keep the tooltip inside the chart on phones
   backgroundColor: 'rgba(16,19,27,0.97)',
   borderColor: '#3a4152',
   textStyle: { color: '#ece9e2', fontFamily: CHART_FONT, fontSize: 12 },
