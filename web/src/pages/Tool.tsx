@@ -8,6 +8,7 @@ import { drawnArea, pointCount, scatterIn, type Area } from '../geo';
 import Globe, { BRAZIL_CENTER, zoomForRadius } from '../components/Globe';
 import LocationGate, { PinIcon, type Way } from '../components/LocationGate';
 import StatusHero from '../components/Status';
+import MonthHistory from '../components/MonthHistory';
 import { stateArea, type StateFeature } from '../states';
 import { LEVEL_WORDS, makeCountLevels } from '../levels';
 import FireCalendar, { type Mode } from '../components/FireCalendar';
@@ -456,6 +457,7 @@ export default function Tool() {
                 </section>
               )}
               {data && <StatusHero data={data} area={area} status={status} updating={updating} onUpdate={updateNow} onForecast={status?.forecast_available === false ? undefined : toForecast} />}
+              {data && <MonthHistory data={data} />}
               <DateControls day={day} onDay={pickDay} fromYear={fromYear} setFromYear={setFromYear} detailed={detailed} setDetailed={setDetailed} today={today} />
               {load.kind === 'loading' && (
                 <div className="sheet" aria-busy="true" aria-label="Loading fire data"><SheetSkeleton /></div>

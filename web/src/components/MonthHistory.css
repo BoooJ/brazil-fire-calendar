@@ -1,0 +1,71 @@
+/* "November over the years" (components/MonthHistory.tsx). Its own file so it never collides with styles.css;
+   it only uses the design tokens defined at the top of styles.css. */
+.mh { margin: 0 0 var(--s-6); background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg); padding: var(--s-4); animation: swap 0.4s var(--ease) both; }
+
+.mh-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-1) var(--s-4); }
+.mh-head h2 { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); line-height: 1.4; }
+.mh-hint { font-size: var(--t-xs); color: var(--ink-2); }
+
+/* the month picker: a segmented track like .seg, twelve equal chips */
+.mh-months { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 2px; margin-top: var(--s-3); padding: 3px; border-radius: var(--r-md); background: #e8e8ed; }
+.mh-months button { min-height: 32px; padding: 0; border: 0; border-radius: 8px; background: transparent; font-size: var(--t-sm); font-weight: 550; color: var(--ink-2); transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease; }
+.mh-months button:hover:not(.on) { color: var(--ink); background: rgba(255, 255, 255, 0.5); }
+.mh-months button.on { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
+.mh-months button.is-now { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; text-decoration-color: var(--fire); }
+
+.mh-lead { margin-top: var(--s-4); font-size: var(--t-base); line-height: 1.45; color: var(--ink-2); text-wrap: pretty; }
+.mh-lead b { color: var(--ink); font-weight: 600; }
+
+/* the chart: bars on one scale, a right gutter for the typical line's label */
+.mh-chart { --gutter: 52px; margin-top: var(--s-4); }
+.mh-plot { position: relative; height: 128px; margin-right: var(--gutter); padding-top: 18px; box-sizing: content-box; }
+.mh-plot::after { content: ''; position: absolute; left: 0; right: calc(-1 * var(--gutter)); bottom: 0; border-bottom: 1px solid var(--line-strong); pointer-events: none; }
+.mh-bars { position: relative; display: grid; gap: 3px; height: 100%; }
+.mh-bars li { position: relative; min-width: 0; }
+.mh-bars button { position: absolute; inset: -18px -1.5px 0; display: block; padding: 0; border: 0; background: none; border-radius: 4px; }
+.mh-bars i { position: absolute; left: 1.5px; right: 1.5px; bottom: 0; border-radius: 4px 4px 1px 1px; background: #d6d6d6; transition: height 0.55s var(--ease), opacity 0.2s ease, background-color 0.25s ease; }
+.mh-bars i.lv1 { background-color: var(--lv1); } .mh-bars i.lv2 { background-color: var(--lv2); } .mh-bars i.lv3 { background-color: var(--lv3); } .mh-bars i.lv4 { background-color: var(--lv4); }
+/* provisional or not finished yet: hatched, like the calendar's provisional bricks */
+.mh-bars li.is-prov i { background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0 2px, transparent 2px 5px); box-shadow: inset 0 0 0 1px rgba(29, 29, 31, 0.18); }
+.mh-bars li.is-none i { height: 0 !important; border-bottom: 2px dotted var(--edge); border-radius: 0; background: none; }
+/* hover / focus: light one year, dim the rest */
+.mh-plot.is-hot .mh-bars li:not(.is-lit) i { opacity: 0.35; }
+.mh-bars li.is-lit i { box-shadow: 0 0 0 1.5px var(--card), 0 0 0 3px var(--ink); }
+.mh-bars li.is-lit.is-prov i { box-shadow: inset 0 0 0 1px rgba(29, 29, 31, 0.18), 0 0 0 1.5px var(--card), 0 0 0 3px var(--ink); }
+.mh-plot:not(.is-hot) .mh-bars li.is-lit i { box-shadow: none; }
+.mh-plot:not(.is-hot) .mh-bars li.is-lit.is-prov i { box-shadow: inset 0 0 0 1px rgba(29, 29, 31, 0.18); }
+.mh-val { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); padding-bottom: 3px; font-family: var(--mono); font-size: 10px; font-weight: 500; color: var(--ink); white-space: nowrap; pointer-events: none; }
+/* near the plot's edges the value hangs inward instead of past the card */
+.mh-val.at-start { left: 0; transform: none; }
+.mh-val.at-end { left: auto; right: 0; transform: none; }
+
+/* the typical (average) line, dashed across the bars, its value in the gutter */
+.mh-avg { position: absolute; left: 0; right: calc(-1 * var(--gutter)); height: 0; border-top: 1.5px dashed var(--ink-2); z-index: 1; pointer-events: none; transition: bottom 0.55s var(--ease); }
+.mh-avg span { position: absolute; right: 0; bottom: 3px; width: calc(var(--gutter) - 6px); font-family: var(--mono); font-size: 10px; line-height: 1.15; text-align: right; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.04em; }
+.mh-avg b { display: block; font-weight: 500; color: var(--ink); text-transform: none; letter-spacing: 0; }
+
+.mh-years { display: grid; gap: 3px; margin-right: var(--gutter); height: 22px; font-family: var(--mono); font-size: 10px; color: var(--ink-2); }
+.mh-years li { position: relative; min-width: 0; }
+.mh-years span { position: absolute; top: 6px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
+.mh-years li.is-lit span { color: var(--ink); font-weight: 600; }
+
+.mh-read { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px var(--s-4); min-height: 1.45em; margin-top: var(--s-3); padding-top: var(--s-3); border-top: 1px solid var(--line); font-size: var(--t-base); }
+.mh-read-rank { color: var(--ink-2); font-size: var(--t-sm); }
+.mh-note { margin-top: var(--s-2); font-size: var(--t-xs); line-height: 1.45; color: var(--ink-2); }
+
+@media (max-width: 599px) {
+  .mh-chart { --gutter: 46px; }
+  .mh-plot { height: 104px; }
+  .mh-bars, .mh-years { gap: 2px; }
+  .mh-bars button { inset: -18px -1px 0; }
+  .mh-bars i { left: 1px; right: 1px; border-radius: 3px 3px 1px 1px; }
+  .mh-years li.minor span { display: none; }
+  /* bars are too thin for two values side by side: the latest one is in the line under the chart */
+  .mh-val.is-latest { display: none; }
+  .mh-months { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .mh-months button { min-height: 36px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mh, .mh-bars i, .mh-avg { animation: none; transition: none; }
+}
