@@ -334,3 +334,5 @@ Global rules for this block:
   - Roving tabindex: one Tab stop for the grid (the brick last focused, else this month, else the newest); the existing arrow keys move between months/years; a screen-reader-only line says so. axe clean at 375; checked Tab / Shift+Tab / arrows at 1440.
 - [x] Landing method panels on 768px-high laptops (1366×768): the fire-day grid almost touched the top of its panel
   - The steps there scale to 0.8 (was 0.84), so each picture has air above and below. Section still one screen at 1366×768.
+- [x] Reduced motion: the detailed charts still animated in, and three phone jumps to the map (month on the map, next-week cells, drawing) still scrolled smoothly
+  - EChart.tsx turns chart animation off and Tool.tsx jumps instead of smooth-scrolling (`scrollMotion()`) when the visitor asks for reduced motion. Normal motion unchanged. Checked 1440 with reduced motion emulated.

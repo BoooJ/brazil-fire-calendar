@@ -37,6 +37,8 @@ type Load = { kind: 'loading' } | { kind: 'error'; message: string } | { kind: '
 type Stage = 'globe' | 'map';
 
 const isPhone = () => window.matchMedia('(max-width: 899px)').matches;
+/** 'auto' (jump) when the visitor asked for reduced motion, else 'smooth' */
+const scrollMotion = (): ScrollBehavior => (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth');
 const message = (e: unknown, fallback: string) => (e instanceof ApiError ? e.message : fallback);
 
 export default function Tool() {
@@ -142,7 +144,7 @@ export default function Tool() {
         setMapMonth({ year: selected.year, month: selected.month });
         setMap({ kind: 'shown', total: h.total, returned: h.returned, truncated: h.truncated });
         setStage('map');
-        if (isPhone()) window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (isPhone()) window.scrollTo({ top: 0, behavior: scrollMotion() });
       })
       .catch((e) => setMap({ kind: 'error', message: message(e, 'Could not load the hotspots.') }));
   }, [area, selected]);
@@ -151,8 +153,7 @@ export default function Tool() {
   const toForecast = useCallback(() => {
     const h = document.getElementById('fc-title');
     if (!h) return;
-    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    h.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'start' });
+    h.scrollIntoView({ behavior: scrollMotion(), block: 'start' });
     h.focus({ preventScroll: true });
   }, []);
 
@@ -163,14 +164,14 @@ export default function Tool() {
     setMapMonth(null);
     setFcMap(f);
     setStage('map');
-    if (isPhone()) window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (isPhone()) window.scrollTo({ top: 0, behavior: scrollMotion() });
   }, []);
 
   // ---------- drawing an area on the map ----------
   const startDraw = (m: DrawMode) => {
     setDrawMode(m);
     setStage(m === 'none' ? 'globe' : 'map');
-    if (m !== 'none' && isPhone()) window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (m !== 'none' && isPhone()) window.scrollTo({ top: 0, behavior: scrollMotion() });
   };
   const drawDone = (polygon: Area['polygon']) => {
     if (pointCount(polygon) > 1000) {
