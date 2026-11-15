@@ -283,7 +283,6 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
     const cls = ['day'];
     if (mode === 'counts') cls.push(`lv${levels.level(b.count)}`);
     else cls.push(`vs${vsLevel(b.vs_avg_pct) + 2}`);
-    if (b.provisional) cls.push('is-prov');
     if (b.uncertain) cls.push('is-unc');
     if (flashKey === b.key) cls.push('is-flash');
     if (b.key === nowKey) cls.push('is-now');
@@ -305,7 +304,7 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
     const label = typLabel(y, col);
     const lv = levels.level(mean);
     return (
-      <div className={'cell is-future' + (y > refYear ? '' : ' is-rest')} key={col} style={{ '--c': at } as React.CSSProperties}>
+      <div className="cell is-future" key={col} style={{ '--c': at } as React.CSSProperties}>
         <span className={`day est ${mode === 'counts' ? `lv${typLv(mean)}` : 'vs2'}`} role="img"
           aria-label={`${label}: estimate, usually ${LEVEL_WORDS[lv].toLowerCase()} (typical ${period}, not a forecast)`}
           onClick={(e) => (tip?.el === e.currentTarget ? hideTip() : showTyp(e.currentTarget, label, mean))}
@@ -314,6 +313,9 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
     );
   };
   const emptyCell = (col: number) => <div className="cell" key={col}><span className="day empty" aria-hidden="true" /></div>;
+  // this year's coming weeks, and the lines they sit on (only drawn with the estimate block)
+  const isRest = (col: number) => col > refCol && col < colsIn(refYear);
+  const restLines = ahead && data.average_period ? lines.filter(([a, b]) => Array.from({ length: b - a + 1 }, (_, i) => a + i).some(isRest)) : [];
   /** one year as its lines of bricks */
   const yearLines = (cell: (col: number, at: number) => React.ReactNode) =>
     lines.map(([a, b]) => (
@@ -346,6 +348,20 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
               <div className="yr-label">{next}</div>
               <div className="yr-months">{yearLines((col, at) => (col < colsIn(next) ? typicalCell(next, col, at) : emptyCell(col)))}</div>
             </div>
+            {/* the rest of this year, cut out of its row and lifted straight up into the estimate, in the same columns:
+                pushed down, it would slot into the gap after this week like a Lego piece */}
+            {restLines.length > 0 && (
+              <div className="yr yr-ahead yr-rest">
+                <div className="yr-label">{refYear}</div>
+                <div className="yr-months">
+                  {restLines.map(([a, b]) => (
+                    <div className="yr-line" key={a}>
+                      {Array.from({ length: b - a + 1 }, (_, i) => (isRest(a + i) ? typicalCell(refYear, a + i, i) : emptyCell(a + i)))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
         {visibleYears.map((y) => (
@@ -355,9 +371,8 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
               {yearLines((col, at) => {
                 const b = byKey.get(`${y}-${col}`);
                 if (!b) {
-                  // the rest of this year: what is typical, faded; week 53 stays empty in 52-week years
-                  const future = y === refYear && col > refCol && col < colsIn(y);
-                  return future && data.average_period ? typicalCell(y, col, at) : emptyCell(col);
+                  // the rest of this year is drawn in the estimate block above (a gap here); week 53 stays empty in 52-week years
+                  return emptyCell(col);
                 }
                 return (
                   <div className="cell" key={col} style={{ '--c': at } as React.CSSProperties}>
@@ -386,7 +401,6 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
       <ul className="cal-keys">
         <li><span className={`day mini est ${mode === 'counts' ? 'lv2' : 'vs2'}`} />Faded: estimate from past years, not a forecast</li>
         <li><span className="day mini lv0 is-now" />This {unit}</li>
-        <li><span className={`day mini is-prov ${mode === 'counts' ? 'lv2' : 'vs3'}`} />Provisional (recent data)</li>
         <li><span className={`day mini is-unc ${mode === 'counts' ? 'lv2' : 'vs3'}`} />Uncertain (very few fires)</li>
       </ul>
 
