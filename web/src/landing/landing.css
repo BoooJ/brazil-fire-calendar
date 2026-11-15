@@ -353,3 +353,10 @@ strong { font-weight: 650; }
 #method .panel.bfc-panel { background: #eef0f6; box-shadow: none; }
 #method .panel.bfc-panel::before { content: none; display: none; }
 #method .bfc-panel .bfc-conv__arrow { background: #4f5462; opacity: 1; }
+
+/* the app frame's left pane: the tool's white sheet with the brick calendar */
+.app > .app__pane.bfc-pane-sheet { background: #fff; padding: var(--s-4); }
+.app > .app__pane.bfc-pane-sheet::after { display: none; }
+.bfc-pane-sheet .bfc-how-ui { box-shadow: none; padding: 0; }
+.app > .app__pane--open::after { display: none; }
+.bfc-qc__d.is-sel { outline: 2px solid #14151a; outline-offset: 2px; }

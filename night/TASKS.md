@@ -131,3 +131,11 @@ Global rules for this block:
   - Coming-months cards say "on average (corrected count)", month card "corrected count", empty state "saw no fire". Detailed view keeps the term with its explanation.
 - [x] Landing method panels: drop the kit's grain-gradient ground (no gradients rule)
   - Panels are flat #eef0f6 like the satellite timeline; the kit's radial shade removed; conversion arrow darkened.
+
+## Found on the 04:06 run
+
+- [x] Landing "Built for people…" app frame showed a list of years the tool doesn't have (invented UI)
+  - Left pane is now the tool's white sheet with the brick calendar (10 years, the open month outlined); map pane keeps the real month stats; glow gradients on the mini-map removed.
+- [ ] Phone: the calendar legend takes ~150px before the first brick; fold the state keys (typical / provisional / uncertain / in progress) into a "What the marks mean" disclosure under 600px
+- [ ] web/CLAUDE.md file table: describe FireCalendar as bricks + anchored card, `headlineFor`/`trendOf`/`rankLine` in format.ts, `components/useClosing.ts`
+

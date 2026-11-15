@@ -76,21 +76,10 @@ const frpColour = (frp: number | null) => {
   return colour;
 };
 
-/** The app in a frame: the list of years beside the busiest month on the map. */
+/** The app in a frame: the brick calendar (as the tool's sheet draws it) beside the busiest month on the map. */
 export function AppFrame({ show }: { show: Show }) {
   if (!show) return <div className="ui app fill bfc-app" aria-hidden="true"><div className="app__pane app__pane--list" /><div className="app__pane app__pane--open" /></div>;
-  const { cal } = calendarOf(show);
-  const a = show.analysis;
   const sel = show.month;
-  const years = [...a.yearly].sort((x, y) => y.year - x.year);
-  const peak = (year: number) => {
-    let best: CalendarItem | null = null;
-    for (let m = 1; m <= 12; m++) {
-      const c = cal.get(`${year}-${m}`);
-      if (c && c.count != null && (!best || c.count > (best.count ?? 0))) best = c;
-    }
-    return best ? MON[best.month - 1] : null;
-  };
 
   // equirectangular inside the area's box, padded
   const W = 1000, H = 560;
@@ -103,23 +92,14 @@ export function AppFrame({ show }: { show: Show }) {
   const [x1, y1] = px(east, south);
   const pts = (show.hotspots?.features ?? []).map((f) => ({ xy: px(...f.geometry.coordinates), colour: frpColour(f.properties.frp) }));
   const h = show.hotspots;
-  const label = `The fire calendar app: a list of years for the ${show.areaName}` +
-    (sel ? ` with ${sel.year} open, and ${MONTHS[sel.month - 1]} ${sel.year} on the map` : '') +
+  const label = `The fire calendar app: the burning calendar for the ${show.areaName}` +
+    (sel ? `, and ${MONTHS[sel.month - 1]} ${sel.year} on the map` : '') +
     (h ? ` with ${num(h.returned)} of ${num(h.total)} hotspots` : '') + (show.demo ? ' (demo data)' : '');
 
   return (
     <div className="ui app fill bfc-app" role="img" aria-label={label}>
-      <div className="app__pane app__pane--list">
-        <div className="bfc-pane-head"><b>{show.areaName}</b><span>{years.length} years · {num(a.query.area_km2)} km²</span></div>
-        <div className="bfc-yrs">
-          {years.map((r) => (
-            <div className={'bfc-yr' + (r.year === sel?.year ? ' is-on' : '')} key={r.year}>
-              <b>{r.year}</b>
-              <span>{num(r.count)} fire-days{peak(r.year) && ` · peak ${peak(r.year)}`}</span>
-              {r.provisional ? <span className="bfc-chip bfc-chip--prov">Provisional</span> : <span className="bfc-chip">Final</span>}
-            </div>
-          ))}
-        </div>
+      <div className="app__pane app__pane--list bfc-pane-sheet">
+        <HowCalendar show={show} rows={sel ? Math.max(10, show.analysis.cards.ref_year - sel.year + 1) : 10} mark={sel} />
       </div>
       <div className="app__pane app__pane--open">
         <div className="bfc-pane-head">
@@ -135,14 +115,7 @@ export function AppFrame({ show }: { show: Show }) {
           </div>
         )}
         <svg className="bfc-map" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMin slice" aria-hidden="true">
-          <defs>
-            <radialGradient id="bfc-glow">
-              <stop offset="0" stopColor="#f98e09" stopOpacity=".45" />
-              <stop offset="1" stopColor="#f98e09" stopOpacity="0" />
-            </radialGradient>
-          </defs>
           <rect x={x0} y={y0} width={x1 - x0} height={y1 - y0} className="bfc-map__box" />
-          {pts.filter((_, i) => i % 3 === 0).map((p, i) => <circle key={`g${i}`} cx={p.xy[0].toFixed(1)} cy={p.xy[1].toFixed(1)} r="16" fill="url(#bfc-glow)" data-c="" />)}
           {pts.map((p, i) => <circle key={i} cx={p.xy[0].toFixed(1)} cy={p.xy[1].toFixed(1)} r="5" fill={p.colour} />)}
         </svg>
       </div>
@@ -322,7 +295,7 @@ export function HowAnswer({ show }: { show: Show }) {
 }
 
 /** Step 3, the quick-view calendar on the white sheet (FireCalendar.tsx): rounded bricks, same level rule. */
-export function HowCalendar({ show }: { show: Show }) {
+export function HowCalendar({ show, rows = 6, mark }: { show: Show; rows?: number; mark?: CalendarItem | null }) {
   const items = show?.analysis.calendar ?? [];
   const v = items.map((i) => i.count).filter((n): n is number => n != null && n > 0).sort((a, b) => a - b);
   const q = (p: number) => (v.length ? v[Math.min(v.length - 1, Math.floor(p * v.length))] : Infinity);
@@ -330,7 +303,7 @@ export function HowCalendar({ show }: { show: Show }) {
   const level = (n: number | null) => (n == null ? 0 : n >= t[3] ? 4 : n >= t[2] ? 3 : n >= t[1] ? 2 : n >= t[0] ? 1 : 0);
   const data = show && calendarOf(show);
   const ref = show?.analysis.cards.ref_year ?? new Date().getFullYear();
-  const years = [ref, ref - 1, ref - 2, ref - 3, ref - 4, ref - 5];
+  const years = Array.from({ length: rows }, (_, k) => ref - k);
   return (
     <div className="bfc-how-ui bfc-how-ui--sheet" aria-hidden="true">
       <b className="bfc-how-ui__h">Burning calendar</b>
@@ -341,7 +314,7 @@ export function HowCalendar({ show }: { show: Show }) {
           ...MON.map((m, i) => {
             const c = data?.cal.get(`${y}-${i + 1}`);
             const lv = c ? level(c.count) : -1;
-            return <i key={`${y}${m}`} className={'bfc-qc__d' + (lv < 0 ? ' is-none' : ` lv${lv}`) + (c?.provisional ? ' is-prov' : '')} />;
+            return <i key={`${y}${m}`} className={'bfc-qc__d' + (lv < 0 ? ' is-none' : ` lv${lv}`) + (c?.provisional ? ' is-prov' : '') + (mark && mark.year === y && mark.month === i + 1 ? ' is-sel' : '')} />;
           }),
         ])}
       </div>
