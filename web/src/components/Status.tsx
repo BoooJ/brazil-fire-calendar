@@ -107,7 +107,7 @@ export default function StatusHero({ data, area, status, updating, onUpdate, onF
           <span>Updated {dateTime(status?.data_updated ?? data.data_updated)}</span>
           <button className="textlink" onClick={onUpdate} disabled={updating}>{updating ? 'Updating…' : 'Update now'}</button>
         </span>
-        {onForecast && <button className="textlink" onClick={onForecast}>Next week: model estimate ↓</button>}
+        {onForecast && <button className="textlink" onClick={onForecast}>Next week's fire chance ↓</button>}
       </p>
       <p className="hero-smoke">Smoke from fires can lower air quality nearby. We don’t measure air quality.</p>
     </section>
@@ -150,7 +150,7 @@ function Season({ data, levels, quiet, period }: { data: Analysis; levels: Retur
           const ahead = i > 5;
           return (
             <li key={m} className={(m === lit ? 'is-lit' : '') + (now ? ' is-now' : '') + (ahead ? ' is-ahead' : '')}>
-              <button type="button" aria-label={`${MONTHS[m - 1]}: usually ${LEVEL_WORDS[lv].toLowerCase()}${m === peak ? ', the peak' : ''}${now ? ', this month' : ahead ? ', coming up, an estimate from history' : ''}`}
+              <button type="button" aria-label={`${MONTHS[m - 1]}: usually ${LEVEL_WORDS[lv].toLowerCase()}${m === peak ? ', the peak' : ''}${now ? ', this month' : ahead ? ', coming up' : ''}`}
                 onPointerEnter={() => setOn(m)} onFocus={() => setOn(m)} onBlur={() => setOn(null)}>
                 <span className="season-col"><i className={`lv${lv}`} style={{ height: `${grown ? Math.max(4, ((a?.mean ?? 0) / top) * 100) : 4}%`, transitionDelay: `${i * 18}ms` }} /></span>
                 <span className="season-mon">{MON[m - 1][0]}<span>{MON[m - 1].slice(1)}</span></span>
@@ -163,7 +163,7 @@ function Season({ data, levels, quiet, period }: { data: Analysis; levels: Retur
       <p className="season-split" aria-hidden="true"><span>Earlier</span><span>Now</span><span>Coming up</span></p>
       <p className="season-read" aria-live="polite">
         <span><b>{MONTHS[lit - 1]}</b> · {LEVEL_WORDS[litLevel].toLowerCase()}{lit === peak && ' · the peak'}{lit === c.ref_month && ' · this month'}</span>
-        <span className="season-src">Estimate from the {period} average, not a forecast.</span>
+        <span className="season-src">From the {period} average.</span>
       </p>
     </div>
   );

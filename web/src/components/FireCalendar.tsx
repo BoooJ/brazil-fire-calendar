@@ -309,7 +309,7 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
     return (
       <div className="cell is-future" key={col} style={{ '--c': at } as React.CSSProperties}>
         <span className={`day est ${mode === 'counts' ? `lv${typLv(mean)}` : 'vs2'}`} role="img"
-          aria-label={`${label}: estimate, usually ${LEVEL_WORDS[lv].toLowerCase()} (typical ${period}, not a forecast)`}
+          aria-label={`${label}: usually ${LEVEL_WORDS[lv].toLowerCase()} (typical ${period})`}
           onClick={(e) => (tip?.el === e.currentTarget ? hideTip() : showTyp(e.currentTarget, label, mean))}
           onPointerEnter={onRest((el) => showTyp(el, label, mean))} onPointerLeave={() => { stopDwell(); hideTip(); }} />
       </div>
@@ -402,7 +402,7 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
         <Legend mode={mode} thresholds={levels.thresholds} unit={unit} />
       </div>
       <ul className="cal-keys">
-        <li><span className={`day mini est ${mode === 'counts' ? 'lv2' : 'vs2'}`} />Faded: estimate from past years, not a forecast</li>
+        <li><span className={`day mini est ${mode === 'counts' ? 'lv2' : 'vs2'}`} />Faded: coming weeks, as in past years</li>
         <li><span className="day mini lv0 is-now" />This {unit}</li>
         <li><span className={`day mini is-unc ${mode === 'counts' ? 'lv2' : 'vs3'}`} />Uncertain (very few fires)</li>
       </ul>
@@ -416,7 +416,7 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
               <>
                 <b>{tip.item.title}</b>
                 <span>
-                  {tip.item.count == null ? 'No data' : `${num(tip.item.count)} fire-day${tip.item.count === 1 ? '' : 's'}`}
+                  {tip.item.count == null ? 'No data' : `${num(tip.item.count)} hotspot${tip.item.count === 1 ? '' : 's'}`}
                   {tip.item.vs_avg_pct != null && <> · <wbr /><span className="nowrap">{signedPct(tip.item.vs_avg_pct)} vs usual ({period})</span></>}
                 </span>
                 {tip.item.partial && <span>Week in progress: {tip.item.days_covered} of 7 days</span>}
@@ -457,7 +457,7 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
               {i.count ? <>Fire detected · <b>{levelWord(levels, i.count)}</b></> : 'No fire detected'}
             </p>
             {i.week && i.count != null && (
-              <p className="cal-pop-num">{num(i.count)} fire-day{i.count === 1 ? '' : 's'}{i.vs_avg_pct != null && <> · {signedPct(i.vs_avg_pct)} vs usual</>}</p>
+              <p className="cal-pop-num">{num(i.count)} hotspot{i.count === 1 ? '' : 's'}{i.vs_avg_pct != null && <> · {signedPct(i.vs_avg_pct)} vs usual</>}</p>
             )}
             {!!i.count && <p>{i.vs_avg_pct == null ? `No typical ${what} to compare with yet.` : <>{vsTypical(i.vs_avg_pct)} for {what}.</>}</p>}
             {flags.length ? flags.map((f) => <p className="cal-pop-flag" key={f}>{f}</p>) : <p className="cal-pop-flag">Final data.</p>}

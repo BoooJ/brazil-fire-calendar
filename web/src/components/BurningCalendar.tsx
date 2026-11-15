@@ -97,7 +97,7 @@ export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningC
           if (d._avg) {
             const a = d._avg as MonthAverage;
             return `<b>${MONTHS[a.month - 1]}, typical</b> <span style="opacity:.6">(${period})</span><br/>Mean ${num(a.mean)} · median ${num(a.median)}<br/>Usual range ${num(a.p10)}–${num(a.p90)}` +
-              `<div style="margin-top:6px;font-size:11px;opacity:.6">History, not a forecast</div>`;
+              '';
           }
           const r = d._row as YearItem;
           return `<b>${r.year} total</b><br/>${num(r.count)} ${unitMain}${r.complete ? '' : '<br/><i>Year not finished</i>'}${r.provisional ? '<br/><i>Includes provisional data</i>' : ''}`;
@@ -118,7 +118,7 @@ export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningC
           <span style="font-size:20px;font-weight:700">${num(c.count)}</span> <span style="opacity:.7">${unitMain}</span><br/>
           ${pctShort(c.vs_avg_pct)} vs average${c.rank != null ? ` · ${ordinal(c.rank)} of ${c.of_years} years` : ''}
           ${flags.length ? `<div style="margin-top:6px;color:#b64400">${flags.join('<br/>')}</div>` : ''}
-          <div style="margin-top:6px;font-size:12px;opacity:.85">Raw hotspots detected<br/>${det}</div>
+          <div style="margin-top:6px;font-size:12px;opacity:.85">Satellite detections<br/>${det}</div>
           <div style="margin-top:6px;font-size:11px;opacity:.55">Click for details and the map</div></div>`;
       },
     };
@@ -207,7 +207,7 @@ export function HeatmapLegend({ mode, maxCount }: { mode: Mode; maxCount: number
           ))}
         </div>
         <div className="hm-caption">
-          {mode === 'counts' ? 'Fire-days per month, satellite-adjusted (log scale)' : '▼ below average · ▲ above average (ratio to the multi-year mean)'}
+          {mode === 'counts' ? 'Hotspots per month, satellite-adjusted (log scale)' : '▼ below average · ▲ above average (ratio to the multi-year mean)'}
         </div>
       </div>
       <ul className="hm-keys">

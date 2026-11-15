@@ -3749,7 +3749,7 @@
     }
   ],
   "next_months_label": "Based on history (2003-2019), not a forecast",
-  "briefing": "In this area, fire activity usually peaks in August, and the main fire season runs from July to October. The most active year since 2003 was 2019 (2.3x an average year). So far in September 2020, activity is 252% above the average for the same days (rank 1 of 18 years). Of the next three months, October is historically the most active (average 253 fire-days). This is what is normal, not a forecast. Source: NASA FIRMS (MODIS + VIIRS), harmonized.",
+  "briefing": "In this area, fire activity usually peaks in August, and the main fire season runs from July to October. The most active year since 2003 was 2019 (2.3x an average year). So far in September 2020, activity is 252% above the average for the same days (rank 1 of 18 years). Of the next three months, October is historically the most active (average 253 hotspots). Source: NASA FIRMS (MODIS + VIIRS), harmonized.",
   "reliability": {
     "median_error_pct": 12.0,
     "validated_years": [

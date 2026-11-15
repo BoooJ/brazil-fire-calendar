@@ -42,7 +42,7 @@ export const TypicalYearChart = forwardRef<EChartHandle, { average: MonthAverage
         legend: { ...legendBase, data: [band, 'Median', String(refYear)] },
         grid: { top: compact ? 52 : 34, left: 44, right: 12, bottom: 24 },
         xAxis: { type: 'category', data: MON, axisLabel: axisText, axisLine: { lineStyle: { color: '#d6d6d6' } }, boundaryGap: false },
-        yAxis: { type: 'value', axisLabel: axisText, splitLine: split, name: 'fire-days', nameTextStyle: axisText },
+        yAxis: { type: 'value', axisLabel: axisText, splitLine: split, name: 'hotspots', nameTextStyle: axisText },
         series: [
           { name: 'p10', type: 'line', data: byMonth.map((a) => a?.p10 ?? null), stack: 'band', lineStyle: { opacity: 0 }, symbol: 'none', silent: true },
           {
@@ -71,15 +71,15 @@ export const YearlyChart = forwardRef<EChartHandle, { yearly: YearItem[]; unitMa
       formatter: (ps: any) => {
         const r = yearly[ps[0].dataIndex];
         const raw = SATELLITES.map((s) => (r.detected[s] == null ? '' : `${SAT_NAMES[s]}: ${num(r.detected[s])}<br/>`)).join('');
-        return `<b>${r.year}</b>${r.complete ? '' : ' <i>(not finished)</i>'}<br/><b style="color:#d9480f">Corrected: ${num(r.count)}</b> ${unitMain}<br/><span style="opacity:.8">Raw hotspots:</span><br/>${raw}`;
+        return `<b>${r.year}</b>${r.complete ? '' : ' <i>(not finished)</i>'}<br/><b style="color:#d9480f">Corrected: ${num(r.count)}</b> ${unitMain}<br/><span style="opacity:.8">Satellite detections:</span><br/>${raw}`;
       },
     },
     legend: { ...legendBase, data: [...SATELLITES.map((s) => SAT_NAMES[s]), 'Corrected (harmonized)'] },
     grid: { top: compact ? 96 : 56, left: compact ? 44 : 52, right: compact ? 40 : 52, bottom: 24 }, // a phone: the legend takes two or three lines
     xAxis: { type: 'category', data: yearly.map((r) => String(r.year)), axisLabel: axisText, axisLine: { lineStyle: { color: '#d6d6d6' } } },
     yAxis: [
-      { type: 'value', name: 'raw hotspots', nameTextStyle: { ...axisText, align: 'left' }, axisLabel: { ...axisText, formatter: thousands }, splitLine: split },
-      { type: 'value', name: compact ? 'corrected' : 'corrected fire-days', nameTextStyle: { ...axisText, color: EMBER, align: 'right' }, axisLabel: { ...axisText, color: EMBER, formatter: thousands }, splitLine: { show: false } },
+      { type: 'value', name: 'satellite detections', nameTextStyle: { ...axisText, align: 'left' }, axisLabel: { ...axisText, formatter: thousands }, splitLine: split },
+      { type: 'value', name: compact ? 'corrected' : 'hotspots (adjusted)', nameTextStyle: { ...axisText, color: EMBER, align: 'right' }, axisLabel: { ...axisText, color: EMBER, formatter: thousands }, splitLine: { show: false } },
     ],
     series: [
       ...SATELLITES.map((s) => ({
@@ -94,5 +94,5 @@ export const YearlyChart = forwardRef<EChartHandle, { yearly: YearItem[]; unitMa
       },
     ],
   }), [yearly, unitMain, compact]);
-  return <EChart ref={ref} option={option} height={compact ? 360 : 320} ariaLabel="Year by year: raw hotspots by satellite versus the corrected count" />;
+  return <EChart ref={ref} option={option} height={compact ? 360 : 320} ariaLabel="Year by year: satellite detections by satellite versus the adjusted hotspots" />;
 });

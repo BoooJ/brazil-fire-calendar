@@ -250,7 +250,7 @@ def briefing(cards: dict, season: list[int], worst_year: int, worst_factor: floa
         f"{abs(vs):.0f}% {direction} the average{same_days} "
         f"(rank {cards['rank']} of {cards['of_years']} years). "
         f"Of the next three months, {MONTH_NAMES[nxt['month'] - 1]} is historically the most active "
-        f"(average {nxt['mean']:.0f} fire-days). This is what is normal, not a forecast. "
+        f"(average {nxt['mean']:.0f} hotspots). "
         f"Source: NASA FIRMS (MODIS + VIIRS), harmonized."
     )
 

@@ -315,7 +315,7 @@ export default function Landing() {
               <article className="l-card l-card--white">
                 <div className="l-steps__pic"><StepGrid /></div>
                 <h3>Count places that burned, not detections</h3>
-                <p>A sharp sensor can report one fire many times. We count each 1 km square once per day it burned (a “fire-day”), so sharper eyes can’t inflate the total.</p>
+                <p>A sharp sensor can report one fire many times. We count each 1 km square once per day it burned (one “hotspot”), so sharper eyes can’t inflate the total.</p>
               </article>
               <article className="l-card l-card--white">
                 <div className="l-steps__pic"><StepConvert /></div>
