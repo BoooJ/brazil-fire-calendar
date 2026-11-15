@@ -121,7 +121,7 @@ function ForecastBody({ f }: { f: Forecast }) {
           <div>
             <dt>Likely to catch fire</dt>
             <dd>
-              <span className="fc-val">{s.expected_cells_with_fire == null ? '–' : `${km2(s.expected_cells_with_fire * cell)} at risk`}</span>
+              <span className="fc-val">{s.expected_cells_with_fire == null ? '–' : `~${km2(s.expected_cells_with_fire * cell)} at risk`}</span>
               {s.expected_cells_with_fire != null && <span className="muted">{num(s.expected_cells_with_fire)} out of {num(s.cells)} cells{s.expected_share_pct != null && <> ({pct1(s.expected_share_pct)}%)</>}</span>}
             </dd>
           </div>
