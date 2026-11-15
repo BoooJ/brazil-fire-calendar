@@ -1,7 +1,7 @@
 // The burning calendar, GitHub-contributions style: one row per year, a rounded brick per month.
 // Colour shows intensity (filled = happened, dotted = typical); the numbers are in the tooltip and the month card.
 // The detailed view draws the same months as a dense heatmap: see BurningCalendar.tsx.
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Analysis, CalendarItem } from '../types';
 import { MON, MONTHS, compact, num, pctLong } from '../format';
 
@@ -49,6 +49,43 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
     window.addEventListener('scroll', follow, { passive: true });
     return () => window.removeEventListener('scroll', follow);
   }, [tip]);
+
+  // click / Enter on a brick: a small card anchored to it, with that month's numbers (all from the API)
+  const [pop, setPop] = useState<{ item: CalendarItem; el: HTMLElement } | null>(null);
+  const popRef = useRef<HTMLDivElement>(null);
+  const [popPos, setPopPos] = useState<{ left: number; top: number; below: boolean } | null>(null);
+  useEffect(() => {
+    if (!pop) return;
+    const placePop = () => {
+      const r = pop.el.getBoundingClientRect();
+      const below = r.bottom + 220 < window.innerHeight;
+      setPopPos({ left: Math.min(Math.max(r.left + r.width / 2, 150), window.innerWidth - 150), top: below ? r.bottom + 10 : r.top - 10, below });
+    };
+    placePop();
+    const close = (back: boolean) => {
+      setPop(null);
+      if (back && document.contains(pop.el)) pop.el.focus({ preventScroll: true });
+    };
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && close(true);
+    const onDown = (e: PointerEvent) => {
+      if (!popRef.current?.contains(e.target as Node) && e.target !== pop.el) close(false);
+    };
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('pointerdown', onDown);
+    window.addEventListener('scroll', placePop, { passive: true });
+    window.addEventListener('resize', placePop);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('pointerdown', onDown);
+      window.removeEventListener('scroll', placePop);
+      window.removeEventListener('resize', placePop);
+    };
+  }, [pop]);
+
+  const popShown = !!(pop && popPos);
+  useEffect(() => {
+    if (popShown) popRef.current?.querySelector<HTMLElement>('button')?.focus({ preventScroll: true });
+  }, [popShown, pop]);
 
   const { years, byKey } = useMemo(() => {
     const byKey = new Map<string, CalendarItem>();
@@ -156,7 +193,8 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
                   return (
                     <div className="cell" key={m}>
                       {isNow && <span className="now-tag">{item.partial ? 'SO FAR' : 'NOW'}</span>}
-                      <button className={cellClass(item)} onClick={() => onSelect(item)} aria-label={describe(item)}
+                      <button className={cellClass(item)} aria-label={describe(item)} aria-haspopup="dialog" aria-expanded={pop?.item === item}
+                        onClick={(e) => { hideTip(); setPop(pop?.item === item ? null : { item, el: e.currentTarget }); }}
                         onPointerEnter={onEnter(item)} onPointerLeave={hideTip} onFocus={onFocusTip(item)} onBlur={hideTip} />
                       <span className="cell-mon" aria-hidden="true">{m}</span>
                     </div>
@@ -187,6 +225,25 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
           <span className="cal-tip-hint">Click for details and the map</span>
         </div>
       )}
+      {pop && popPos && (() => {
+        const i = pop.item;
+        const typical = avg.get(i.month)?.mean;
+        const status = [i.partial && `month in progress (first ${i.days_covered} days)`, i.provisional && 'provisional, may still change', i.uncertain && 'uncertain: few fires']
+          .filter(Boolean).join(' · ') || 'final data';
+        return (
+          <div ref={popRef} className={'cal-pop' + (popPos.below ? ' is-below' : ' is-above')} role="dialog" aria-label={`${MONTHS[i.month - 1]} ${i.year}`}
+            style={{ left: popPos.left, top: popPos.top }}>
+            <b className="cal-pop-title">{MONTHS[i.month - 1]} {i.year}</b>
+            <p className="cal-pop-main">{i.count ? <>Fire was detected: corrected count <b>{num(i.count)}</b></> : 'No fire detected this month'}</p>
+            <p>{i.vs_avg_pct == null ? 'No typical month to compare with' : <>{pctLong(i.vs_avg_pct)}</>}{typical != null && <> · typical {num(typical)}</>}</p>
+            <p className="cal-pop-flag">{status}</p>
+            <div className="cal-pop-act">
+              <button className="btn btn-fire" onClick={() => { setPop(null); onSelect(i); }}>Details and map</button>
+              <button className="btn btn-ghost" onClick={() => { setPop(null); pop.el.focus({ preventScroll: true }); }}>Close</button>
+            </div>
+          </div>
+        );
+      })()}
       <p className="fineprint">
         Colour shows how much burned: the corrected count of 1 km squares with fire each day (NOAA-20 scale; see Detailed view). Year totals on the right, * year not complete. Typical = the {period} average.
       </p>

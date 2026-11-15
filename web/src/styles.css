@@ -273,7 +273,7 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
 .day.is-unc { opacity: 0.6; border: 2px dashed #6a6d7c; }
 .day.is-now { box-shadow: 0 0 0 2px var(--sheet), 0 0 0 4px #b9bcc8; }
 .day.is-sel { outline: 3px solid var(--sheet-ink); outline-offset: 2px; }
-.day.mini { width: 14px; height: 14px; flex: none; font-size: 0; }
+.day.mini { width: 14px; height: 14px; flex: none; font-size: 0; border-radius: 3px; }
 .day.mini.lv0, .day.mini.vs2 { border: 1px solid var(--sheet-edge); }
 .day.mini.is-now { box-shadow: 0 0 0 2px #fff, 0 0 0 3px #b9bcc8; background: #fff; margin: 0 3px; }
 .day.mini.typical, .day.mini.is-unc { border-width: 2px; }
@@ -487,3 +487,14 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
   .yr-label { font-size: 12px; }
 }
 .view-swap + .upcoming { margin-top: 32px; }
+/* the month's small card, anchored to its brick */
+.cal-pop { position: fixed; z-index: 31; width: 280px; transform: translate(-50%, 0); padding: 14px 16px; border-radius: var(--r-lg); background: var(--sheet); color: var(--sheet-ink); border: 1px solid var(--sheet-border); box-shadow: 0 12px 32px rgba(20, 21, 26, 0.22); font-size: 13px; line-height: 1.4; display: grid; gap: 4px; font-variant-numeric: tabular-nums; animation: pop-in 0.14s ease-out; }
+.cal-pop.is-above { transform: translate(-50%, -100%); }
+.cal-pop-title { font-size: 15px; }
+.cal-pop-main b { font-size: 15px; }
+.cal-pop p { margin: 0; color: var(--sheet-ink-2); }
+.cal-pop p.cal-pop-main { color: var(--sheet-ink); }
+.cal-pop-flag { font-size: 12px; }
+.cal-pop-act { display: flex; gap: 8px; margin-top: 8px; }
+.cal-pop-act .btn { min-height: 36px; padding: 0 14px; font-size: 13px; }
+@keyframes pop-in { from { opacity: 0; } to { opacity: 1; } }
