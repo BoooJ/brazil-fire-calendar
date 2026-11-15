@@ -213,3 +213,5 @@ Global rules for this block:
   - Under 480px, once an area is chosen, the name folds to the round flame button (name kept for screen readers) and the pill shows the whole area + "Change". Gate screen unchanged.
 - [x] Phone calendar: the "2027" row lost its "typical" tag (read like a real year), and its note stayed indented 68px because a later rule overrode the phone one; the note repeated "2003–2025" twice in a row
   - Phone keeps the "typical" tag on the next-year row only; the phone padding rule now comes after the base rule; note reads "Dotted bricks: a typical year (the 2003–2025 average) for 2027 and the rest of 2026." + `next_months_label`.
+- [x] Phone calendar legend: the last colour step ("1.3k+") wrapped alone onto a second line; "What the marks mean" was a 32px tap target
+  - Under 600px the legend uses 12px side padding and 8px between steps (all five fit one line at 375), the disclosure is 44px tall and the extra row gap is gone.

@@ -257,7 +257,12 @@ strong { font-weight: 650; }
 .legend-states-phone summary::after { content: '▾'; margin-left: 6px; font-size: var(--t-xs); transition: transform 0.15s ease; }
 .legend-states-phone[open] summary::after { transform: rotate(180deg); }
 .legend-states-phone summary { list-style: none; }
-@media (max-width: 599px) { .legend-states { display: none; } .legend-states-phone { display: block; } }
+@media (max-width: 599px) {
+  .legend-states { display: none; } .legend-states-phone { display: block; }
+  .legend { padding-inline: var(--s-3); gap: 0; }
+  .legend ul { gap: 6px 8px; } .legend li { gap: 4px; }
+  .legend-states-phone summary { min-height: 44px; }
+}
 
 /* GitHub-contributions style: one row per year (label · 12 bricks · total), at every width */
 .cal-grid { position: relative; display: grid; gap: 4px; }
