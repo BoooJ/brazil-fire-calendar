@@ -20,12 +20,14 @@ type Load =
 
 const pct1 = (p: number) => p.toLocaleString('en-GB', { maximumFractionDigits: p < 10 ? 1 : 0 });
 
-export default function ForecastPanel({ area, refDate, available, onShowMap, onHideMap, onShown }: {
+export default function ForecastPanel({ area, refDate, available, refresh = 0, onShowMap, onHideMap, onShown }: {
   area: AreaGeometry;
   /** the past day the page is replayed on, null for today */
   refDate: string | null;
   /** `/api/status` → `forecast_available`; false hides the panel */
   available: boolean;
+  /** bumped when the page reloads its data (Try again, Update now): fetch the estimate again too */
+  refresh?: number;
   /** puts the returned cells on the map */
   onShowMap: (f: Forecast) => void;
   /** takes them off again */
@@ -52,7 +54,7 @@ export default function ForecastPanel({ area, refDate, available, onShowMap, onH
     return () => {
       alive = false;
     };
-  }, [area, refDate, available, tooEarly, attempt]);
+  }, [area, refDate, available, tooEarly, attempt, refresh]);
 
   if (!available) return null;
 

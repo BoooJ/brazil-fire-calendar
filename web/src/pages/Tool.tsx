@@ -393,7 +393,7 @@ export default function Tool() {
                     )}
                     </div>
                     <Upcoming data={data} />
-                    <ForecastPanel area={area.polygon} refDate={refDate} available={status?.forecast_available !== false} onShowMap={showForecastMap} onHideMap={clearMap} onShown={!!fcMap && stage === 'map'} />
+                    <ForecastPanel area={area.polygon} refDate={refDate} available={status?.forecast_available !== false} refresh={attempt} onShowMap={showForecastMap} onHideMap={clearMap} onShown={!!fcMap && stage === 'map'} />
                     <Briefing data={data} short={!detailed} />
                     {detailed && <Reliability data={data} status={status} />}
                     <footer className="sheet-foot">

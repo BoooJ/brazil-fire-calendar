@@ -283,3 +283,5 @@ Global rules for this block:
   - One table cell updated (needs the usual quick human review of CLAUDE.md changes).
 - [x] Forecast panel: no way to pass the estimate on (the analysis briefing has "Copy text")
   - "Copy as text" copies the API's own forecast `briefing` (it ends with the label), with the same status note as the briefing. The "300 of 7,774" note now says it is about the map. axe clean at 375 / 1440.
+- [x] "Update now" (and the page's Try again) reloaded the calendar but not the next-week estimate
+  - ForecastPanel takes `refresh` (the page's reload counter) and fetches again with it.
