@@ -35,7 +35,8 @@ Global rules for this block:
   2. **Short practical context** under it: is this the usual fire season here, when does the season usually peak/end (from the API's monthly averages shown as-is), how intense this month is compared with the typical one. One friendly general note is allowed, e.g. "Smoke from fires can lower air quality nearby", but **no air-quality numbers** (we don't have that data).
   3. Then the calendar.
   Remove or hide jargon ("fire-days", "separate fires", raw rank wording) from the first screen; move technical terms to the Detailed view with a one-line explanation. If a value we'd want isn't in the API (e.g. "how many of the last 20 Novembers were above average", "typical fire duration"), don't compute it: add it to QUESTIONS.md for Paul.
-- [ ] **Rename "How reliable is this?" → "Brazil Fire Calendar can make mistakes"** (both places: `components/Panels.tsx`, `pages/Tool.tsx`). Keep the content and the one-click access.
+- [x] **Rename "How reliable is this?" → "Brazil Fire Calendar can make mistakes"** (both places: `components/Panels.tsx`, `pages/Tool.tsx`). Keep the content and the one-click access.
+  - Both headings renamed; content and placement unchanged.
 
 ### The calendar — redesign (GitHub-contributions style)
 

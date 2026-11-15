@@ -469,7 +469,7 @@ function Briefing({ data, short }: { data: Analysis; short: boolean }) {
       </dl>
       {short && (
         <>
-          <h3>How reliable is this?</h3>
+          <h3>Brazil Fire Calendar can make mistakes</h3>
           <p className="muted">
             {data.reliability.median_error_pct != null && <>Typical error of the harmonized count: about ±{data.reliability.median_error_pct}%. </>}
             {data.reliability.validated_years.length > 0 && <>Checked against {data.reliability.validated_years.join(', ')}. </>}
