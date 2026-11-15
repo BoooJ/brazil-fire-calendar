@@ -39,6 +39,7 @@
   --panel-ink: #ece9e2;
   --panel-ink-2: #9aa1b0;
   --panel-edge: #3a4152;
+  --panel-flag: #f9cb35; /* provisional/uncertain notes in tooltips */
   /* spacing scale */
   --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 20px; --s-6: 24px; --s-7: 32px;
   font-family: 'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -154,11 +155,13 @@ strong { font-weight: 650; }
 .stage-switch { position: absolute; z-index: 3; right: 16px; bottom: 104px; background: var(--overlay); backdrop-filter: blur(8px); border: 1px solid var(--line); }
 .stage-switch button { min-height: 34px; padding: 0 12px; font-size: 13px; }
 /* hotspot popup: same look as the calendar tooltip */
-.maplibregl-popup.hs-popup .maplibregl-popup-content { display: grid; gap: 2px; min-width: 190px; background: rgba(16, 19, 27, 0.97); color: var(--panel-ink); border: 1px solid var(--panel-edge); border-radius: var(--r-xs); font-family: inherit; font-size: 13px; line-height: 1.4; padding: 10px 12px; box-shadow: var(--shadow-float); font-variant-numeric: tabular-nums; }
+/* one tooltip look: the calendar tooltip and the map popup (the heatmap's ECharts tooltip copies it in BurningCalendar.tsx) */
+.cal-tip, .maplibregl-popup.hs-popup .maplibregl-popup-content { display: grid; gap: 2px; padding: 10px 12px; border-radius: var(--r-xs); background: rgba(16, 19, 27, 0.97); border: 1px solid var(--panel-edge); color: var(--panel-ink); font-family: inherit; font-size: 13px; line-height: 1.4; box-shadow: var(--shadow-float); font-variant-numeric: tabular-nums; }
+.maplibregl-popup.hs-popup .maplibregl-popup-content { min-width: 190px; }
 .hs-popup .pt-title { font-size: 13px; }
 .hs-popup .pt-big { font-size: 18px; font-weight: 700; }
 .hs-popup .pt-big small { font-size: 12px; font-weight: 500; opacity: 0.7; }
-.hs-popup .pt-flag { color: #f9cb35; }
+.hs-popup .pt-flag { color: var(--panel-flag); }
 .maplibregl-popup.hs-popup .maplibregl-popup-tip { display: none; }
 /* the imagery credit must stay readable on the dark map (MapLibre's own sheet draws it black on white) */
 .stage-map .maplibregl-ctrl-attrib.maplibregl-compact { background-color: rgba(12, 13, 20, 0.82); color: #d5d8e2; }
@@ -261,11 +264,11 @@ button.day:hover:not(.is-now) { box-shadow: 0 4px 12px rgba(20, 21, 26, 0.18); }
 .day.mini.typical, .day.mini.is-unc { border-width: 2px; }
 
 /* calendar tooltip: same look as the detailed view's chart tooltip; shown on hover and keyboard focus */
-.cal-tip { position: fixed; z-index: 30; transform: translate(-50%, calc(-100% - 10px)); display: grid; gap: 2px; min-width: 200px; max-width: 240px; padding: 10px 12px; border-radius: var(--r-xs); background: rgba(16, 19, 27, 0.97); border: 1px solid var(--panel-edge); color: var(--panel-ink); font-size: 13px; line-height: 1.4; box-shadow: var(--shadow-float); pointer-events: none; animation: fade 0.12s ease-out; }
+.cal-tip { position: fixed; z-index: 30; transform: translate(-50%, calc(-100% - 10px)); min-width: 200px; max-width: 240px; pointer-events: none; animation: fade 0.12s ease-out; }
 .cal-tip b { font-size: 14px; }
 .cal-tip-big { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .cal-tip-big small { font-size: 13px; font-weight: 500; opacity: 0.7; }
-.cal-tip-flags { color: #f9cb35; }
+.cal-tip-flags { color: var(--panel-flag); }
 .cal-tip-hint { margin-top: 4px; font-size: 11px; opacity: 0.6; }
 .sats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
 .sats > div { padding: 10px 12px; border-radius: var(--r-md); background: var(--sheet-soft); }
@@ -302,8 +305,7 @@ button.day:hover:not(.is-now) { box-shadow: 0 4px 12px rgba(20, 21, 26, 0.18); }
 .gate-or { display: flex; align-items: center; gap: 12px; margin: 22px 0 12px; font-size: 13px; color: var(--ink-2); }
 .gate-or::before, .gate-or::after { content: ''; flex: 1; height: 1px; background: var(--line); }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { min-height: 44px; padding: 0 16px; border-radius: var(--r-pill); border: 1px solid var(--line); background: var(--surface); font-weight: 600; font-size: 14px; }
-.chip { display: inline-flex; align-items: center; gap: 8px; transition: border-color 0.15s ease, background 0.15s ease; }
+.chip { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: var(--r-pill); border: 1px solid var(--line); background: var(--surface); font-weight: 600; font-size: 14px; transition: border-color 0.15s ease, background 0.15s ease; }
 .chip:hover { border-color: var(--fire); }
 .chip.on { border-color: var(--fire); background: rgba(255, 106, 31, 0.16); color: var(--fire-ink); }
 .coords { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }

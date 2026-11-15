@@ -40,4 +40,5 @@
   - Tabular figures on every number block (month card, key cards, stats, satellites, coming months, sources, tooltip); tightened label/note line-heights and heading spacing; month card eyebrow no longer runs under the close button.
 - [x] Map popups: consistent styling with the rest of the tool, readable on mobile
   - Hotspot popup restyled like the calendar tooltip: date/time title, fire strength as the big number, satellite and pass, confidence, amber provisional flag; max 260px wide for phones.
-- [ ] Find and merge duplicated UI components or duplicated CSS rules
+- [x] Find and merge duplicated UI components or duplicated CSS rules
+  - Merged the two .chip rules; the calendar tooltip and map popup share one tooltip rule (+ --panel-flag token). Error messages already merged into ErrorNote.tsx earlier tonight.
