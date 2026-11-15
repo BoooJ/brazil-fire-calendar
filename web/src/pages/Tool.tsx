@@ -37,6 +37,8 @@ type Load = { kind: 'loading' } | { kind: 'error'; message: string } | { kind: '
 type Stage = 'globe' | 'map';
 
 const isPhone = () => window.matchMedia('(max-width: 899px)').matches;
+/** a touch screen: no Esc or Enter key to talk about */
+const touch = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
 /** 'auto' (jump) when the visitor asked for reduced motion, else 'smooth' */
 const scrollMotion = (): ScrollBehavior => (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth');
 const message = (e: unknown, fallback: string) => (e instanceof ApiError ? e.message : fallback);
@@ -290,8 +292,14 @@ export default function Tool() {
             </Suspense>
           )}
           {drawMode !== 'none' && (
-            <div className="map-banner" role="status">
-              {drawMode === 'rect' ? 'Drag to draw a box' : 'Click the corners, Enter to finish'} · Esc to cancel
+            <div className="map-banner">
+              <span role="status">
+                {touch
+                  ? (drawMode === 'rect' ? 'Drag to draw a box' : 'Tap the corners, then the first again')
+                  : `${drawMode === 'rect' ? 'Drag to draw a box' : 'Click the corners, Enter to finish'} · Esc to cancel`}
+              </span>
+              {/* phones have no Esc key: a visible way out of drawing */}
+              <button type="button" className="map-banner-x" onClick={() => startDraw('none')}>Cancel</button>
             </div>
           )}
           {map.kind === 'shown' && mapMonth && (

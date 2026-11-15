@@ -336,3 +336,5 @@ Global rules for this block:
   - The steps there scale to 0.8 (was 0.84), so each picture has air above and below. Section still one screen at 1366×768.
 - [x] Reduced motion: the detailed charts still animated in, and three phone jumps to the map (month on the map, next-week cells, drawing) still scrolled smoothly
   - EChart.tsx turns chart animation off and Tool.tsx jumps instead of smooth-scrolling (`scrollMotion()`) when the visitor asks for reduced motion. Normal motion unchanged. Checked 1440 with reduced motion emulated.
+- [x] Drawing an area on a phone: the map banner said "Esc to cancel" / "Enter to finish" (no keys on a phone) and the only way out was the chip scrolled off under the map
+  - The map banner has a Cancel button (all screens); on touch screens it and the gate note say "Tap the corners, then the first again" / "Drag to draw a box" without key names. Desktop wording unchanged. Checked iPhone 13 emulation and 1440; Cancel ends drawing.

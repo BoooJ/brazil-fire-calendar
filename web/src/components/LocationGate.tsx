@@ -145,9 +145,13 @@ export default function LocationGate({ presets, picked, onPickedChange, onDone, 
       </div>
       {drawMode !== 'none' && (
         <p className="note" role="status">
-          {drawMode === 'rect'
-            ? 'Drag on the map to draw a box. Press Esc to cancel.'
-            : 'Click the map to add corners. Click the first corner again, double-click or press Enter to finish. Esc cancels.'}
+          {window.matchMedia('(pointer: coarse)').matches
+            ? (drawMode === 'rect'
+              ? 'Drag on the map to draw a box. Cancel is on the map.'
+              : 'Tap the map to add corners. Tap the first corner again to finish. Cancel is on the map.')
+            : drawMode === 'rect'
+              ? 'Drag on the map to draw a box. Press Esc to cancel.'
+              : 'Click the map to add corners. Click the first corner again, double-click or press Enter to finish. Esc cancels.'}
         </p>
       )}
 
