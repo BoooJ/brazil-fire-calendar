@@ -606,7 +606,7 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
 
   .kc { grid-template-columns: 1.15fr 1fr 1fr; }
   .kc .kc-hot { grid-column: auto; grid-row: span 2; justify-content: center; }
-  .kc .kc-vs, .kc > div:last-child { grid-column: auto; }
+  .kc .kc-vs, .kc:not(.kc-2) > div:last-child { grid-column: auto; }
   .kc-2 { grid-template-columns: repeat(2, 1fr); }
   .chart-card { padding: 18px 16px 14px; }
   .modal-backdrop { place-items: center; padding: 24px; }
