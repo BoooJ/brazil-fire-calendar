@@ -498,6 +498,14 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
   .map-caption button { min-height: 44px; padding: 0 6px; }
 }
 
+/* small phones with an area chosen: the name folds to the flame so the area name in the pill is readable */
+@media (max-width: 479px) {
+  .topbar--area .brand { width: 44px; padding: 0; justify-content: center; }
+  .topbar--area .brand-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .topbar--area .pill-text { max-width: calc(100vw - 210px); }
+  .topbar--area .pill-action { display: inline; }
+}
+
 /* ---------- tablet: a taller map band, compact caption, the month card centred ---------- */
 @media (min-width: 600px) and (max-width: 899px) {
   .tool--map .globe-wrap { height: 560px; }

@@ -206,3 +206,8 @@ Global rules for this block:
   - Legend max width leaves 184px for the switch; 27px clear gap at 375.
 - [x] Landing app frame on tablets: the calendar pane cut through the open month (2020) and the frame left a big empty band below
   - Tablet list pane 312px (whole calendar, open month visible) and frame up to 660px (56svh); #tool still one 820×1180 screen.
+
+## Found on the 05:55 run
+
+- [x] Phone top bar: the area pill was cut to "All of Br…" (no "Change") because the full name took half the bar
+  - Under 480px, once an area is chosen, the name folds to the round flame button (name kept for screen readers) and the pill shows the whole area + "Change". Gate screen unchanged.

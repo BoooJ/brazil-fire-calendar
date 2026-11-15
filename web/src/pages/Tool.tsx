@@ -218,9 +218,9 @@ export default function Tool() {
 
   return (
     <div className={'tool' + (stage === 'map' ? ' tool--map' : '')}>
-      <header className="topbar">
+      <header className={'topbar' + (area ? ' topbar--area' : '')}>
         <a className="brand" href="#/">
-          <Flame /> Brazil Fire Calendar
+          <Flame /> <span className="brand-text">Brazil Fire Calendar</span>
         </a>
         <div className="topbar-actions">
           <button className="toplink" onClick={() => setShowSources(true)}>Data sources</button>
