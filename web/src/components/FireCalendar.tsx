@@ -110,6 +110,8 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
   const narrow = useNarrow();
   const lines = weekly ? (narrow ? LINES.narrow : LINES.wide) : LINES.month;
   const per = Math.max(...lines.map(([a, b]) => b - a + 1));
+  // drawn bottom to top, like the years: a year's first weeks on its bottom line, its last weeks on top
+  const drawn = [...lines].reverse();
   const period = data.average_period ? `${data.average_period.from}–${data.average_period.to}` : 'no complete year yet';
 
   // every brick, keyed "year-col"; a week opens the month that holds its Thursday
@@ -213,7 +215,7 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
   }, [pop]);
 
   // arrow keys, as in a data grid: left/right = the previous/next week (or month) of that year, across its lines;
-  // up/down = the line above/below, so a wrapped year reads top to bottom and then goes on to the next year
+  // up/down = the line above/below (a year's lines run bottom to top, like the years)
   const moveFocus = (e: React.KeyboardEvent<HTMLDivElement>) => {
     const from = e.target as HTMLElement;
     if (!from.matches('button.day')) return;
@@ -226,7 +228,8 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
     };
     const cellOf = (el: HTMLElement) => el.closest<HTMLElement>('.cell')!;
     if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-      const cells = [...from.closest('.yr')!.querySelectorAll<HTMLElement>('.yr-line > .cell')];
+      // lines are drawn bottom to top, so the year in order is its lines read from the last one up
+      const cells = [...from.closest('.yr')!.querySelectorAll<HTMLElement>('.yr-line')].reverse().flatMap((l) => [...l.children] as HTMLElement[]);
       const step = e.key === 'ArrowLeft' ? -1 : 1;
       for (let i = cells.indexOf(cellOf(from)) + step; i >= 0 && i < cells.length; i += step) if (go(cells[i].querySelector<HTMLElement>('button.day'))) return;
     } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
@@ -315,10 +318,10 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
   const emptyCell = (col: number) => <div className="cell" key={col}><span className="day empty" aria-hidden="true" /></div>;
   // this year's coming weeks, and the lines they sit on (only drawn with the estimate block)
   const isRest = (col: number) => col > refCol && col < colsIn(refYear);
-  const restLines = ahead && data.average_period ? lines.filter(([a, b]) => Array.from({ length: b - a + 1 }, (_, i) => a + i).some(isRest)) : [];
+  const restLines = ahead && data.average_period ? drawn.filter(([a, b]) => Array.from({ length: b - a + 1 }, (_, i) => a + i).some(isRest)) : [];
   /** one year as its lines of bricks */
   const yearLines = (cell: (col: number, at: number) => React.ReactNode) =>
-    lines.map(([a, b]) => (
+    drawn.map(([a, b]) => (
       <div className="yr-line" key={a}>{Array.from({ length: b - a + 1 }, (_, i) => cell(a + i, i))}</div>
     ));
 
