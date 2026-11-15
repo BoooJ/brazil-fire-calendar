@@ -222,6 +222,8 @@ strong { font-weight: 650; }
 .bfc-qc__d.is-typ { background: none; border: 1.5px dotted #b9bcc8; }
 .bfc-qc__d.is-typ.lv1 { border-color: #e0b84a; } .bfc-qc__d.is-typ.lv2 { border-color: #d9a13a; } .bfc-qc__d.is-typ.lv3 { border-color: #e0662d; } .bfc-qc__d.is-typ.lv4 { border-color: #b5121b; }
 .bfc-qc > .bfc-qc__typ { color: #5d6070; font-weight: 500; }
+/* the next-year row is the average, never a real year: a small "typ." tag under its label, as in the tool */
+.bfc-qc__typ small { display: block; margin-top: -2px; font-size: 9px; line-height: 1; letter-spacing: 0.02em; }
 .bfc-how-ui__h--big { margin: 2px 0 2px; }
 .bfc-how-ui--dark { gap: 10px; }
 .bfc-qc__d.is-prov { background-image: repeating-linear-gradient(-45deg, transparent 0 2px, rgba(255, 255, 255, 0.7) 2px 4px); }

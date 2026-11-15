@@ -219,3 +219,5 @@ Global rules for this block:
   - Compact heatmap only: the average row takes the month colour scale (its mean in Counts; the neutral middle in vs Average, since it is the average) with a thin dotted white edge, like the quick view's dotted typical bricks. Tooltip unchanged; desktop unchanged (numbers in neutral cells).
 - [x] Map: when the NASA GIBS imagery cannot load (offline, blocked network) the map was a silent black square
   - After 3 failed imagery tiles (and none loaded) a small status note above the zoom buttons says "Satellite imagery could not load. The area and its hotspots are still shown."; it clears if a tile loads. Phones show only the first sentence; 220px wide so the month card never cuts it.
+- [x] Landing calendars (How it works step 3, app frame): the dotted "2027" row had no tag, so it read like real 2027 data
+  - A small "typ." under its year label, as the tool's "2027 · typical". Sections still exactly one screen at 1440×900, 1366×768, 820×1180.

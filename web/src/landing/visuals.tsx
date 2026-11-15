@@ -307,7 +307,7 @@ export function HowCalendar({ show, rows = 5, mark }: { show: Show; rows?: numbe
         <span />{MON.map((m) => <em key={m}>{m[0]}</em>)}
         {/* next year: the typical months, dotted, as in the tool (history, not a forecast) */}
         {show && [
-          <span key="typ" className="bfc-qc__typ">{ref + 1}</span>,
+          <span key="typ" className="bfc-qc__typ">{ref + 1}<small>typ.</small></span>,
           ...MON.map((m, i) => {
             const a = show.analysis.average_by_month.find((x) => x.month === i + 1);
             return <i key={`typ${m}`} className={`bfc-qc__d is-typ lv${level(a?.mean ?? null)}`} />;
