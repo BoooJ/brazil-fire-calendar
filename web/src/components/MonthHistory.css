@@ -25,8 +25,8 @@
 .mh-bars button { position: absolute; inset: -18px -1.5px 0; display: block; padding: 0; border: 0; background: none; border-radius: 4px; }
 .mh-bars i { position: absolute; left: 1.5px; right: 1.5px; bottom: 0; border-radius: 4px 4px 1px 1px; background: #d6d6d6; transition: height 0.55s var(--ease), opacity 0.2s ease, background-color 0.25s ease; }
 .mh-bars i.lv1 { background-color: var(--lv1); } .mh-bars i.lv2 { background-color: var(--lv2); } .mh-bars i.lv3 { background-color: var(--lv3); } .mh-bars i.lv4 { background-color: var(--lv4); }
-/* provisional or not finished yet: hatched, like the calendar's provisional bricks */
-.mh-bars li.is-prov i { background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0 2px, transparent 2px 5px); box-shadow: inset 0 0 0 1px rgba(29, 29, 31, 0.18); }
+/* provisional or not finished yet: hatched with a small SVG stripe pattern, like the calendar's provisional bricks */
+.mh-bars li.is-prov i { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Cpath d='M-1 1l2-2M0 5l5-5M4 6l2-2' stroke='%23fff' stroke-opacity='.6' stroke-width='1.4'/%3E%3C/svg%3E"); background-size: 5px 5px; box-shadow: inset 0 0 0 1px rgba(29, 29, 31, 0.18); }
 .mh-bars li.is-none i { height: 0 !important; border-bottom: 2px dotted var(--edge); border-radius: 0; background: none; }
 /* hover / focus: light one year, dim the rest */
 .mh-plot.is-hot .mh-bars li:not(.is-lit) i { opacity: 0.35; }
