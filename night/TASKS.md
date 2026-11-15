@@ -165,3 +165,5 @@ Global rules for this block:
   - In the two-column layout the last card spans the full width; desktop's three columns unchanged.
 - [x] vs Average mode: typical (dotted) bricks kept their orange count colours, which read as "above average" in that legend
   - In vs Average the typical bricks and their legend key are neutral grey dotted (they are the average); Counts unchanged.
+- [x] Landing "Real change, not sensor change" chart: the corrected marks were yellow, almost the same as the NOAA-20 amber bars
+  - Corrected marks (and their key) are white with a thin dark edge; satellite colours unchanged.

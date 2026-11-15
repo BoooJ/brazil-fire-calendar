@@ -161,12 +161,13 @@ strong { font-weight: 650; }
 .bfc-yb { position: relative; height: 100%; }
 .bfc-yb__raw { position: absolute; inset: 0; display: flex; flex-direction: column-reverse; }
 .bfc-yb__raw i { display: block; width: 100%; opacity: 0.85; }
-.bfc-yb > b { position: absolute; left: -2px; right: -2px; height: 3px; background: #f9cb35; border-radius: 2px; }
+/* the corrected value: white, so it never reads as one of the satellite colours (NOAA-20 is amber) */
+.bfc-yb > b { position: absolute; left: -2px; right: -2px; height: 3px; background: #fff; border-radius: 2px; box-shadow: 0 0 0 1px rgba(13, 16, 23, 0.85); }
 .bfc-yb > span { position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font: 400 13px/1 var(--font-mono); color: #9aa1b0; }
 .bfc-rc__key { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; font-size: 13px; }
 .bfc-rc__key li { display: flex; gap: 6px; align-items: center; }
 .bfc-rc__key i { width: 10px; height: 10px; border-radius: 2px; }
-.bfc-rc__key .k-line { height: 3px; width: 14px; background: #f9cb35; }
+.bfc-rc__key .k-line { height: 3px; width: 14px; background: #fff; }
 @media (max-width: 639px) {
   #statement h2.mo-lt__type { font-size: 40px; }
   #statement .bfc-stmt { margin-top: var(--s-5); }
