@@ -23,12 +23,12 @@ Scope: everything the user sees. `../docs/api-contract.md` is the source of trut
 
 - **Areas:** convert a rectangle, or lat/lon + radius (a 64-point circle), into a GeoJSON `Polygon` with **`[lon, lat]`** order before sending it (`src/geo.ts`).
 - **Burning calendar:** years × months grid, with `Counts` / `vs Average` modes, an average row, year totals, hover details, and a click that opens that month on the map.
-- **Every state needs a design:** loading, zero fires, API error, `truncated` hotspots ("showing 300 of N"), and `provisional` / `uncertain` / `partial` cells (hatched or faded, explained in the legend).
+- **Every state needs a design:** loading, zero fires, API error, `truncated` hotspots ("showing 300 of N"), and `provisional` / `uncertain` / `partial` cells (dotted or faded, explained in the legend).
 - **"Coming months"** always shows `next_months_label` ("not a forecast").
 
 ## Accessibility (part of "done")
 
-- Counts use a colour-blind-safe sequential scale (yellow → orange → red on the white sheet, inferno on the dark panels). vs Average uses a diverging scale **without red/green** (purple ↔ orange) with a neutral middle.
+- Counts use a colour-blind-safe sequential scale (yellow → orange → red, darker = more), in the bricks and in the charts. vs Average uses a diverging scale **without red/green** (purple ↔ orange) with a neutral middle.
 - Never rely on colour alone: numbers on hover, ▲/▼ arrows, legends with values.
 - Check with Chrome DevTools → Rendering → *Emulate vision deficiencies*. Works at 375 px width.
 
@@ -45,29 +45,34 @@ npm run preview    # serve the build
 ```
 
 - `.env` is read from the **repo root** (`envDir: '..'`). Leave `VITE_API_BASE_URL` empty to use the mocks.
-- **The two pages never share a document.** Each is a lazy chunk with its own stylesheet, and `App.tsx` reloads the page when the route changes, so the landing page's kit and the tool's CSS cannot leak into each other. Shared code: `api.ts`, `types.ts`, `format.ts`, `geo.ts`, `colors.ts`, `components/Globe.tsx`, `components/Brand.tsx`.
+- **The two pages never share a document.** Each is a lazy chunk with its own stylesheet, and `App.tsx` reloads the page when the route changes, so the landing page and the tool cannot leak styles into each other. Shared code: `api.ts`, `types.ts`, `format.ts`, `geo.ts`, `colors.ts`, `components/Globe.tsx`, `components/Brand.tsx`.
+- **One look, two stylesheets:** light theme, flat colours, **no gradients anywhere** (`grep -rn gradient src` must stay empty). Shared tokens: canvas `#fff`, bands `#f5f5f7`, ink `#1d1d1f`, secondary `#6e6e73`, hairline `#e6e6e8`/`#d6d6d6`, one accent (ember `#d9480f`); radii 10 / 20 / 28 / pill; 4 px spacing base; Inter, with JetBrains Mono uppercase for small labels; cards are flat with a hairline, only floating things (popovers, the month card, toasts) have a shadow.
 - **The tool** uses plain CSS (`src/styles.css`, design tokens at the top). The globe is a canvas drawn with `d3-geo`; the quick calendar is plain HTML buttons. Two heavy parts load on demand: the map (MapLibre GL 5; basemap NASA GIBS Blue Marble, imagery only) and the detailed view's charts (Apache ECharts 5, tree-shaken in `components/EChart.tsx`).
-- **The landing page** is laid out with the tasteskill design kit (MIT, licence beside it) in `public/assets/`. **Never edit the kit's files**: `src/landing/kit.ts` loads them at run time as they are, `src/landing/landing.css` sets the kit's palette and fonts to ours.
-  - The kit makes every `main > section` one screen tall with its `h2` first. After changing words or sections, look at 1440×900, 1366×768, 820×1180 and 390×844.
-  - The kit's scripts change the page's DOM (they split the `h1`, add canvases). Keep the landing page's markup static: only `landing/visuals.tsx` re-renders, when its data arrives.
-  - The kit outlines "apology" wording in red (`placeholder`, `sample`, `are invented`, text in `[brackets]`). On the landing page the demo label is just "Demo data".
+- **The landing page** is plain React and CSS too (`src/landing/landing.css`). The tasteskill kit in `public/assets/` is **no longer loaded** (it painted gradients and forced one-screen sections); the files are still there, untouched.
+  - Its pictures of the tool are **real screenshots** in `src/landing/shots/` (never redraw the tool by hand). After the tool's look changes, re-shoot them with Playwright (location step, first screen, calendar, whole tool) and check 1440×900, 1366×768, 820×1180 and 390×844.
+- **Quick view speaks plainly:** no "fire-days", "corrected count" or "rank" there. Intensity is a colour and a word (`src/levels.ts`); the numbers and their one-line explanations live in the Detailed view and the month card.
 
 | File | What |
 |---|---|
 | `src/api.ts` | The only data access (mocks or real API), CSV downloads, the landing page's `getShowcase()` |
 | `src/types.ts` | Contract shapes (keep in sync with `docs/api-contract.md`) |
 | `src/geo.ts` | Circle, rectangle, drawn polygon → GeoJSON; preset areas |
+| `src/states.ts`, `src/data/brazil-states.json` | Brazil's 27 states (Natural Earth admin-1, 1:50m, simplified with mapshaper, 38 KB): search, the state under a point, a state as the page's area (its real border goes to the API) |
+| `src/levels.ts` | Intensity levels (colour + word) shared by the calendar, the first screen and the coming months |
+| `src/components/Status.tsx` | The first screen: the status line, three answers (fire now, against typical, is this the season), a typical year as bars |
 | `src/pages/Tool.tsx` | The tool: location step, the one message, dates, the sheet, the globe/map stage |
-| `src/components/LocationGate.tsx` | "Where should we look?": location, region, point + radius, or draw on the map |
-| `src/components/Globe.tsx` | Globe: Brazil lit, area outline, hotspot points, the picked point's marker (`pick`) |
+| `src/components/LocationGate.tsx` | "Where should we look?": three tabs. State (searchable list of 27, or click the globe), Point (location or coordinates + radius), Draw |
+| `src/components/Globe.tsx` | Globe, flat and light: Brazil with state borders, the state under the pointer lifts and a click selects it (`onState`), area outline, hotspot points, the picked point's marker (`pick`) |
 | `src/components/MapView.tsx` | The map: hotspots by fire strength, or next week's forecast cells by chance (`cells`, viridis `CHANCE_STOPS`), popups, drawing a rectangle or polygon (no draw plugin); zooms to the forecast cells when shown and fits a month's hotspots beside the desktop month card; if the GIBS imagery fails it says so and shows the globe's country outlines instead (`loadWorld()` from Globe.tsx) |
-| `src/components/FireCalendar.tsx` | Quick view calendar, GitHub style: a row per year, a rounded brick per month (filled = happened, dotted = typical, hatched = provisional), a card anchored to the clicked brick; the average row is labelled as next year's typical row (not a forecast); newest 3 years first; bricks per year set by `--n` (ready for weeks) |
+| `src/components/FireCalendar.tsx` | Quick view calendar, GitHub style: a row per year, a rounded brick per month, colour only (filled = happened, dashed outline = typical, dot = provisional, ring = this month); hover lifts the brick, a click opens a card anchored to it with "Open on the map"; next year as a typical row (not a forecast); newest 3 years, See more / See less; bricks per year set by `--n` (ready for weeks) |
 | `src/components/Detailed.tsx` | Detailed view: `BurningCalendar.tsx` (heatmap), `Charts.tsx` (typical year, year by year), PNG downloads |
 | `src/components/Controls.tsx`, `Panels.tsx`, `MonthDetail.tsx` | Dates and view switch · key numbers, reliability, data sources · one month's details (`useClosing.ts`: their close animation) |
 | `src/components/ForecastPanel.tsx` | Next-week fire chance (`POST /api/forecast`, the only forecast): always with its `label`, hidden while `forecast_available` is false |
-| `src/format.ts` | Number/date formats and the one message's wording (`headlineFor`, `trendOf`, `rankLine`), shared by the tool and the landing page |
-| `src/pages/Landing.tsx`, `src/landing/` | The landing page: markup, the kit loader, its stylesheet, the product UI drawn from the data |
+| `src/format.ts` | Number/date formats and the status line's wording (`headlineParts`, `headlineFor`, `trendOf`, `rankLine`, `vsTypical`) |
+| `src/pages/Landing.tsx`, `src/landing/` | The landing page: markup, its stylesheet, the screenshots of the tool (`shots/`), the data pictures drawn from the API (`visuals.tsx`) |
 
-**Display only, never for numbers:** country outlines on the globe and on the map when its imagery fails (Natural Earth, `world-atlas` npm package) and the map's imagery (NASA GIBS). Never use them to select, clip or count data. Both are credited on the landing page and in the data sources dialog.
+**State borders (decided by Mike, UI/UX owner, 15 Nov 2026; overrides root rule 1 for this one dataset):** Brazil's state borders from Natural Earth (public domain) are shown on the globe and the map AND may select the data area: picking a state sends its border to the API as a `Polygon`/`MultiPolygon` in `[lon, lat]` order (under 1,000 points), like any drawn area. Every fire number is still NASA FIRMS only.
+
+**Display only, never for numbers:** country outlines (Natural Earth, `world-atlas` npm package) and the map's imagery (NASA GIBS). All three are credited on the landing page and in the data sources dialog.
 
 Waiting for the API: "Update now" shows the API's own answer (`/api/update` is still a stub).
