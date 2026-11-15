@@ -310,3 +310,5 @@ Global rules for this block:
   - One table cell updated (needs the usual quick human review of CLAUDE.md changes).
 - [x] Quick view counts legend on 320px phones: the last step "1.3k+" wrapped alone onto its own line
   - Under 361px the five count steps sit in a 3-column grid (3 + 2, aligned). vs Average legend and 375+ unchanged.
+- [x] Data sources dialog on phones: S-NPP's end read "To 2 Nov 2026" while the satellite cards now say "ended 2 Nov 2026"
+  - The phone row label is "Ended" (desktop table header stays "To").

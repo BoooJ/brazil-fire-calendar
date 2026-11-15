@@ -104,7 +104,7 @@ export function SourcesDialog({ status, onClose }: { status: Status | null; onCl
                   <td><span className="sat-dot" style={{ background: SAT_COLOR[c.satellite] }} />{SAT_NAMES[c.satellite] ?? c.satellite}</td>
                   <td>{c.satellite.startsWith('modis') ? 'MODIS C6.1, 1 km' : 'VIIRS, 375 m'}</td>
                   <td data-label="From">{dateShort(c.from)}</td>
-                  <td data-label={c.to ? 'To' : undefined}>{c.to ? dateShort(c.to) : 'still active'}</td>
+                  <td data-label={c.to ? 'Ended' : undefined}>{c.to ? dateShort(c.to) : 'still active'}</td>
                 </tr>
               ))}
             </tbody>
