@@ -53,13 +53,14 @@ Global rules for this block:
 
 ### Polish
 
-- [ ] **Light theme in the spirit of the poolside + Apple references**: generous spacing, a strict type scale, hand-picked flat colours, consistent radii. Go through every part of the UI (controls, panels, popovers, legends, empty/error states), not only the hero. Update tokens in `src/styles.css` rather than one-off values.
+- [x] **Light theme in the spirit of the poolside + Apple references**: generous spacing, a strict type scale, hand-picked flat colours, consistent radii. Go through every part of the UI (controls, panels, popovers, legends, empty/error states), not only the hero. Update tokens in `src/styles.css` rather than one-off values.
   - [x] Sub-task 1: flat surfaces in the tool: error note, Key numbers hot card and skeletons (pulse instead of a shimmer gradient) are flat; dead `.stats` rules removed. Kept on purpose: the globe edge fade (blends the canvas into the page), hatching (a state encoding) and the heatmap legend bar (a data scale).
   - [x] Sub-task 2: a strict type scale as tokens (--t-xs 11 · --t-sm 13 · --t-base 15 · --t-md 17 · --t-lg 22 · --t-xl 28) and replace the one-off font sizes in styles.css
     - Done: --t-2xs…--t-4xl (10 · 12 · 13 · 14 · 16 · 18 · 22 · 26 · 34 · 40) in :root; every px font size in styles.css now uses them (11→12, 12.5→13, 15→16, 20→22, 24→26). Only the 8px "SO FAR" micro-tag stays literal.
   - [x] Sub-task 3: spacing pass on the sheet (use --s-* between sections: calendar, coming months, briefing, satellites, reliability), consistent radii on cards/popovers/legend
     - Added --s-8 (40) / --s-9 (56). Every sheet part (calendar, coming months, briefing…) is now separated by one rhythm: 40px + hairline + 40px. Calendar head/legend/foot and upcoming head use --s-*; desktop sheet padding 40px; briefing heading gets room.
-  - [ ] Sub-task 4: empty/error/legend/popover states checked at 375 and 1440 after the above
+  - [x] Sub-task 4: empty/error/legend/popover states checked at 375 and 1440 after the above
+    - Brick card, month card and legend checked at 375 (touch) and 1440: no overflow, card stays inside the screen. Error/empty states use the same tokens (not re-triggerable with the mocks).
 - [ ] **Interactive data feel** (scrolltide helio reference): subtle, fast transitions when switching area/date/view and when numbers change; respect `prefers-reduced-motion`.
 
 ## Blocked — needs a team decision (do NOT do these at night)
