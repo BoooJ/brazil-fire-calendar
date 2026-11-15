@@ -61,7 +61,8 @@ Global rules for this block:
     - Added --s-8 (40) / --s-9 (56). Every sheet part (calendar, coming months, briefing…) is now separated by one rhythm: 40px + hairline + 40px. Calendar head/legend/foot and upcoming head use --s-*; desktop sheet padding 40px; briefing heading gets room.
   - [x] Sub-task 4: empty/error/legend/popover states checked at 375 and 1440 after the above
     - Brick card, month card and legend checked at 375 (touch) and 1440: no overflow, card stays inside the screen. Error/empty states use the same tokens (not re-triggerable with the mocks).
-- [ ] **Interactive data feel** (scrolltide helio reference): subtle, fast transitions when switching area/date/view and when numbers change; respect `prefers-reduced-motion`.
+- [x] **Interactive data feel** (scrolltide helio reference): subtle, fast transitions when switching area/date/view and when numbers change; respect `prefers-reduced-motion`.
+  - New area or date: the headline, rank pill and context ease in (staggered 0/40/80 ms) and calendar rows rise in one after another; switching Counts ↔ vs Average glides the brick colours (0.25 s). All off under prefers-reduced-motion (existing global rule).
 
 ## Blocked — needs a team decision (do NOT do these at night)
 

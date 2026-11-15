@@ -319,7 +319,7 @@ export default function Tool() {
                   <ErrorNote size="page" title="We could not load the fire data" message={load.message} onRetry={() => setAttempt((n) => n + 1)} />
                 </section>
               )}
-              {data && <Hero data={data} area={area} status={status} asOf={refDate} updating={updating} onUpdate={updateNow} />}
+              {data && <Hero key={`${area.label}|${data.query.ref_date}`} data={data} area={area} status={status} asOf={refDate} updating={updating} onUpdate={updateNow} />}
               <DateControls refDate={refDate} setRefDate={changeRefDate} fromYear={fromYear} setFromYear={setFromYear}
                 detailed={detailed} setDetailed={setDetailed} today={today} />
               {load.kind === 'loading' && (
@@ -329,7 +329,7 @@ export default function Tool() {
                 <>
                   <div className="sheet">
                     {detailed && <KeyCards data={data} />}
-                    <div className="view-swap" key={detailed ? 'detailed' : 'quick'}>
+                    <div className="view-swap" key={`${detailed ? 'detailed' : 'quick'}|${area.label}|${data.query.ref_date}`}>
                     {data.calendar.every((c) => !c.count) ? (
                       <section className="empty-state">
                         <span className="empty-art" aria-hidden="true"><i /><i /><i /><i /><i /><i /></span>

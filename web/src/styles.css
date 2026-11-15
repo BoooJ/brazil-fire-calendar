@@ -149,6 +149,15 @@ strong { font-weight: 650; }
 @keyframes fade { from { opacity: 0; } }
 /* quick ↔ detailed: the calendar area fades and lifts in */
 .view-swap { animation: swap 0.28s ease-out; }
+/* data feel: a new area or date eases the message and the calendar in; colours glide when the mode changes */
+.hero h1, .hero-rank, .hero-context { animation: swap 0.32s cubic-bezier(.2, .7, .2, 1) both; }
+.hero-rank { animation-delay: 40ms; }
+.hero-context { animation-delay: 80ms; }
+.cal-grid > .yr { animation: swap 0.3s cubic-bezier(.2, .7, .2, 1) both; }
+.cal-grid > .yr:nth-child(2) { animation-delay: 20ms; } .cal-grid > .yr:nth-child(3) { animation-delay: 40ms; }
+.cal-grid > .yr:nth-child(4) { animation-delay: 60ms; } .cal-grid > .yr:nth-child(5) { animation-delay: 80ms; }
+.cal-grid > .yr:nth-child(n+6) { animation-delay: 100ms; }
+.day { transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.12s ease, box-shadow 0.12s ease; }
 @keyframes swap { from { opacity: 0; transform: translateY(8px); } }
 .stage-map .map { position: absolute; inset: 0; width: 100%; height: 100%; }
 .map-banner { position: absolute; z-index: 3; left: 50%; top: 84px; transform: translateX(-50%); padding: 8px 14px; border-radius: var(--r-pill); background: var(--overlay-strong); border: 1px solid var(--fire); color: var(--fire-ink); font-size: var(--t-sm); font-weight: 600; white-space: nowrap; pointer-events: none; }
@@ -248,7 +257,6 @@ strong { font-weight: 650; }
 .cal-foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); margin-top: var(--s-4); }
 .day { width: 100%; max-width: 36px; aspect-ratio: 1; border-radius: var(--r-brick); display: block; padding: 0; border: 2px solid transparent; background-color: var(--brick-0); font-size: 0; cursor: pointer; }
 span.day { cursor: default; }
-button.day { transition: transform 0.12s ease, box-shadow 0.12s ease; }
 button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2; box-shadow: 0 0 0 2px var(--sheet), 0 0 0 4px var(--sheet-ink), 0 6px 14px rgba(20, 21, 26, 0.22); }
 .day.empty { visibility: hidden; }
 .day.lv1 { background-color: var(--lv1); color: #3a2a00; }
