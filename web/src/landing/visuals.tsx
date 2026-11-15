@@ -6,7 +6,7 @@ import type { Showcase } from '../api';
 import type { CalendarItem, SatelliteKey } from '../types';
 import { SATELLITES } from '../types';
 import { COUNTS_SCALE, FRP_STOPS } from '../colors';
-import { MON, MONTHS, dateShort, headlineFor, num, ordinal } from '../format';
+import { MON, MONTHS, dateShort, headlineFor, num, ordinal, rankLine, trendOf } from '../format';
 
 type Show = Showcase | null; // null while the numbers load: the frames stand, empty
 
@@ -298,25 +298,30 @@ export function HowPlace() {
   );
 }
 
-/** Step 2, the one message at the top of the tool (Tool.tsx, Hero): the same wording function. */
+/** Step 2, the one message at the top of the tool (Tool.tsx, Hero): the same wording functions. */
 export function HowAnswer({ show }: { show: Show }) {
   const c = show?.analysis.cards;
+  const trend = c ? trendOf(c) : null;
+  const rank = c ? rankLine(c) : null;
   return (
     <div className="bfc-how-ui bfc-how-ui--dark" aria-hidden="true">
       <small>{c ? `${MONTHS[c.ref_month - 1]} ${c.ref_year}${c.partial ? ` · first ${c.days_covered} days` : ''} · ${show?.areaName}` : ' '}</small>
-      <b className="bfc-how-ui__h bfc-how-ui__h--big">{c ? headlineFor(c) : ' '}</b>
-      <span className="bfc-how-ui__sub">{show?.analysis.average_period ? `Compared with an average year (${show.analysis.average_period.from}–${show.analysis.average_period.to}). Not a forecast.` : 'Not a forecast.'}</span>
-      <span className="bfc-how-ui__stats">
-        <i><b>{c ? num(c.count) : ' '}</b>fire-days</i>
-        <i><b>{c?.estimated_fires == null ? '–' : `≈ ${num(c.estimated_fires)}`}</b>fires</i>
-        <i><b>{c?.rank == null ? '–' : <>{c.rank}<em> of {c.of_years}</em></>}</b>rank</i>
-      </span>
+      <b className="bfc-how-ui__h bfc-how-ui__h--big">
+        {trend && <span className={`bfc-how-ui__mark is-${trend}`}>{trend === 'up' ? '▲' : trend === 'down' ? '▼' : '●'} </span>}
+        {c ? headlineFor(c) : ' '}
+      </b>
+      {rank && <span className="bfc-how-ui__rank">{rank}</span>}
+      <ul className="bfc-how-ui__ctx">
+        {c?.peak_month != null && <li>Fires here usually peak in <b>{MONTHS[c.peak_month - 1]}</b></li>}
+        <li>History from satellite detections, not a forecast</li>
+        <li>Smoke from fires can lower air quality nearby</li>
+      </ul>
       {show?.demo && <Demo />}
     </div>
   );
 }
 
-/** Step 3, the quick-view calendar on the white sheet (FireCalendar.tsx): marked months, same level rule. */
+/** Step 3, the quick-view calendar on the white sheet (FireCalendar.tsx): rounded bricks, same level rule. */
 export function HowCalendar({ show }: { show: Show }) {
   const items = show?.analysis.calendar ?? [];
   const v = items.map((i) => i.count).filter((n): n is number => n != null && n > 0).sort((a, b) => a - b);
