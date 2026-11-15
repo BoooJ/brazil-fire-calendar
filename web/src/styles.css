@@ -166,6 +166,7 @@ strong { font-weight: 650; }
 .map-banner > span { overflow: hidden; text-overflow: ellipsis; }
 .map-banner-x { pointer-events: auto; flex: none; min-height: 32px; padding: 0 12px; border: 0; border-radius: var(--r-pill); background: rgba(255, 255, 255, 0.12); color: var(--ink); font: inherit; cursor: pointer; }
 .map-banner-x:hover { background: rgba(255, 255, 255, 0.2); }
+@media (max-width: 360px) { .map-banner { border-radius: 18px; width: max-content; } .map-banner > span { white-space: normal; line-height: 1.25; } } /* 320px phones: wrap, don't cut */
 .map-legend { position: absolute; z-index: 3; left: 16px; top: 138px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; max-width: calc(100% - 184px); /* clear of the Globe/Map switch beside it (44px buttons on phones) */ padding: 8px 12px; border-radius: var(--r-md); background: var(--overlay); backdrop-filter: blur(8px); font-size: var(--t-xs); color: var(--ink-2); }
 .map-legend > span:first-child { color: var(--ink); font-weight: 650; }
 .map-legend-scale { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; } /* the colour steps wrap as one group, never one step alone */

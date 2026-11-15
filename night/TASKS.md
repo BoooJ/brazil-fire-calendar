@@ -347,3 +347,5 @@ Global rules for this block:
   - The tip's centre is kept 128px from each edge (was 120), so it stays 8px inside. Checked 320 / 375 / 1440.
 - [x] Detailed charts on phones: the chart cards clip overflow, so a tooltip near the card's edge (late months, recent years) could be cut off
   - `confine: true` on the heatmap, typical-year and year-by-year tooltips: they stay inside the chart. Checked 375 (December cell: tooltip 28–336px inside the 16–359px card).
+- [x] Drawing banner on 320px phones: the touch hint was cut with an ellipsis ("Tap the corners, then the fir…")
+  - Under 361px the banner text wraps onto two lines (rounded box instead of a pill). 375+ unchanged. Checked 320.
