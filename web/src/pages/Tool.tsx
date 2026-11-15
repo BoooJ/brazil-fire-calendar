@@ -325,12 +325,14 @@ export default function Tool() {
           {stage === 'map' && fcMap && (
             <div className="map-legend map-legend--fc" aria-label="Map legend: chance of fire next week, per 5 km cell">
               <span>Chance of fire {dateRange(fcMap.period.from, fcMap.period.to)}, per 5&nbsp;km cell</span>
+              <span className="map-legend-scale">
               {CHANCE_STOPS.map(([from, colour], i) => (
                 <span key={from} className="map-legend-item">
                   <i style={{ background: colour }} />
                   {i === CHANCE_STOPS.length - 1 ? `${from * 100}%+` : `${from * 100}–${CHANCE_STOPS[i + 1][0] * 100}%`}
                 </span>
               ))}
+              </span>
               <span className="map-legend-label">{fcMap.label}</span>
             </div>
           )}
@@ -343,12 +345,14 @@ export default function Tool() {
           {stage === 'map' && map.kind === 'shown' && map.returned > 0 && (
             <div className="map-legend" aria-label="Map legend: fire strength in megawatts">
               <span>Fire strength</span>
+              <span className="map-legend-scale">
               {FRP_STOPS.map(([from, colour], i) => (
                 <span key={from} className="map-legend-item">
                   <i style={{ background: colour }} />
                   {i === 0 ? `under ${FRP_STOPS[1][0]}` : i === FRP_STOPS.length - 1 ? `${from}+ MW` : `${from}–${FRP_STOPS[i + 1][0]}`}
                 </span>
               ))}
+              </span>
             </div>
           )}
           {area && drawMode === 'none' && (

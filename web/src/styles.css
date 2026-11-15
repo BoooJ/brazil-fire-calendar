@@ -165,6 +165,7 @@ strong { font-weight: 650; }
 .map-banner { position: absolute; z-index: 3; left: 50%; top: 84px; transform: translateX(-50%); padding: 8px 14px; border-radius: var(--r-pill); background: var(--overlay-strong); border: 1px solid var(--fire); color: var(--fire-ink); font-size: var(--t-sm); font-weight: 600; white-space: nowrap; pointer-events: none; }
 .map-legend { position: absolute; z-index: 3; left: 16px; top: 138px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; max-width: calc(100% - 184px); /* clear of the Globe/Map switch beside it (44px buttons on phones) */ padding: 8px 12px; border-radius: var(--r-md); background: var(--overlay); backdrop-filter: blur(8px); font-size: var(--t-xs); color: var(--ink-2); }
 .map-legend > span:first-child { color: var(--ink); font-weight: 650; }
+.map-legend-scale { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; } /* the colour steps wrap as one group, never one step alone */
 .map-legend-item { display: inline-flex; align-items: center; gap: 5px; }
 .map-legend i { width: 9px; height: 9px; border-radius: 50%; }
 .map-legend .map-legend-label { flex-basis: 100%; color: var(--panel-flag); font-weight: 500; }

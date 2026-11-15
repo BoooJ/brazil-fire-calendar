@@ -296,3 +296,5 @@ Global rules for this block:
   - MapView zooms to the cells' extent when they are shown (max zoom 8, top padding below the legend, at least 120px of map left; instant with reduced motion); hiding them goes back to the area. Checked 375 / 1440.
 - [x] Detailed heatmap on phones: the "Y" (year total) column was a row of blank grey boxes
   - Phones show the API's `yearly` totals in the short form ("2.3k", "13k", * when the year is not complete) at 9px. Desktop unchanged. Checked 375.
+- [x] Map legends at 1366: the last colour step ("50%+") wrapped alone onto its own line
+  - The colour steps sit in one `.map-legend-scale` group that wraps as a whole (both the forecast and the fire-strength legend). Checked 375 / 1366 / 1440.
