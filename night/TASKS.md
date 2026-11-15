@@ -22,7 +22,8 @@
   - Focus ring uses --focus / --focus-sheet tokens. Month card: focus moves in on open, back to the cell on close, Escape closes it. (Detailed heatmap cells are canvas: the quick view is the keyboard path.)
 - [x] ARIA: labels for icon-only buttons, the calendar grid cells announce month, year and count
   - Typical cells and year totals get role=img + labels, month initials hidden from screen readers, PNG/CSV/Clear/location buttons say what they do.
-- [ ] Contrast: check all text and UI against WCAG AA on both the white sheet and the dark panels; fix tokens, not single colours
+- [x] Contrast: check all text and UI against WCAG AA on both the white sheet and the dark panels; fix tokens, not single colours
+  - Checked ~25 text pairs (all ≥ 4.5:1). Fixed non-text contrast with new tokens: --sheet-edge (typical/no-fire outlines, 3.1:1), --line-strong (input edges), --sheet-border.
 - [ ] Hover details on calendar cells: consistent tooltip style, works with keyboard focus too
 - [ ] Design tokens: replace hard-coded colours, radii, shadows and spacing in src/styles.css and components with the tokens at the top
 - [ ] Buttons: one consistent set of variants (primary, secondary, ghost) with hover, active, disabled and focus states
