@@ -135,7 +135,7 @@ export function Timeline() {
   return (
     <div className="bfc-tl" role="img"
       aria-label="Satellite coverage: MODIS Terra from November 2000, MODIS Aqua from July 2002, VIIRS S-NPP from January 2012 until it ended on 2 November 2026, VIIRS NOAA-20 from April 2018, the reference scale for every count. The calendar starts in January 2003.">
-      <div className="bfc-tl__start" style={{ left: `calc(var(--lane-name) + (100% - var(--lane-name)) * ${(pos(2003) / 100).toFixed(4)})` }}>
+      <div className="bfc-tl__start" style={{ left: `calc(var(--pad-x) + var(--lane-name) + (100% - 2 * var(--pad-x) - var(--lane-name)) * ${(pos(2003) / 100).toFixed(4)})` }}>
         <span>Calendar starts, Jan 2003</span>
       </div>
       {LANES.map((l) => (

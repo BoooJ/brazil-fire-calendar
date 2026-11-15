@@ -124,7 +124,7 @@ strong { font-weight: 650; }
 /* satellites timeline: a flat, light card (no painted ground), pastel bars, plain labels */
 #idea .frame--lit { background: #eef0f6; --ink: #0b0d14; --muted: #4f5462; box-shadow: none; }
 #idea .frame--lit > .stage > :not(.bfc-tl) { display: none; } /* the kit's painted layers, if any */
-.bfc-tl { --lane-name: 168px; position: absolute; inset: 0; padding: 56px 40px 36px; display: grid; align-content: center; gap: 20px; color: var(--ink); }
+.bfc-tl { --lane-name: 168px; --pad-x: 40px; position: absolute; inset: 0; padding: 56px var(--pad-x) 36px; display: grid; align-content: center; gap: 20px; color: var(--ink); }
 .bfc-lane { display: grid; grid-template-columns: var(--lane-name) 1fr; align-items: center; }
 .bfc-lane__name { display: grid; gap: 4px; }
 .bfc-lane__name b { font-weight: 600; font-size: 16px; letter-spacing: -0.01em; }
@@ -142,9 +142,9 @@ strong { font-weight: 650; }
 .bfc-tl__ticks { position: relative; height: 18px; font: 400 13px/1 var(--font-mono); color: var(--muted); }
 .bfc-tl__ticks span { position: absolute; transform: translateX(-50%); }
 .bfc-tl__ticks span:last-child { transform: translateX(-100%); }
-@media (max-width: 1279px) { .bfc-tl { --lane-name: 140px; padding: 48px 24px 28px; } }
+@media (max-width: 1279px) { .bfc-tl { --lane-name: 140px; --pad-x: 24px; padding: 48px var(--pad-x) 28px; } }
 @media (max-width: 639px) {
-  .bfc-tl { --lane-name: 104px; padding: 36px 16px 20px; gap: 12px; }
+  .bfc-tl { --lane-name: 104px; --pad-x: 16px; padding: 36px var(--pad-x) 20px; gap: 12px; }
   .bfc-lane__name b { font-size: 13px; }
   .bfc-lane__name span { font-size: 11px; gap: 4px; }
   .bfc-badge { font-size: 10px; padding: 3px 5px; }

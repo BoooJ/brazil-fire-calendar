@@ -257,3 +257,5 @@ Global rules for this block:
   - format.ts: `pctLong` shows ● inside ±20% ("● 1% above average"), ▲/▼ outside; `pctShort` uses +/− inside the band; the Key numbers colour uses the same ±20% as `trendOf`. Wording only, values are the API's.
 - [x] Phones/tablets: the location step had no way to the data sources (the top bar hides "Data sources" under 900px; only the result sheet's footer has it)
   - LocationGate takes `onSources`; under 900px a "Data sources" text link (44px) sits under the privacy line and opens the same dialog. Hidden on desktop, where the top bar has it.
+- [x] Landing satellite timeline: the dashed "Calendar starts, Jan 2003" line sat ~30px left of the 2003 tick (its position ignored the card's side padding)
+  - The padding is a `--pad-x` variable used by both the padding and the line's position: line and 2003 tick now match at 1440, 820 and 390.
