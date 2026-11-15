@@ -1,11 +1,10 @@
 // "November over the years": one month, every year since the calendar starts, as bars on one scale.
-// Its own card under the first screen: pick a month, see how each year's went against a typical one.
+// Its own card under the first screen: the page's month, each year's against a typical one.
 // Display only: every number is the API's (calendar counts, vs_avg_pct, rank, average_by_month).
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { KeyboardEvent } from 'react';
 import type { Analysis, CalendarItem } from '../types';
-import { MON, MONTHS, num, ordinal, pctShort } from '../format';
-import { makeCountLevels } from '../levels';
+import { MONTHS, num, ordinal, pctShort } from '../format';
 import './MonthHistory.css';
 
 const still = () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -34,17 +33,13 @@ function step(key: string, at: number, n: number): number | null {
 
 export default function MonthHistory({ data }: { data: Analysis }) {
   const c = data.cards;
-  const [month, setMonth] = useState(c.ref_month);
+  const month = c.ref_month; // always the page's month (the current month by default)
   const [active, setActive] = useState<number | null>(null); // the year under the pointer or keyboard focus
   const [grown, setGrown] = useState(still);
-  const chips = useRef<(HTMLButtonElement | null)[]>([]);
   const bars = useRef<(HTMLButtonElement | null)[]>([]);
 
   // follow the page when its reference month changes ("Select a day")
-  useEffect(() => {
-    setMonth(c.ref_month);
-    setActive(null);
-  }, [c.ref_month, c.ref_year]);
+  useEffect(() => setActive(null), [c.ref_month, c.ref_year]);
   // bars grow from the baseline on first show; later month changes animate height to height
   useEffect(() => {
     if (grown) return;
@@ -52,11 +47,16 @@ export default function MonthHistory({ data }: { data: Analysis }) {
     return () => cancelAnimationFrame(id);
   }, [grown]);
 
-  const levels = useMemo(() => makeCountLevels(data.calendar), [data.calendar]);
   const items = useMemo(() => data.calendar.filter((i) => i.month === month).sort((a, b) => a.year - b.year), [data.calendar, month]);
+  // colours against this month's own years (every year with fire gets a colour, darker = more): lv1 … lv4 by quartile
+  const level = useMemo(() => {
+    const v = items.map((i) => i.count).filter((n): n is number => n != null && n > 0).sort((a, b) => a - b);
+    const q = (p: number) => v[Math.min(v.length - 1, Math.floor(p * v.length))];
+    const t = v.length ? [q(0.25), q(0.5), q(0.75)] : [];
+    return (n: number | null) => (!n || !t.length ? 0 : n >= t[2] ? 4 : n >= t[1] ? 3 : n >= t[0] ? 2 : 1);
+  }, [items]);
   const name = MONTHS[month - 1];
   const avg = data.average_by_month.find((a) => a.month === month)?.mean ?? null;
-  const period = data.average_period ? `${data.average_period.from}–${data.average_period.to}` : null;
   const top = Math.max(1, avg ?? 0, ...items.map((i) => i.count ?? 0));
   const latest = [...items].reverse().find((i) => i.count != null) ?? null;
   const record = items.reduce<CalendarItem | null>((best, i) => (i.count && (best == null || i.count > (best.count ?? 0)) ? i : best), null);
@@ -69,17 +69,6 @@ export default function MonthHistory({ data }: { data: Analysis }) {
   const labelLatest = latest != null && latest !== record && Math.abs(iLatest - iRecord) > 2;
   const isNow = (i: CalendarItem) => i.year === c.ref_year && i.month === c.ref_month;
 
-  const pick = (m: number) => {
-    setMonth(m);
-    setActive(null);
-  };
-  const chipKey = (e: KeyboardEvent, at: number) => {
-    const to = step(e.key, at, 12);
-    if (to == null) return;
-    e.preventDefault();
-    pick(to + 1);
-    chips.current[to]?.focus();
-  };
   const barKey = (e: KeyboardEvent, at: number) => {
     const to = step(e.key, at, items.length);
     if (to == null) return;
@@ -94,19 +83,6 @@ export default function MonthHistory({ data }: { data: Analysis }) {
     <section className="mh" aria-labelledby="mh-title">
       <div className="mh-head">
         <h2 id="mh-title">{name} over the years</h2>
-        <p className="mh-hint">Pick a month</p>
-      </div>
-
-      <div className="mh-months" role="radiogroup" aria-label="Month to compare across years">
-        {MONTHS.map((m, i) => (
-          <button key={m} type="button" role="radio" aria-checked={month === i + 1} tabIndex={month === i + 1 ? 0 : -1}
-            ref={(el) => { chips.current[i] = el; }}
-            className={(month === i + 1 ? 'on' : '') + (c.ref_month === i + 1 ? ' is-now' : '')}
-            aria-label={`${m}${c.ref_month === i + 1 ? ', this month' : ''}`}
-            onClick={() => pick(i + 1)} onKeyDown={(e) => chipKey(e, i)}>
-            {MON[i]}
-          </button>
-        ))}
       </div>
 
       {!anyFire ? (
@@ -136,7 +112,7 @@ export default function MonthHistory({ data }: { data: Analysis }) {
                         aria-label={`${name} ${i.year}${i.partial ? `, first ${i.days_covered} days` : ''}: ${i.count == null ? 'no data' : `${num(i.count)} hotspots`}${vs ? `, ${vs}` : ''}${i.provisional ? ', provisional' : ''}`}
                         onPointerEnter={() => setActive(i.year)} onFocus={() => setActive(i.year)} onBlur={() => setActive(null)}
                         onKeyDown={(e) => barKey(e, at)}>
-                        <i className={`lv${levels.level(i.count)}`} style={{ height: `${h}%`, transitionDelay: `${at * 12}ms` }}>
+                        <i className={`lv${level(i.count)}`} style={{ height: `${h}%`, transitionDelay: `${at * 12}ms` }}>
                           {label && <span className={'mh-val' + (i === record ? '' : ' is-latest') + (at < 2 ? ' at-start' : at > items.length - 3 ? ' at-end' : '')}>{num(i.count)}{i.partial && ' so far'}</span>}
                         </i>
                       </button>
@@ -162,7 +138,7 @@ export default function MonthHistory({ data }: { data: Analysis }) {
             )}
           </p>
           <p className="mh-note">
-            Every year on one scale: MODIS and VIIRS harmonized. {period && <>Dashed line: the {period} average. </>}Striped: recent, still provisional.
+            Year over year data on one scale, based on satellite imagery from MODIS and VIIRS, harmonized.
           </p>
 
           <table className="sr-only">
