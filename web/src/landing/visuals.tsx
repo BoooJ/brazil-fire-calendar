@@ -58,8 +58,9 @@ export function Timeline() {
   );
 }
 
-/** What each satellite reported per year (stacked) against the one harmonized record: the jump and the fix. */
-export function RawVsCorrected({ show }: { show: Show }) {
+/** What each satellite reported per year (stacked), and with `record` the one harmonized record as a dark tick per year:
+ *  the jump and the fix. */
+export function RawVsCorrected({ show, record = true }: { show: Show; record?: boolean }) {
   const years = (show?.analysis.yearly ?? []).filter((r) => r.complete);
   const raw = (r: (typeof years)[number]) => SATELLITES.reduce((sum, k) => sum + (r.detected[k] ?? 0), 0);
   const rawMax = Math.max(1, ...years.map(raw));
@@ -67,7 +68,7 @@ export function RawVsCorrected({ show }: { show: Show }) {
   const span = years.length ? `${years[0].year} to ${years[years.length - 1].year}` : '';
   return (
     <div className="l-rc" role="img"
-      aria-label={`Detections reported per year jump when the sharper VIIRS sensor arrives in 2018; the harmonized record stays on one scale. ${show?.areaName ?? ''}${span && `, ${span}`}${show?.demo ? ' (demo data)' : ''}.`}>
+      aria-label={`Detections reported per year jump when the sharper VIIRS sensor arrives in 2018${record ? '; the harmonized record stays on one scale' : ''}. ${show?.areaName ?? ''}${span && `, ${span}`}${show?.demo ? ' (demo data)' : ''}.`}>
       <div className="l-rc__head">
         <p>{show ? `${show.areaName}, ${span}` : ' '}</p>
         {show?.demo && <Demo />}
@@ -78,7 +79,7 @@ export function RawVsCorrected({ show }: { show: Show }) {
             <div className="l-yb__raw">
               {SATELLITES.map((k) => <i key={k} style={{ height: `${(((r.detected[k] ?? 0) / rawMax) * 100).toFixed(2)}%`, background: SAT[k].colour }} />)}
             </div>
-            {r.count != null && <b style={{ bottom: `${((r.count / countMax) * 100).toFixed(2)}%` }} />}
+            {record && r.count != null && <b style={{ bottom: `${((r.count / countMax) * 100).toFixed(2)}%` }} />}
             <span>{r.year % 5 ? '' : r.year}</span>
           </div>
         ))}
@@ -86,7 +87,7 @@ export function RawVsCorrected({ show }: { show: Show }) {
       <ul className="l-rc__key">
         <li><i style={{ background: SAT.modis_terra.colour }} />MODIS Terra</li>
         <li><i style={{ background: SAT.viirs_noaa20.colour }} />VIIRS NOAA-20</li>
-        <li><i className="k-line" />Our one record</li>
+        {record && <li><i className="k-line" />Our one record</li>}
       </ul>
     </div>
   );

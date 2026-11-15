@@ -37,7 +37,7 @@ const TOOLS = [
 
 const FAQ = [
   ['Where does the data come from?', 'NASA FIRMS, and nothing else: MODIS and VIIRS active-fire detections. The map imagery and country outlines only help you find your way. A state’s border only sets which area is counted; every number comes from NASA FIRMS.'],
-  ['Does it predict fires?', 'No. The calendar shows what happened and what is typical. The one look ahead is an experimental next-week estimate, always labelled, and it is not an official warning.'],
+  ['Does it predict fires?', 'It estimates, it doesn’t promise. The calendar shows when fire usually comes to your area, from 23 years of what happened, and an experimental model gives the chance of fire next week. Neither is an official warning.'],
   ['What exactly do you count?', 'We count each 1 km square once for every day a satellite saw fire in it. That tracks fire activity, not burned area or damage.'],
   ['Why are recent months marked provisional?', 'They use NASA’s near-real-time data, which is replaced by final data a few months later. Those numbers can still shift a little.'],
   ['Which areas can I look at?', 'Any Brazilian state, your own location, a point with a radius, or a shape you draw on the map.'],
@@ -189,14 +189,14 @@ export default function Landing() {
         <section className="l-hero" aria-labelledby="hero-h">
           <HeroVideo onReady={filmReady} />
           <div className="l-wrap l-hero__text">
-            <p className="l-eyebrow">NASA Space Apps 2026 · MODIS + VIIRS, one record</p>
-            <h1 id="hero-h">Know your fire season.</h1>
+            <p className="l-eyebrow">NASA Space Apps 2026 · Two satellites, one fire record</p>
+            <h1 id="hero-h">There’s a wildfire in your area.</h1>
             <p className="l-lead l-hero__lead">
-              Every month of NASA fire detections over Brazil since 2003, in one calendar for your area.
-              See when fire usually comes, when it peaks, and whether this month is out of the ordinary.
+              Maybe not today. But we estimated when. 23 years of NASA satellite fire detections over Brazil, showing
+              the history of fire in your area, its intensity, and what to expect in the future.
             </p>
             <div className="l-row">
-              <Go>See my area</Go>
+              <Go>Check my area</Go>
               <a className="l-btn" href="#how">How it works</a>
             </div>
           </div>
@@ -233,7 +233,7 @@ export default function Landing() {
             </div>
             <div className="l-card l-card--white l-col l-duo">
               <Timeline />
-              <RawVsCorrected show={show} />
+              <RawVsCorrected show={show} record={false} />
             </div>
           </div>
         </section>
