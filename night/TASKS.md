@@ -47,7 +47,8 @@
 
 - [x] Hero stats: "rank among Novs" reads oddly; use the full month name ("rank among Novembers")
   - Tool.tsx Hero uses MONTHS instead of MON for that label.
-- [ ] Desktop globe: the left fade over light-grey Brazil shows as a visible grey band at ~60% width (1366px). Soften the gradient or start it on the dark ocean
+- [x] Desktop globe: the left fade over light-grey Brazil shows as a visible grey band at ~60% width (1366px). Soften the gradient or start it on the dark ocean
+  - Longer, eased fade (0 → 8% → 18% → 36%) on the desktop globe edge; the hard band is gone.
 - [ ] Month card and data sources dialog: add a close animation (needs a short delayed unmount)
 - [ ] Detailed view heatmap is a canvas: cells are not reachable by keyboard (see night/QUESTIONS.md)
 - [ ] Gate on phones: the long single column could show the four ways as numbered steps (1 location · 2 region · 3 point · 4 draw)
