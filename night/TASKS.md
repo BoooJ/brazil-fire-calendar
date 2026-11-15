@@ -223,3 +223,5 @@ Global rules for this block:
   - A small "typ." under its year label, as the tool's "2027 · typical". Sections still exactly one screen at 1440×900, 1366×768, 820×1180.
 - [x] Phone "can make mistakes" cards: "Typical conversion error" wrapped to two lines, so ±12% sat a line lower than "2016, 2019"
   - Under 600px both labels reserve two lines; the two values share one baseline.
+- [x] Calendar: hovering or focusing the current brick grew its ring over its own "SO FAR" tag
+  - The tag sits above the brick (own white ground) and steps down 4px while its brick is hovered, focused or open.
