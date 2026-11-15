@@ -48,7 +48,8 @@ Global rules for this block:
   - Quick view shows the newest 3 years; "Show more years (10 more)" adds ten at a time, "Show less" goes back to 3, with "3 of 24 years" beside them.
 - [x] **Add one year forward** (rest of 2026 + 2027) as "typical" bricks (dotted/outlined) using the API's typical/average values, clearly labelled with `next_months_label` ("not a forecast").
   - A dotted "2027 · typical" row above the newest year, from `average_by_month` as-is, plus a note with `next_months_label`. The rest of 2026 was already dotted typical bricks. Hidden if the API ever returns months after the reference year.
-- [ ] **Weekly bricks:** the API currently gives **monthly** values only (`docs/api-contract.md`), and we must not compute weeks from hotspots in the browser. Build the brick component so it works with months now and can switch to weeks (52/53 per year row) when the API provides weekly values. Write the exact weekly endpoint/field request for Paul in QUESTIONS.md.
+- [x] **Weekly bricks:** the API currently gives **monthly** values only (`docs/api-contract.md`), and we must not compute weeks from hotspots in the browser. Build the brick component so it works with months now and can switch to weeks (52/53 per year row) when the API provides weekly values. Write the exact weekly endpoint/field request for Paul in QUESTIONS.md.
+  - Brick grid is driven by `--n` (bricks per year) and `data-period` on .cal-grid; gaps and radii scale for 52/53 weeks. Still months, since the API is monthly. Exact weekly request for Paul in QUESTIONS.md.
 
 ### Polish
 

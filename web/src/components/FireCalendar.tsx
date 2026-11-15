@@ -142,7 +142,9 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
 
       <Legend mode={mode} thresholds={levels.thresholds} period={period} />
 
-      <div className="cal-grid">
+      {/* Bricks are laid out per period: 12 months now. Weekly bricks need weekly values from the API (we never
+          build weeks from hotspots in the browser): set data-period="week" and --n to 52/53 once they exist. */}
+      <div className="cal-grid" data-period="month" style={{ '--n': 12 } as React.CSSProperties}>
         <div className="yr yr-colhead" aria-hidden="true">
           <div className="yr-label" />
           <div className="yr-months">{MON.map((m) => <span key={m} data-i={m[0]}>{m}</span>)}</div>

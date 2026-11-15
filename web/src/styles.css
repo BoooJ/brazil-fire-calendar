@@ -242,7 +242,9 @@ strong { font-weight: 650; }
 .yr-label { font-size: 13px; font-weight: 650; font-variant-numeric: tabular-nums; }
 .yr-label small { display: block; font-size: 10px; font-weight: 500; color: var(--sheet-ink-2); }
 .yr-total { font-size: 12px; font-weight: 600; text-align: right; color: var(--sheet-ink-2); font-variant-numeric: tabular-nums; }
-.yr-months { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 4px; }
+/* --n = bricks per year: 12 months today; 52/53 weeks once the API has weekly values (the gap shrinks with it) */
+.yr-months { display: grid; grid-template-columns: repeat(var(--n, 12), minmax(0, 1fr)); gap: clamp(1px, calc(48px / var(--n, 12)), 4px); }
+.cal-grid[data-period='week'] .day { border-radius: 2px; border-width: 1px; }
 .cell { position: relative; display: grid; place-items: center; }
 .cell-mon { display: none; }
 .now-tag { position: absolute; bottom: -12px; z-index: 1; font-size: 8px; font-weight: 800; letter-spacing: 0.06em; white-space: nowrap; color: var(--sheet-ink-2); }
