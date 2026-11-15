@@ -19,12 +19,14 @@ interface Props {
   onSelect: (item: CalendarItem) => void;
   /** opens that month's hotspots on the map */
   onOpenMap: (item: CalendarItem) => void;
+  /** a month to bring into view and light briefly ("Select a day"); `n` changes on every request */
+  jump?: { year: number; month: number; n: number } | null;
   mode: Mode;
   onMode: (m: Mode) => void;
   onCsv: () => void;
 }
 
-export default function FireCalendar({ data, selected, onSelect, onOpenMap, mode, onMode, onCsv }: Props) {
+export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump, mode, onMode, onCsv }: Props) {
   const levels = useMemo(() => makeCountLevels(data.calendar), [data.calendar]);
   // typical bricks: coloured by size in Counts; in vs Average they ARE the average, so they stay neutral
   const typLv = (mean: number | null | undefined) => (mode === 'counts' ? levels.level(mean ?? null) : 0);
@@ -124,6 +126,23 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, mode
   // the newest three years first; more on request (all the rows stay in the API answer and the CSV)
   const [shown, setShown] = useState(FIRST);
   const visibleYears = years.slice(0, shown);
+  // "Select a day": show that year if it is folded away, scroll to the month, light it for a moment
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [flashKey, setFlashKey] = useState<string | null>(null);
+  useEffect(() => {
+    if (!jump) return;
+    const at = years.indexOf(jump.year);
+    if (at < 0) return;
+    if (at >= shown) setShown(at + 1);
+    const key = `${jump.year}-${jump.month}`;
+    setFlashKey(key);
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const go = requestAnimationFrame(() => requestAnimationFrame(() =>
+      gridRef.current?.querySelector(`[data-key="${key}"]`)?.scrollIntoView({ block: 'center', behavior: still ? 'auto' : 'smooth' })));
+    const off = window.setTimeout(() => setFlashKey(null), 2600);
+    return () => { cancelAnimationFrame(go); window.clearTimeout(off); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jump?.n]);
 
   // One Tab stop for the whole grid (roving tabindex): the brick last focused, else this month, else the newest.
   // The arrow keys (moveFocus) move between bricks, so Tab goes on to the next control instead of every month.
@@ -142,8 +161,7 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, mode
     const cls = ['day'];
     if (mode === 'counts') cls.push(`lv${levels.level(item.count)}`);
     else cls.push(`vs${vsLevel(item.vs_avg_pct) + 2}`);
-    if (item.provisional) cls.push('is-prov');
-    if (item.uncertain) cls.push('is-unc');
+    if (flashKey === `${item.year}-${item.month}`) cls.push('is-flash');
     if (item.year === ref_year && item.month === ref_month) cls.push('is-now');
     if (selected && selected.year === item.year && selected.month === item.month) cls.push('is-sel');
     return cls.join(' ');
@@ -188,7 +206,7 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, mode
       {/* Bricks are laid out per period: 12 months now. Weekly bricks need weekly values from the API (we never
           build weeks from hotspots in the browser): set data-period="week" and --n to 52/53 once they exist. */}
       <p className="sr-only">In the calendar, the arrow keys move between months and years; Enter opens a month.</p>
-      <div className="cal-grid" data-period="month" style={{ '--n': 12 } as React.CSSProperties} onKeyDown={moveFocus}>
+      <div ref={gridRef} className="cal-grid" data-period="month" style={{ '--n': 12 } as React.CSSProperties} onKeyDown={moveFocus}>
         <div className="yr yr-colhead" aria-hidden="true">
           <div className="yr-label" />
           <div className="yr-months">{MON.map((m) => <span key={m} data-i={m[0]}>{m}</span>)}</div>
@@ -214,7 +232,7 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, mode
                 }
                 return (
                   <div className="cell" key={m}>
-                    <button className={cellClass(item)} aria-label={describe(item)} aria-haspopup="dialog" aria-expanded={pop?.item === item}
+                    <button className={cellClass(item)} data-key={`${y}-${idx + 1}`} aria-label={describe(item)} aria-haspopup="dialog" aria-expanded={pop?.item === item}
                       tabIndex={`${y}-${idx + 1}` === stopKey ? 0 : -1}
                       onClick={(e) => { hideTip(); setPop(pop?.item === item ? null : { item, el: e.currentTarget }); }}
                       onPointerEnter={onEnter(item)} onPointerLeave={hideTip}
@@ -238,8 +256,6 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, mode
       </div>
       <ul className="cal-keys">
         <li><span className={`day mini typical ${mode === 'counts' ? 'lv2' : 'lv0'}`} />Typical for that month, not a forecast</li>
-        <li><span className="day mini lv2 is-prov" />Provisional, may still change</li>
-        <li><span className="day mini lv2 is-unc" />Uncertain, very few fires</li>
         <li><span className="day mini lv0 is-now" />This month</li>
       </ul>
 

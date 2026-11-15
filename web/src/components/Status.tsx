@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Analysis, Status as ApiStatus } from '../types';
 import type { Area } from '../geo';
 import { anomalyPosition } from '../colors';
-import { MON, MONTHS, dateShort, dateTime, headlineParts, rankLine, trendOf, vsTypical } from '../format';
+import { MON, MONTHS, dateTime, headlineParts, rankLine, trendOf, vsTypical } from '../format';
 import { LEVEL_WORDS, USUALLY, makeCountLevels } from '../levels';
 
 const still = () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -36,19 +36,16 @@ interface Props {
   data: Analysis;
   area: Area;
   status: ApiStatus | null;
-  /** the past day the page is replayed on, null for today */
-  asOf: string | null;
   updating: boolean;
   onUpdate: () => void;
   /** jumps to the next-week panel (the only forecast); absent while the model is unavailable */
   onForecast?: () => void;
 }
 
-export default function StatusHero({ data, area, status, asOf, updating, onUpdate, onForecast }: Props) {
+export default function StatusHero({ data, area, status, updating, onUpdate, onForecast }: Props) {
   const c = data.cards;
   const month = MONTHS[c.ref_month - 1];
   const trend = trendOf(c);
-  const h = headlineParts(c);
   const rankText = rankLine(c);
   const provisional = data.calendar.find((i) => i.year === c.ref_year && i.month === c.ref_month)?.provisional;
   const levels = useMemo(() => makeCountLevels(data.calendar), [data.calendar]);
@@ -62,17 +59,24 @@ export default function StatusHero({ data, area, status, asOf, updating, onUpdat
   // where this month sits between half and double a typical one (log scale, display only)
   const pos = anomalyPosition(c.count ? c.vs_avg_pct : null);
 
-  // the number inside the strong part rolls; the words around it stay
-  const strong = h.n != null ? <><Roll n={h.n} />{h.strong.replace(String(h.n), '')}</> : h.strong;
+  // the headline is a few words and one number; the full sentence sits under it, small
+  const p = c.vs_avg_pct;
+  const h = headlineParts(c);
+  // the sentence under it does not repeat "Fire activity is"
+  const sub = [h.lead ? '' : h.strong, h.lead ? h.strong : '', h.tail].filter(Boolean).join(' ');
+  const big = !c.count ? 'No fire detected'
+    : p == null ? 'Fire detected'
+    : trend === 'flat' ? 'Fire activity is typical'
+    : <>Fire activity <span className="hero-mark" aria-hidden="true">{trend === 'up' ? '▲' : '▼'}</span><span className="sr-only">{trend === 'up' ? 'up ' : 'down '}</span>{p >= 200 ? `${(p / 100 + 1).toFixed(1)}×` : <><Roll n={Math.abs(Math.round(p))} />%</>}</>;
 
   return (
     <section className="hero">
       <p className="eyebrow">{area.label} · {month} {c.ref_year}{c.partial && `, first ${c.days_covered} days`}</p>
-      <h1 className={trend ? `is-${trend}` : undefined}>
-        {trend && <span className="hero-mark" aria-hidden="true">{trend === 'up' ? '▲' : trend === 'down' ? '▼' : '●'}</span>}
-        {h.lead && <span className="soft">{h.lead} </span>}<span>{strong}</span>{h.tail && <span className="soft"> {h.tail}</span>}
-      </h1>
-      {rankText && <p className="hero-rank">{rankText}.</p>}
+      <h1 className={trend ? `is-${trend}` : undefined}>{big}</h1>
+      <p className="hero-sub">
+        {sub.charAt(0).toUpperCase() + sub.slice(1)}{period && !!c.count && p != null && <>, comparing the same days in {period}</>}.
+        {rankText && <> {rankText}.</>}
+      </p>
 
       <dl className="answers">
         <div>
@@ -87,7 +91,6 @@ export default function StatusHero({ data, area, status, asOf, updating, onUpdat
             <span className="meter-track"><i className="meter-mid" />{pos != null && <i className={`meter-dot is-${trend ?? 'flat'}`} style={{ left: `${((pos + 2) / 4) * 100}%` }} />}</span>
             <span className="meter-ends"><span>half</span><span>typical</span><span>double</span></span>
           </dd>
-          <dd className="answers-note">{period ? `Same days in ${period}.` : 'No complete earlier year yet.'}</dd>
         </div>
         <div>
           <dt>Is this the season?</dt>
@@ -100,7 +103,6 @@ export default function StatusHero({ data, area, status, asOf, updating, onUpdat
 
       <p className="hero-meta">
         {provisional && <span className="tag" title="Recent days use NASA's near-real-time data and may still change">Provisional</span>}
-        {asOf && <span className="tag">As of {dateShort(data.query.ref_date)}</span>}
         <span className="hero-meta-upd">
           <span>Updated {dateTime(status?.data_updated ?? data.data_updated)}</span>
           <button className="textlink" onClick={onUpdate} disabled={updating}>{updating ? 'Updating…' : 'Update now'}</button>
@@ -127,6 +129,9 @@ function Season({ data, levels, quiet, period }: { data: Analysis; levels: Retur
   const peak = c.peak_month;
   const lit = on ?? c.ref_month;
   const litLevel = levels.level(data.average_by_month.find((a) => a.month === lit)?.mean);
+  // this month sits in the middle: five months behind it on the left, the six coming months on the right
+  const order = Array.from({ length: 12 }, (_, i) => ((c.ref_month - 1 - 5 + i + 12) % 12) + 1);
+  const byMonth = new Map(data.average_by_month.map((a) => [a.month, a]));
 
   return (
     <div className="season">
@@ -134,28 +139,30 @@ function Season({ data, levels, quiet, period }: { data: Analysis; levels: Retur
         <h2>A typical year here</h2>
         <p>
           {peak != null && <>Peaks in <b>{MONTHS[peak - 1]}</b></>}
-          {peak != null && quiet != null && quiet !== peak && <>, calmest in <b>{MONTHS[quiet - 1]}</b></>}
-          {c.worst_year != null && <>. Most active year: <b>{c.worst_year}</b></>}.
+          {peak != null && quiet != null && quiet !== peak && <>, calmest in <b>{MONTHS[quiet - 1]}</b></>}.
         </p>
       </div>
       <ol className={'season-bars' + (on != null ? ' is-hot' : '')} onPointerLeave={() => setOn(null)}>
-        {data.average_by_month.map((a) => {
-          const lv = levels.level(a.mean);
-          const now = a.month === c.ref_month;
+        {order.map((m, i) => {
+          const a = byMonth.get(m);
+          const lv = levels.level(a?.mean);
+          const now = m === c.ref_month;
+          const ahead = i > 5;
           return (
-            <li key={a.month} className={(a.month === lit ? 'is-lit' : '') + (now ? ' is-now' : '')}>
-              <button type="button" aria-label={`${MONTHS[a.month - 1]}: usually ${LEVEL_WORDS[lv].toLowerCase()}${a.month === peak ? ', the peak' : ''}${now ? ', this month' : ''}`}
-                onPointerEnter={() => setOn(a.month)} onFocus={() => setOn(a.month)} onBlur={() => setOn(null)}>
-                <span className="season-col"><i className={`lv${lv}`} style={{ height: `${grown ? Math.max(4, ((a.mean ?? 0) / top) * 100) : 4}%`, transitionDelay: `${a.month * 18}ms` }} /></span>
-                <span className="season-mon">{MON[a.month - 1][0]}<span>{MON[a.month - 1].slice(1)}</span></span>
+            <li key={m} className={(m === lit ? 'is-lit' : '') + (now ? ' is-now' : '') + (ahead ? ' is-ahead' : '')}>
+              <button type="button" aria-label={`${MONTHS[m - 1]}: usually ${LEVEL_WORDS[lv].toLowerCase()}${m === peak ? ', the peak' : ''}${now ? ', this month' : ahead ? ', coming up, an estimate from history' : ''}`}
+                onPointerEnter={() => setOn(m)} onFocus={() => setOn(m)} onBlur={() => setOn(null)}>
+                <span className="season-col"><i className={`lv${lv}`} style={{ height: `${grown ? Math.max(4, ((a?.mean ?? 0) / top) * 100) : 4}%`, transitionDelay: `${i * 18}ms` }} /></span>
+                <span className="season-mon">{MON[m - 1][0]}<span>{MON[m - 1].slice(1)}</span></span>
               </button>
             </li>
           );
         })}
       </ol>
+      <p className="season-split" aria-hidden="true"><span>Earlier</span><span>Now</span><span>Coming up · estimate</span></p>
       <p className="season-read" aria-live="polite">
-        <span><b>{MONTHS[lit - 1]}</b> · usually {LEVEL_WORDS[litLevel].toLowerCase()}{lit === peak && ' · the peak'}{lit === c.ref_month && ' · this month'}</span>
-        <span className="season-src">Average of {period}. History, not a forecast.</span>
+        <span><b>{MONTHS[lit - 1]}</b> · {LEVEL_WORDS[litLevel].toLowerCase()}{lit === peak && ' · the peak'}{lit === c.ref_month && ' · this month'}</span>
+        <span className="season-src">Estimate from the {period} average, not a forecast.</span>
       </p>
     </div>
   );
