@@ -18,6 +18,21 @@ type Load =
   | { kind: 'note'; message: string }
   | { kind: 'error'; message: string };
 
+// The model's cells are 0.05° × 0.05° squares (science/forecast, infra/api/forecast.py "cell_deg"), called "5 km" by the API:
+// about 31 km² × cos(latitude). Display only: turns the API's cell counts into an area people can picture.
+const CELL_DEG = 0.05;
+function cellKm2(f: Forecast): number {
+  const lats = f.cells.features.map((c) => c.geometry.coordinates[1]);
+  const lat = lats.length ? lats.reduce((a, b) => a + b, 0) / lats.length : -15; // Brazil's middle when no cell came back
+  const side = CELL_DEG * 111.32;
+  return side * side * Math.cos((lat * Math.PI) / 180);
+}
+/** 98,027 → "98,000", 1,704 → "1,700", 87 → "90", 6 → "6" (it is an estimate: no false precision) */
+function km2(n: number): string {
+  const r = n >= 1000 ? Math.round(n / 10 ** (Math.floor(Math.log10(n)) - 1)) * 10 ** (Math.floor(Math.log10(n)) - 1) : n >= 100 ? Math.round(n / 10) * 10 : Math.round(n);
+  return `${num(r)}\u00a0km²`;
+}
+
 const pct1 = (p: number) => p.toLocaleString('en-GB', { maximumFractionDigits: p < 10 ? 1 : 0 });
 
 export default function ForecastPanel({ area, refDate, available, refresh = 0, onLoad }: {
@@ -93,33 +108,29 @@ export default function ForecastPanel({ area, refDate, available, refresh = 0, o
 
 function ForecastBody({ f }: { f: Forecast }) {
   const s = f.summary;
-  const [copied, setCopied] = useState<null | 'ok' | 'fail'>(null);
-  // the API's own briefing (it already ends with the label), for sharing in a message or a report
-  const copy = () => {
-    const done = (r: 'ok' | 'fail') => { setCopied(r); setTimeout(() => setCopied(null), 2500); };
-    if (!navigator.clipboard || !f.briefing) return done('fail');
-    navigator.clipboard.writeText(f.briefing).then(() => done('ok'), () => done('fail'));
-  };
+  const cell = cellKm2(f);
+  // the API's test note, without its "(1 = perfect, 0.5 = coin flip)" aside (also dropped in infra/api/forecast.py)
+  const testNote = f.reliability.note?.replace(/\s*\(1 = perfect, 0\.5 = coin flip\)/, '');
   return (
     <>
       <p className="fc-period">
-        {dateRange(f.period.from, f.period.to)} <span className="muted">· {num(s.cells)} cells of {f.cell_size_km}&nbsp;km that have burned before</span>
+        {dateRange(f.period.from, f.period.to)} <span className="muted">· {num(s.cells)} fire cells (about {km2(s.cells * cell)}) historically registered in the area</span>
       </p>
       {s.cells > 0 ? (
         <dl className="fc-stats">
           <div>
-            <dt>Cells likely to see fire</dt>
+            <dt>Likely to catch fire</dt>
             <dd>
-              <span className="fc-val">{s.expected_cells_with_fire == null ? '–' : `about ${num(s.expected_cells_with_fire)}`}</span>
-              <span className="muted">of {num(s.cells)}{s.expected_share_pct != null && <> ({pct1(s.expected_share_pct)}%)</>}</span>
+              <span className="fc-val">{s.expected_cells_with_fire == null ? '–' : `${km2(s.expected_cells_with_fire * cell)} at risk`}</span>
+              {s.expected_cells_with_fire != null && <span className="muted">{num(s.expected_cells_with_fire)} out of {num(s.cells)} cells{s.expected_share_pct != null && <> ({pct1(s.expected_share_pct)}%)</>}</span>}
             </dd>
           </div>
           <div>
-            <dt>Highest chance in one cell</dt>
+            <dt>Highest chance per cell</dt>
             <dd><span className="fc-val">{s.max_probability == null ? '–' : `${pct1(s.max_probability * 100)}%`}</span></dd>
           </div>
           <div>
-            <dt>Likely strength if it burns</dt>
+            <dt>Estimated intensity</dt>
             <dd><span className="fc-val">{s.intensity_if_fire ? INTENSITY[s.intensity_if_fire] : '–'}</span></dd>
           </div>
         </dl>
@@ -128,12 +139,8 @@ function ForecastBody({ f }: { f: Forecast }) {
       )}
       <div className="fc-map-row">
         {f.returned > 0 && (
-          <p className="muted fc-map-hint"><MapIcon /> To see these cells, choose <strong>Fire cells</strong> on the map.</p>
+          <p className="muted fc-map-hint"><MapIcon /> <span><strong>Fire cells</strong> option is available on the map.</span></p>
         )}
-        {f.briefing && <button className="textlink fc-copy" onClick={copy}>{copied === 'ok' ? '✓ Copied' : 'Copy as text'}</button>}
-        <span className="sr-only" role="status">
-          {copied === 'ok' ? 'Estimate copied to the clipboard.' : copied === 'fail' ? 'Could not copy here.' : ''}
-        </span>
       </div>
       <details className="more">
         <summary>Read more</summary>
@@ -145,7 +152,7 @@ function ForecastBody({ f }: { f: Forecast }) {
         )}
         <p>
           Based on {s.recent_detections == null ? 'the' : num(s.recent_detections)} NASA FIRMS VIIRS NOAA-20 detections here from {dateShort(f.based_on.from)} to {dateShort(f.based_on.to)}, and the usual pattern for this week of the year.
-          {f.reliability.note && <> {f.reliability.note}</>}
+          {testNote && <> {testNote}</>}
         </p>
       </details>
     </>

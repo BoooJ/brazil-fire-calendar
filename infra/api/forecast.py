@@ -27,7 +27,7 @@ RELIABILITY = {
     "auc": 0.87,
     "baseline_auc": 0.76,
     "test_years": [2023, 2024, 2025],
-    "note": "Tested on 2023-2025, years the model never saw: AUC 0.87 (1 = perfect, 0.5 = coin flip). "
+    "note": "Tested on 2023-2025, years the model never saw: AUC 0.87. "
             "Using only the usual pattern for that week of the year gives 0.76.",
 }
 # Messages of the science module we replace with our own (English) wording.

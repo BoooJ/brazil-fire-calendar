@@ -344,8 +344,8 @@ def make_forecast(rng: random.Random, n: int = 300, total: int = 7774) -> dict:
                     "intensity_if_fire": "high", "recent_detections": 519},
         "briefing": briefing,
         "reliability": {"auc": 0.87, "baseline_auc": 0.76, "test_years": [2023, 2024, 2025],
-                        "note": "Tested on 2023-2025, years the model never saw: AUC 0.87 (1 = perfect, "
-                                "0.5 = coin flip). Using only the usual pattern for that week of the year gives 0.76."},
+                        "note": "Tested on 2023-2025, years the model never saw: AUC 0.87. "
+                                "Using only the usual pattern for that week of the year gives 0.76."},
         "total": total, "returned": n, "truncated": total > n,
         "cells": {"type": "FeatureCollection", "features": features},
         "notes": [],

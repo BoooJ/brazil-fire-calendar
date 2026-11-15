@@ -420,7 +420,6 @@ button.day:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px;
 .fc-map-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3) var(--s-5); margin-bottom: var(--s-3); }
 .fc-map-hint { display: inline-flex; align-items: center; gap: var(--s-2); margin: 0; }
 .fc-map-hint svg { flex: none; }
-.fc-copy { font-size: var(--t-sm); color: var(--ink-2); text-decoration-color: var(--line-strong); font-weight: 500; }
 .more summary { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; cursor: pointer; list-style: none; font-size: var(--t-sm); font-weight: 550; color: var(--ink-2); }
 .more summary::-webkit-details-marker { display: none; }
 .more summary::after { content: '+'; font-weight: 400; }
