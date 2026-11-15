@@ -239,3 +239,5 @@ Global rules for this block:
   - Under 900px, once a valid point inside Brazil is picked, the button is sticky at the bottom of the screen (with a dark ring so it lifts off the content) until the user reaches its place in the steps. Desktop unchanged.
 - [x] Location step: the point picked on the globe was a 2px red dot (same as a hotspot), hard to see on light Brazil
   - Globe takes an optional `pick` and draws it as an orange dot with a white edge and a soft halo; hotspot dots unchanged.
+- [x] Landing phone menu: with the sheet open, Tab went to the hero buttons hidden behind it
+  - Landing.tsx keeps Tab / Shift+Tab inside the open sheet (kit files untouched); Escape still closes it and returns focus to Menu.

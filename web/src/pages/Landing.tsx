@@ -74,6 +74,28 @@ export default function Landing() {
     if (id && !id.startsWith('/')) document.getElementById(id)?.scrollIntoView({ behavior: 'instant' });
   }, [styled]);
 
+  // The kit's phone menu sheet covers the page but lets Tab wander behind it: keep focus inside while it is open.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const nav = document.querySelector<HTMLElement>('header.nav.is-open');
+      if (e.key !== 'Tab' || !nav) return;
+      const items = [...nav.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')].filter((el) => el.offsetParent !== null);
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      const inside = nav.contains(document.activeElement);
+      if (e.shiftKey && (document.activeElement === first || !inside)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && (document.activeElement === last || !inside)) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, []);
+
   if (!styled) return null;
 
   return (
