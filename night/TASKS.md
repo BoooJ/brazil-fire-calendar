@@ -142,3 +142,5 @@ Global rules for this block:
   - Done (needs the usual quick human review of CLAUDE.md changes).
 - [x] Calendar keyboard: arrow keys move between bricks (←/→ months, ↑/↓ years, skipping empty cells)
   - onKeyDown on .cal-grid; Tab still reaches every brick, Enter opens the brick card.
+- [x] Landing CSS: remove the dead hero-window / year-list rules (HeroWindow and the year list are gone)
+  - ~25 unused .bfc-win / .bfc-kpi / .bfc-yr rules deleted; the app frame stats keep their own rules.

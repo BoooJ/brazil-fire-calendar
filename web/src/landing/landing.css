@@ -71,28 +71,12 @@ strong { font-weight: 650; }
 @media (max-width: 639px) { .hero--globe { --photo: min(40svh, 300px); } }
 
 /* ---------- the product UI: the fire calendar's own colours, as the tool's dark panels draw them ---------- */
-.bfc-win, .bfc-app, .bfc-step { --fc-bg: #0d1017; --fc-panel: #151a26; --fc-line: #262d3e; --fc-ink: #ece9e2; --fc-muted: #9aa1b0; --fc-fire: #f9cb35; --fc-up: #f7a14a; --fc-down: #b4a4d8; }
-.bfc-sp { flex: 1; }
+.bfc-app, .bfc-step, .bfc-how-ui { --fc-bg: #0d1017; --fc-panel: #151a26; --fc-line: #262d3e; --fc-ink: #ece9e2; --fc-muted: #9aa1b0; --fc-fire: #f9cb35; --fc-up: #f7a14a; --fc-down: #b4a4d8; }
 .bfc-up { color: var(--fc-up); }
 .bfc-down { color: var(--fc-down); }
 .bfc-chip { font-size: 11px; padding: 3px 8px; border-radius: 99px; border: 1px solid var(--fc-line, #262d3e); color: var(--fc-muted, #9aa1b0); white-space: nowrap; }
 .bfc-chip--prov { border-color: transparent; background: #fde7c4; color: #5a3600; font-weight: 600; }
 
-.bfc-win { background: var(--fc-bg); color: var(--fc-ink); border: 1px solid var(--fc-line); border-radius: 14px; overflow: hidden; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35); font-family: var(--font-text); }
-.bfc-win__bar { display: flex; gap: 12px; align-items: center; height: 40px; padding: 0 16px; border-bottom: 1px solid var(--fc-line); font-size: 13px; color: var(--fc-muted); }
-.bfc-win__bar b { color: var(--fc-ink); font-weight: 500; }
-.bfc-win__dots { display: inline-flex; gap: 6px; }
-.bfc-win__dots i { width: 10px; height: 10px; border-radius: 50%; background: #2c3344; }
-.bfc-win__body { display: grid; grid-template-columns: 196px 1fr; gap: 16px; padding: 16px; }
-.bfc-kpis { display: grid; gap: 10px; align-content: start; }
-.bfc-kpi { background: var(--fc-panel); border: 1px solid var(--fc-line); border-radius: 10px; padding: 10px 12px; display: grid; gap: 2px; }
-.bfc-kpi small, .bfc-stats small { font-size: 11px; color: var(--fc-muted); }
-.bfc-kpi strong { font-size: 24px; font-weight: 500; letter-spacing: -0.02em; line-height: 1.15; }
-.bfc-kpi strong em, .bfc-stats strong em { font-style: normal; font-size: 13px; color: var(--fc-muted); }
-.bfc-kpi span { font-size: 12px; color: var(--fc-muted); }
-.bfc-kpi--hot { background: #2a1d14; border-color: rgba(249, 142, 9, 0.4); }
-.bfc-kpi--hot strong { color: var(--fc-fire); font-size: 30px; }
-@media (max-width: 1279px) { .bfc-kpis { display: none; } .bfc-win__body { grid-template-columns: minmax(0, 1fr); } }
 
 /* the burning calendar, in HTML */
 .bfc-cal { display: grid; gap: 2px; font: 500 11px/1 var(--font-mono); }
@@ -124,14 +108,10 @@ strong { font-weight: 650; }
 .bfc-app { --u-bg: #0d1017; --u-ink: #ece9e2; --u-r: 16px; color: var(--fc-ink); font-family: var(--font-text); min-height: 280px; }
 .bfc-pane-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--fc-line); font-size: 13px; color: var(--fc-muted); }
 .bfc-pane-head b { color: var(--fc-ink); font-size: 15px; font-weight: 500; }
-.bfc-yrs { display: grid; }
-.bfc-yr { display: grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items: center; padding: 11px 20px; border-bottom: 1px solid var(--fc-line); font-size: 13px; color: var(--fc-muted); }
-.bfc-yr b { font: 500 14px/1 var(--font-mono); color: var(--fc-ink); }
-.bfc-yr > span:not(.bfc-chip) { color: #c3c8d2; }
-.bfc-yr.is-on { background: rgba(249, 142, 9, 0.12); box-shadow: inset 3px 0 0 #f98e09; }
-.bfc-yr.is-on > span:not(.bfc-chip) { color: var(--fc-ink); }
 .bfc-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--fc-line); }
 .bfc-stats > div { display: grid; gap: 4px; }
+.bfc-stats small { font-size: 11px; color: var(--fc-muted); }
+.bfc-stats strong em { font-style: normal; font-size: 13px; color: var(--fc-muted); }
 .bfc-stats strong { font-size: 22px; font-weight: 500; letter-spacing: -0.02em; }
 .bfc-map { display: block; width: 100%; height: auto; background: #121722; }
 .bfc-map__box { fill: rgba(249, 142, 9, 0.05); stroke: #ff6a1f; stroke-width: 1.5; }
@@ -308,7 +288,6 @@ strong { font-weight: 650; }
   .bfc-method-act { margin-top: var(--s-5); }
 }
 @media (max-width: 639px) {
-  .bfc-win__src { display: none; }
   .bfc-cal__c { font-size: 0; height: 14px; }
   #method .panel { --p-h: 236px; }
   .bfc-q-lede { display: none; }
