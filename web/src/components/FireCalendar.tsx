@@ -281,7 +281,7 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
           <div ref={popRef} className={'cal-pop' + (popPos.below ? ' is-below' : ' is-above')} role="dialog" aria-label={`${MONTHS[i.month - 1]} ${i.year}`}
             style={{ left: popPos.left, top: popPos.top }}>
             <b className="cal-pop-title">{MONTHS[i.month - 1]} {i.year}</b>
-            <p className="cal-pop-main">{i.count ? <>Fire was detected: corrected count <b>{num(i.count)}</b></> : 'No fire detected this month'}</p>
+            <p className="cal-pop-main">{i.count ? <>Fire detected<br /><b>{num(i.count)}</b> corrected count</> : 'No fire detected this month'}</p>
             <p>{i.vs_avg_pct == null ? 'No typical month to compare with' : <>{pctLong(i.vs_avg_pct)}</>}{typical != null && <> · typical {num(typical)}</>}</p>
             <p className="cal-pop-flag">{status}</p>
             <div className="cal-pop-act">

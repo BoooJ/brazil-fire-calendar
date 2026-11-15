@@ -159,3 +159,5 @@ Global rules for this block:
   - Eight eased stops (to 42%) instead of four: the fade over Brazil's west no longer ends in a visible edge.
 - [x] Landing "How it works" step 3 and the app frame: add the dotted next-year typical row, as the tool now shows it
   - HowCalendar draws a "2027" row of dotted bricks from `average_by_month` (as-is) and the rest of 2026 as dotted typical bricks, coloured by level like the tool.
+- [x] Month card flags started with a stray "·"; brick card read "Fire was detected: corrected count 442"; Detailed view: "Burning calendar" sat right under the Key numbers cards
+  - Flags get a small amber dot; brick card says "Fire detected" then "442 corrected count" (number first, bigger); Key numbers → calendar now uses the sheet's 40 + line + 40 rhythm.
