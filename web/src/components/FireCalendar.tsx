@@ -19,7 +19,7 @@ function makeCountLevels(items: CalendarItem[]) {
 
 /** -2 … +2 for the diverging scale. */
 const vsLevel = (p: number | null) => (p == null ? 0 : p <= -50 ? -2 : p <= -20 ? -1 : p < 20 ? 0 : p < 100 ? 1 : 2);
-const VS_LABELS = ['≤ −50%', '−50 to −20%', 'near average', '+20 to +100%', '≥ +100%'];
+const VS_LABELS = ['≤ −50%', '−50 to −20%', 'near average (±20%)', '+20 to +100%', '≥ +100%'];
 
 interface Props {
   data: Analysis;

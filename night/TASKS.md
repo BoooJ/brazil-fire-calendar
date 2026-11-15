@@ -16,7 +16,8 @@
   - Map caption now carries an orange "showing 300 of N" badge (fits at 375px); tooltip says the CSV has every hotspot.
 - [x] Provisional / uncertain / partial cells: make the hatching/fading consistent between FireCalendar and BurningCalendar and explain it in the legend
   - Same wording in both legends (hatched / faded / month in progress), same 0.6 fade for uncertain cells, tooltip text aligned.
-- [ ] Legends: show values for every colour step; vs Average legend with ▲/▼ and a neutral middle
+- [x] Legends: show values for every colour step; vs Average legend with ▲/▼ and a neutral middle
+  - Heatmap vs-average ticks now read ▼ ¼× · ▼ ½× · ● avg · ▲ 2× · ▲ 4×+; quick legend middle step says "near average (±20%)". Count steps already had values.
 - [ ] Keyboard: every interactive element reachable with Tab, visible :focus-visible ring using a design token, Escape closes dialogs/popups
 - [ ] ARIA: labels for icon-only buttons, the calendar grid cells announce month, year and count
 - [ ] Contrast: check all text and UI against WCAG AA on both the white sheet and the dark panels; fix tokens, not single colours

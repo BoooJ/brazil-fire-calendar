@@ -40,9 +40,9 @@ export function anomalyPosition(vsAvgPct: number | null): number | null {
 }
 
 export const ANOMALY_TICKS: { pos: number; label: string }[] = [
-  { pos: -2, label: '¼×' },
-  { pos: -1, label: '½×' },
-  { pos: 0, label: 'avg' },
-  { pos: 1, label: '2×' },
-  { pos: 2, label: '4×+' },
+  { pos: -2, label: '▼ ¼×' },
+  { pos: -1, label: '▼ ½×' },
+  { pos: 0, label: '● avg' },
+  { pos: 1, label: '▲ 2×' },
+  { pos: 2, label: '▲ 4×+' },
 ];
