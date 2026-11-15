@@ -254,6 +254,9 @@ strong { font-weight: 650; }
 
 /* ---------- calendar ---------- */
 .cal-head { display: flex; flex-wrap: wrap; gap: var(--s-3); align-items: flex-end; justify-content: space-between; margin-bottom: var(--s-4); }
+.cal-head:has(> .btn:last-child) { flex-wrap: nowrap; } /* a lone PNG button stays beside its heading, at every width */
+.cal-head:has(> .btn:last-child) > div:first-child { flex: 1 1 auto; min-width: 0; }
+.cal-head > .btn { flex: none; }
 .tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .legend { display: grid; gap: var(--s-2); padding: var(--s-3) var(--s-4); border-radius: var(--r-lg); background: var(--sheet-soft); font-size: var(--t-sm); color: var(--sheet-ink-2); margin-bottom: var(--s-4); }
 .legend-title { display: block; font-weight: 650; color: var(--sheet-ink); margin-bottom: 6px; }

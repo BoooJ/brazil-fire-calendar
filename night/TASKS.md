@@ -322,3 +322,5 @@ Global rules for this block:
   - landing.css: the card's inner grid can shrink (`min-width: 0`), and under 361px the card's side padding and the button are a little smaller. 390 / 1440 unchanged; no text past the edge anywhere on the landing at 320.
 - [x] Detailed view Key numbers at 600px+: "Peak month" spanned the whole last row and left an empty slot beside "Estimated fires"
   - The 2-column rule (`.kc:not(.kc-2) > div:last-child`) out-ranked the wide-screen reset; the reset now uses the same selector, so the five cards fill the 3-column grid (big card + 2×2). Phones unchanged. Checked 820 / 1440.
+- [x] Detailed view chart headings: the PNG button sat beside "Typical year" at some widths and dropped under the subtitle at others (always under "Year by year")
+  - A `.cal-head` that ends with one button no longer wraps: the text block shrinks and the PNG button stays at the right, bottom-aligned, at every width. The heatmap's tool row (Counts / vs Average / Table / PNG / CSV) still wraps as before. Checked 320 / 375 / 1440, no page overflow.
