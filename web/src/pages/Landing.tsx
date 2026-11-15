@@ -34,7 +34,7 @@ const FAQ = [
   ['What is a fire-day?', 'A grid cell of about 1 km with at least one valid hotspot on one UTC day.'],
   ['Why are recent calendar months hatched?', 'They use near-real-time data, which NASA replaces with final data about five months later.'],
   ['Which areas does the calendar cover?', 'Your own location, a point with a radius, four ready-made regions of Brazil, or a rectangle or polygon you draw on the map.'],
-  ['Does the calendar forecast fires?', 'No. What is normal for the coming months comes from past years and is labelled as history, not a forecast.'],
+  ['Does the calendar forecast fires?', 'No, the calendar is history. The one look ahead is a next-week fire chance from an experimental model, labelled as such.'],
 ];
 
 const Arrow = () => (
@@ -241,8 +241,8 @@ export default function Landing() {
                   satellite data, but split across instruments that don’t agree.
                 </p>
                 <p>
-                  Everything here is history. Recent months are marked provisional, weak numbers uncertain, and what is
-                  typical for the coming months is always labelled as history, <strong>not a forecast</strong>.
+                  The calendar is history, <strong>not a forecast</strong>: recent months are marked provisional, weak
+                  numbers uncertain. The one look ahead, next week’s fire chance, is labelled a model estimate.
                 </p>
               </div>
             </div>
