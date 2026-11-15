@@ -209,8 +209,8 @@ Global rules for this block:
 
 ## Found on the 05:55 run
 
-- [x] Phone top bar: the area pill was cut to "All of Br…" (no "Change") because the full name took half the bar
-  - Under 480px, once an area is chosen, the name folds to the round flame button (name kept for screen readers) and the pill shows the whole area + "Change". Gate screen unchanged.
+- [x] Phone top bar: the area pill was cut to "All of Br…" (no "Change") because the full name took half the bar; tablets never showed "Change"
+  - Under 520px, once an area is chosen, the name folds to the round flame button (name kept for screen readers) and the pill shows the whole area + "Change". "Change" now shows at every width. Gate screen unchanged.
 - [x] Phone calendar: the "2027" row lost its "typical" tag (read like a real year), and its note stayed indented 68px because a later rule overrode the phone one; the note repeated "2003–2025" twice in a row
   - Phone keeps the "typical" tag on the next-year row only; the phone padding rule now comes after the base rule; note reads "Dotted bricks: a typical year (the 2003–2025 average) for 2027 and the rest of 2026." + `next_months_label`.
 - [x] Phone calendar legend: the last colour step ("1.3k+") wrapped alone onto a second line; "What the marks mean" was a 32px tap target
