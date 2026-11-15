@@ -352,7 +352,7 @@ strong { font-weight: 650; }
 /* the app frame's left pane: the tool's white sheet with the brick calendar */
 .app > .app__pane.bfc-pane-sheet { background: #fff; padding: var(--s-4); }
 .app > .app__pane.bfc-pane-sheet::after { display: none; }
-.bfc-pane-sheet .bfc-how-ui { box-shadow: none; padding: 0; }
+.bfc-pane-sheet .bfc-how-ui { box-shadow: none; padding: 0; border-radius: 0; } /* no padding here, so a radius would clip the heading's first letter */
 .app > .app__pane--open::after { display: none; }
 .bfc-qc__d.is-sel { outline: 2px solid #14151a; outline-offset: 2px; }
 

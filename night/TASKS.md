@@ -196,3 +196,5 @@ Global rules for this block:
   - Once the hotspots are shown, the card shrinks to 44vh on phones (scrolls inside), so the map band with the points stays visible above it.
 - [x] Landing hero at 1366×768: the three facts sat glued under the buttons; "Twenty years" undersold 2003 → today
   - Facts keep at least 32px above them; lead says "More than twenty years". All sections still one screen at the four sizes.
+- [x] Landing app frame: the "B" of "Burning calendar" was clipped by the drawn sheet's rounded corner
+  - Inside the frame's white pane the drawn sheet has no radius (the pane gives the edge); the heading shows whole.
