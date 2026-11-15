@@ -241,3 +241,5 @@ Global rules for this block:
   - Globe takes an optional `pick` and draws it as an orange dot with a white edge and a soft halo; hotspot dots unchanged.
 - [x] Landing phone menu: with the sheet open, Tab went to the hero buttons hidden behind it
   - Landing.tsx keeps Tab / Shift+Tab inside the open sheet (kit files untouched); Escape still closes it and returns focus to Menu.
+- [x] Landing CTA promised "your location stays in your browser", but the area drawn around it is sent to the API
+  - Now "No account, and your location is never stored." (matches the tool's "only used to draw this area, not stored on a server").

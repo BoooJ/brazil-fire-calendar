@@ -219,7 +219,7 @@ export default function Landing() {
             <div className="bfc-cta fill">
               <div className="bfc-cta__in">
                 <h2 id="start-h">When does your area usually burn?</h2>
-                <p>One tap to find out. No account, and your location stays in your browser.</p>
+                <p>One tap to find out. No account, and your location is never stored.</p>
                 <a className="btn btn--primary bfc-go" href={TOOL}>Open the fire calendar<Arrow /></a>
               </div>
             </div>
