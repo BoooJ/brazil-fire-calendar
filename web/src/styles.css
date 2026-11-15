@@ -284,6 +284,21 @@ abbr { text-decoration: none; }
 .controls-fields { justify-content: flex-start; }
 .controls-fields label, .coords label, .radius legend { display: grid; gap: 6px; font-size: var(--t-sm); font-weight: 550; color: var(--ink-2); }
 .controls-fields input, .controls-fields select, .coords input, .field { min-height: 44px; padding: 0 var(--s-3); border-radius: var(--r-sm); border: 1px solid var(--line-strong); background: var(--card); color: var(--ink); font-size: var(--t-md); font-variant-numeric: tabular-nums; transition: border-color 0.18s ease; }
+/* "Select a day": DD . MM . YYYY typed straight through, no calendar popup (Controls.tsx DayField) */
+.day-field-wrap { display: grid; gap: 6px; }
+.day-field-label { font-size: var(--t-sm); font-weight: 550; color: var(--ink-2); }
+.controls-fields .day-field { display: inline-flex; align-items: center; width: max-content; min-height: 44px; padding: 0 var(--s-3); border-radius: var(--r-sm); border: 1px solid var(--line-strong); background: var(--card); cursor: text; transition: border-color 0.18s ease; }
+.controls-fields .day-field:hover { border-color: var(--edge); }
+.controls-fields .day-field:focus-within { border-color: var(--ink); }
+.controls-fields .day-field.is-bad { border-color: var(--fire); }
+.day-field-part { display: inline-flex; align-items: center; }
+.controls-fields .day-field input { min-height: 0; height: 40px; padding: 0; border: 0; border-radius: 4px; background: transparent; font-size: var(--t-md); font-variant-numeric: tabular-nums; text-align: center; outline: none; }
+.controls-fields .day-field input:focus { background: #f0f0f2; }
+.controls-fields .day-field input::placeholder { color: #b0b0b5; }
+.controls-fields .day-field-d, .controls-fields .day-field-m { width: 2.4ch; }
+.controls-fields .day-field-y { width: 4.6ch; }
+.day-field-sep { padding: 0 2px; color: var(--ink-2); font-size: var(--t-md); }
+.day-field-err { font-size: var(--t-xs); color: var(--fire); }
 .controls-fields input:hover, .controls-fields select:hover, .coords input:hover, .field:hover { border-color: var(--edge); }
 
 /* ---------- the sheet: calendar, coming months, next week, summary ---------- */
