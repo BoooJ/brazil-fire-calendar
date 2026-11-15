@@ -4,8 +4,8 @@ import { useEffect, useState, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import '../landing/landing.css';
 import { getShowcase, type Showcase } from '../api';
-import { applyKitAttributes, groundsMayMove, loadKitCss, startKit } from '../landing/kit';
-import { AppFrame, HeroWindow, RawVsCorrected, StepConvert, StepGrid, StepProvisional, Timeline, heroWindowLabel } from '../landing/visuals';
+import { applyKitAttributes, loadKitCss, startKit } from '../landing/kit';
+import { AppFrame, HowAnswer, HowCalendar, HowPlace, RawVsCorrected, StepConvert, StepGrid, StepProvisional, Timeline } from '../landing/visuals';
 import Globe from '../components/Globe';
 import { Flame } from '../components/Brand';
 
@@ -45,12 +45,6 @@ const Arrow = () => (
 );
 
 const vars = (v: Record<string, string | number>) => v as CSSProperties;
-
-// The painted ground under the calendar window moves where the kit lets a ground move (kit.ts, moveGrounds);
-// elsewhere it is a plain data-fx ground, which the kit draws once.
-const PAINTING = groundsMayMove()
-  ? { 'data-fx-moving': 'painterly-landscape', 'data-ui-pause-host': '' }
-  : { 'data-fx': 'painterly-landscape' };
 
 export default function Landing() {
   const [styled, setStyled] = useState(false);
@@ -174,13 +168,19 @@ export default function Landing() {
               <h2 id="how-h">Your fire calendar in three steps</h2>
             </div>
             <ol className="grid bfc-how">
-              <li className="span-4"><span className="step-num">1</span><h3>Pick your area</h3><p>Your location, a point with a radius, a ready-made region of Brazil, or a shape you draw on the map.</p></li>
-              <li className="span-4"><span className="step-num">2</span><h3>See if this month is unusual</h3><p>One line: is fire activity above or below a typical month here?</p></li>
-              <li className="span-4"><span className="step-num">3</span><h3>Find the critical months</h3><p>Every month since 2003: the usual season, its peak, the odd years.</p></li>
+              <li className="span-4 bfc-folder">
+                <div className="bfc-folder__img"><HowPlace /></div>
+                <div className="bfc-folder__txt"><span className="step-num">1</span><h3>Pick your area</h3><p>Your location, a point with a radius, a ready-made region of Brazil, or a shape you draw on the map.</p></div>
+              </li>
+              <li className="span-4 bfc-folder">
+                <div className="bfc-folder__img"><HowAnswer show={show} /></div>
+                <div className="bfc-folder__txt"><span className="step-num">2</span><h3>See if this month is unusual</h3><p>One line: is fire activity above or below a typical month here?</p></div>
+              </li>
+              <li className="span-4 bfc-folder">
+                <div className="bfc-folder__img"><HowCalendar show={show} /></div>
+                <div className="bfc-folder__txt"><span className="step-num">3</span><h3>Find the critical months</h3><p>Every month since 2003: the usual season, its peak, the odd years.</p></div>
+              </li>
             </ol>
-            <div className="bfc-window" {...PAINTING} data-fx-seed="7" role="img" aria-label={heroWindowLabel(show)}>
-              <HeroWindow show={show} />
-            </div>
           </div>
         </section>
 

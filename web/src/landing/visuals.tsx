@@ -6,7 +6,7 @@ import type { Showcase } from '../api';
 import type { CalendarItem, SatelliteKey } from '../types';
 import { SATELLITES } from '../types';
 import { COUNTS_SCALE, FRP_STOPS } from '../colors';
-import { MON, MONTHS, dateShort, num, ordinal } from '../format';
+import { MON, MONTHS, dateShort, headlineFor, num, ordinal } from '../format';
 
 type Show = Showcase | null; // null while the numbers load: the frames stand, empty
 
@@ -69,48 +69,6 @@ function CalendarRows({ show, years }: { show: Show; years: number[] }) {
 }
 
 const Demo = () => <span className="bfc-chip bfc-chip--prov">Demo data</span>;
-
-/** The window on the painted ground: the two key numbers beside the newest finished years of the calendar. */
-export function HeroWindow({ show }: { show: Show }) {
-  const c = show?.analysis.cards;
-  const period = show?.analysis.average_period;
-  const last = c ? c.ref_year - 1 : new Date().getFullYear() - 1;
-  const years = Array.from({ length: 8 }, (_, i) => last - i);
-  return (
-    <div className="ly-piece ui bfc-win" aria-hidden="true">
-      <div className="bfc-win__bar">
-        <span className="bfc-win__dots"><i /><i /><i /></span>
-        <span><b>{show?.areaName ?? ' '}</b> · burning calendar</span>
-        <span className="bfc-sp" />
-        {show?.demo ? <Demo /> : <span className="bfc-win__src">NASA FIRMS · MODIS + VIIRS</span>}
-      </div>
-      <div className="bfc-win__body">
-        <div className="bfc-kpis">
-          <div className="bfc-kpi bfc-kpi--hot">
-            <small>{c ? `${MONTHS[c.ref_month - 1]} ${c.ref_year}${c.partial ? `, first ${c.days_covered} days` : ''}` : ' '}</small>
-            <strong>{c ? num(c.count) : ' '}</strong>
-            <span>corrected fire-days</span>
-          </div>
-          <div className="bfc-kpi">
-            <small>{period ? `vs the ${period.from} to ${period.to} average` : 'vs the average'}</small>
-            <strong className={c ? tone(c.vs_avg_pct) : ''}>{c ? pct(c.vs_avg_pct) : ' '}</strong>
-            <span>{c?.partial ? 'same days, other years' : 'same month, other years'}</span>
-          </div>
-        </div>
-        <div className="bfc-cal"><CalendarRows show={show} years={years} /></div>
-      </div>
-    </div>
-  );
-}
-
-/** What the hero window shows, in words (the window itself is hidden from screen readers). */
-export function heroWindowLabel(show: Show): string {
-  if (!show) return 'The fire calendar: key numbers beside a calendar of monthly fire-days';
-  const c = show.analysis.cards;
-  return `The fire calendar for the ${show.areaName}: ${num(c.count)} fire-days in ${c.partial ? `the first ${c.days_covered} days of ` : ''}${MONTHS[c.ref_month - 1]} ${c.ref_year}` +
-    (c.vs_avg_pct == null ? '' : `, ${Math.abs(Math.round(c.vs_avg_pct))}% ${c.vs_avg_pct < 0 ? 'below' : 'above'} average`) +
-    `, beside a calendar of monthly fire-days${show.demo ? ' (demo data)' : ''}`;
-}
 
 const frpColour = (frp: number | null) => {
   let colour = FRP_STOPS[0][1];
@@ -319,6 +277,69 @@ export function StepProvisional({ show }: { show: Show }) {
         <li><i className="k-prov" />Provisional{show?.finalUntil ? `, after ${dateShort(show.finalUntil)}` : ': near-real-time data'}</li>
         <li><i className="k-part" />Month not finished</li>
       </ul>
+    </div>
+  );
+}
+
+// ---------- "How it works": the tool's three screens, drawn as they look in #/app ----------
+
+/** Step 1, the location step ("Where should we look?"), as LocationGate.tsx draws it. */
+export function HowPlace() {
+  return (
+    <div className="bfc-how-ui bfc-how-ui--dark" aria-hidden="true">
+      <small>Step 1</small>
+      <b className="bfc-how-ui__h">Where should we look?</b>
+      <span className="bfc-how-ui__btn">Use my location</span>
+      <span className="bfc-how-ui__or">or pick a region</span>
+      <span className="bfc-how-ui__chips"><i>All of Brazil</i><i className="is-on">Pantanal</i><i>Roraima</i><i>Southern Amazon</i></span>
+      <span className="bfc-how-ui__or">or a point and a radius</span>
+      <span className="bfc-how-ui__seg"><i>25 km</i><i>50 km</i><i className="is-on">100 km</i><i>250 km</i></span>
+    </div>
+  );
+}
+
+/** Step 2, the one message at the top of the tool (Tool.tsx, Hero): the same wording function. */
+export function HowAnswer({ show }: { show: Show }) {
+  const c = show?.analysis.cards;
+  return (
+    <div className="bfc-how-ui bfc-how-ui--dark" aria-hidden="true">
+      <small>{c ? `${MONTHS[c.ref_month - 1]} ${c.ref_year}${c.partial ? ` · first ${c.days_covered} days` : ''} · ${show?.areaName}` : ' '}</small>
+      <b className="bfc-how-ui__h bfc-how-ui__h--big">{c ? headlineFor(c) : ' '}</b>
+      <span className="bfc-how-ui__sub">{show?.analysis.average_period ? `Compared with an average year (${show.analysis.average_period.from}–${show.analysis.average_period.to}). Not a forecast.` : 'Not a forecast.'}</span>
+      <span className="bfc-how-ui__stats">
+        <i><b>{c ? num(c.count) : ' '}</b>fire-days</i>
+        <i><b>{c?.estimated_fires == null ? '–' : `≈ ${num(c.estimated_fires)}`}</b>fires</i>
+        <i><b>{c?.rank == null ? '–' : <>{c.rank}<em> of {c.of_years}</em></>}</b>rank</i>
+      </span>
+      {show?.demo && <Demo />}
+    </div>
+  );
+}
+
+/** Step 3, the quick-view calendar on the white sheet (FireCalendar.tsx): marked months, same level rule. */
+export function HowCalendar({ show }: { show: Show }) {
+  const items = show?.analysis.calendar ?? [];
+  const v = items.map((i) => i.count).filter((n): n is number => n != null && n > 0).sort((a, b) => a - b);
+  const q = (p: number) => (v.length ? v[Math.min(v.length - 1, Math.floor(p * v.length))] : Infinity);
+  const t = [q(0.5), q(0.75), q(0.9), q(0.97)];
+  const level = (n: number | null) => (n == null ? 0 : n >= t[3] ? 4 : n >= t[2] ? 3 : n >= t[1] ? 2 : n >= t[0] ? 1 : 0);
+  const data = show && calendarOf(show);
+  const ref = show?.analysis.cards.ref_year ?? new Date().getFullYear();
+  const years = [ref, ref - 1, ref - 2, ref - 3, ref - 4, ref - 5];
+  return (
+    <div className="bfc-how-ui bfc-how-ui--sheet" aria-hidden="true">
+      <b className="bfc-how-ui__h">Burning calendar</b>
+      <div className="bfc-qc">
+        <span />{MON.map((m) => <em key={m}>{m[0]}</em>)}
+        {years.map((y) => [
+          <span key={y}>{show ? y : ''}</span>,
+          ...MON.map((m, i) => {
+            const c = data?.cal.get(`${y}-${i + 1}`);
+            const lv = c ? level(c.count) : -1;
+            return <i key={`${y}${m}`} className={'bfc-qc__d' + (lv < 0 ? ' is-none' : ` lv${lv}`) + (c?.provisional ? ' is-prov' : '')} />;
+          }),
+        ])}
+      </div>
     </div>
   );
 }

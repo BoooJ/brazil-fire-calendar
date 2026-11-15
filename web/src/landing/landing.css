@@ -78,20 +78,6 @@ strong { font-weight: 650; }
 .bfc-chip { font-size: 11px; padding: 3px 8px; border-radius: 99px; border: 1px solid var(--fc-line, #262d3e); color: var(--fc-muted, #9aa1b0); white-space: nowrap; }
 .bfc-chip--prov { border-color: transparent; background: #fde7c4; color: #5a3600; font-weight: 600; }
 
-/* the window on the painted ground (the kit's hero window, here under the three steps) */
-.bfc-window {
-  position: relative; flex: 1 1 0; min-height: clamp(240px, 34svh, 420px); overflow: hidden; margin-top: var(--s-6);
-  border-radius: var(--r-lg); background: var(--ground-bg, #79a8d6);
-  -webkit-mask-image: linear-gradient(to bottom, #000 82%, transparent); mask-image: linear-gradient(to bottom, #000 82%, transparent);
-  --fx-bg: var(--ground-bg); --fx-surface: var(--ground-surface); --fx-ink: var(--ground-ink); --fx-accent: var(--ground-accent);
-}
-.bfc-window > .ly-piece { position: absolute; z-index: 1; left: 50%; top: var(--s-6); width: min(880px, calc(100% - 2 * var(--s-6))); transform: translateX(-50%); }
-.bfc-window > button.ui-pause.ui-pause { bottom: 21%; } /* above the fade at the window's foot */
-.bfc-window .loop-pause:focus-visible { outline-color: #0a0d14; }
-@media (max-width: 639px) {
-  .bfc-window { min-height: 240px; -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to bottom, #000 calc(100% - 28px), transparent); }
-  .bfc-window > .ly-piece { top: var(--s-4); width: calc(100% - 2 * var(--s-4)); left: var(--s-4); transform: none; }
-}
 .bfc-win { background: var(--fc-bg); color: var(--fc-ink); border: 1px solid var(--fc-line); border-radius: 14px; overflow: hidden; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35); font-family: var(--font-text); }
 .bfc-win__bar { display: flex; gap: 12px; align-items: center; height: 40px; padding: 0 16px; border-bottom: 1px solid var(--fc-line); font-size: 13px; color: var(--fc-muted); }
 .bfc-win__bar b { color: var(--fc-ink); font-weight: 500; }
@@ -208,13 +194,56 @@ strong { font-weight: 650; }
   .bfc-rc { padding: 20px 16px 16px; }
 }
 
-/* ---------- how it works: three plain steps over the window ---------- */
-.bfc-how { counter-reset: none; }
-.bfc-how > li { display: grid; gap: var(--s-2); align-content: start; }
-.bfc-how h3 { font: 600 var(--t-card) / 1.3 var(--font-text); letter-spacing: -0.01em; margin-top: var(--s-2); }
-.bfc-how p { color: var(--muted); max-width: 40ch; }
+/* ---------- how it works: three folder cards (picture of the real screen, then the words) ---------- */
+.bfc-how { row-gap: var(--s-6); margin-top: var(--s-6); }
+.bfc-folder { display: grid; grid-template-rows: auto 1fr; gap: var(--s-4); align-content: start; }
+.bfc-folder__img { position: relative; height: clamp(220px, 34svh, 300px); margin-top: 14px; padding: 18px; border-radius: 4px 18px 18px 18px; background: #eef0f6; display: grid; place-items: stretch; transition: transform .35s cubic-bezier(.2, .7, .2, 1); }
+.bfc-folder__img::before { content: ''; position: absolute; left: 0; top: -14px; width: 38%; height: 16px; border-radius: 12px 12px 0 0; background: #eef0f6; }
+.bfc-folder:hover .bfc-folder__img { transform: translateY(-4px); }
+.bfc-folder__txt { display: grid; grid-template-columns: 32px 1fr; column-gap: var(--s-3); row-gap: var(--s-1); align-content: start; }
+.bfc-folder__txt h3 { font: 600 var(--t-card) / 1.3 var(--font-text); letter-spacing: -0.01em; margin: 3px 0 0; }
+.bfc-folder__txt p { grid-column: 2; color: var(--muted); max-width: 40ch; margin: 0; }
 .step-num { border: 0; background: #ffe1cc; color: #6b2a00; font-weight: 650; }
-@media (max-width: 1023px) { .bfc-how > li { grid-template-columns: 32px 1fr; column-gap: var(--s-4); } .bfc-how h3 { margin-top: 4px; } .bfc-how p { grid-column: 2; } }
+
+/* the drawn screens: the tool's own colours (dark stage, white sheet) */
+.bfc-how-ui { min-width: 0; overflow: hidden; border-radius: 12px; padding: 14px 16px; display: grid; align-content: start; gap: 8px; font-family: var(--font-text); font-size: 12px; line-height: 1.3; box-shadow: 0 1px 2px rgba(10, 12, 20, 0.12); }
+.bfc-how-ui--dark { background: #04050b; color: #f4f5f8; }
+.bfc-how-ui--sheet { background: #fff; color: #14151a; }
+.bfc-how-ui small { font-size: 11px; color: #a9adbd; font-weight: 500; }
+.bfc-how-ui__h { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; }
+.bfc-how-ui__h--big { font-size: 19px; }
+.bfc-how-ui__btn { display: grid; place-items: center; height: 30px; border-radius: 99px; background: #fff; color: #04050b; font-weight: 600; }
+.bfc-how-ui__or { text-align: center; color: #a9adbd; font-size: 11px; }
+.bfc-how-ui__chips, .bfc-how-ui__seg { display: flex; flex-wrap: wrap; gap: 5px; }
+.bfc-how-ui__chips i, .bfc-how-ui__seg i { font-style: normal; padding: 6px 9px; border-radius: 99px; background: #161823; border: 1px solid #2a2d3a; white-space: nowrap; }
+.bfc-how-ui__chips i.is-on { border-color: #ff6a1f; color: #ffb27e; }
+.bfc-how-ui__seg { flex-wrap: nowrap; padding: 3px; border-radius: 99px; background: #161823; }
+.bfc-how-ui__seg i { flex: 1; text-align: center; border: 0; background: none; padding: 5px 0; color: #a9adbd; }
+.bfc-how-ui__seg i.is-on { background: #fff; color: #04050b; font-weight: 600; }
+.bfc-how-ui__sub { color: #a9adbd; }
+.bfc-how-ui__stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 10px 6px; border-radius: 10px; background: #1a0f0a; border: 1px solid #4a2410; text-align: center; color: #a9adbd; font-size: 11px; }
+.bfc-how-ui__stats i { font-style: normal; display: grid; gap: 2px; }
+.bfc-how-ui__stats b { font-size: 17px; font-weight: 600; color: #f4f5f8; font-variant-numeric: tabular-nums; }
+.bfc-how-ui__stats i:first-child b { color: #ffb347; }
+.bfc-how-ui__stats em { font-style: normal; font-size: 11px; color: #a9adbd; }
+.bfc-how-ui .bfc-chip { justify-self: start; }
+.bfc-qc { display: grid; grid-template-columns: 30px repeat(12, minmax(0, 1fr)); gap: 6px 3px; align-items: center; justify-items: center; margin-top: 4px; }
+.bfc-qc > span { justify-self: start; font-weight: 600; font-size: 11px; }
+.bfc-qc > em { font-style: normal; font-size: 10px; color: #5d6070; }
+.bfc-qc__d { width: 100%; max-width: 18px; aspect-ratio: 1; border-radius: 50%; background: #f1f2f5; }
+.bfc-qc__d.lv1 { background: #ffe08a; } .bfc-qc__d.lv2 { background: #ffb347; } .bfc-qc__d.lv3 { background: #f2682a; } .bfc-qc__d.lv4 { background: #b5121b; }
+.bfc-qc__d.is-none { background: none; border: 1.5px dotted #b9bcc8; }
+.bfc-qc__d.is-prov { background-image: repeating-linear-gradient(-45deg, transparent 0 2px, rgba(255, 255, 255, 0.7) 2px 4px); }
+@media (prefers-reduced-motion: reduce) { .bfc-folder__img { transition: none; } .bfc-folder:hover .bfc-folder__img { transform: none; } }
+@media (max-width: 1023px) {
+  .bfc-how { row-gap: var(--s-5); }
+  .bfc-folder { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s-5); align-items: center; }
+  .bfc-folder__img { height: 230px; }
+}
+@media (max-width: 639px) {
+  .bfc-folder { grid-template-columns: minmax(0, 1fr); gap: var(--s-3); }
+  .bfc-folder__img { height: auto; padding: 12px; }
+}
 
 /* ---------- the call to action: our fire gradient, under the kit's grain ---------- */
 .bfc-cta {

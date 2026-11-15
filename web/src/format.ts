@@ -1,3 +1,5 @@
+import type { Cards } from './types';
+
 export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 export const MON = MONTHS.map((m) => m.slice(0, 3));
 
@@ -51,3 +53,16 @@ export function dateShort(iso: string): string {
 }
 
 export const todayIso = () => new Date().toISOString().slice(0, 10);
+
+/** The tool's one message for a month (wording only: every number is the API's). Shared with the landing page. */
+export function headlineFor(c: Cards): string {
+  const month = MONTHS[c.ref_month - 1];
+  const p = c.vs_avg_pct;
+  const scope = c.partial ? `the first ${c.days_covered} days of ${month}` : month;
+  if (!c.count) return `No fires detected around you in ${scope}`;
+  if (p == null) return `${num(c.count)} fire-days around you in ${scope}`;
+  if (p >= 200) return `Fire activity around you is ${(p / 100 + 1).toFixed(1)}× the normal level`;
+  if (p >= 20) return `Fire activity around you is ${Math.round(p)}% above normal`;
+  if (p <= -20) return `Fire activity around you is ${Math.abs(Math.round(p))}% below normal`;
+  return 'Fire activity around you is close to normal';
+}

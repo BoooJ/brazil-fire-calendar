@@ -14,7 +14,7 @@ import { KeyCards, Reliability, SourcesDialog } from '../components/Panels';
 import { Flame } from '../components/Brand';
 import type { DrawMode } from '../components/MapView';
 import { FRP_STOPS } from '../colors';
-import { MON, MONTHS, dateShort, dateTime, num, todayIso } from '../format';
+import { MON, MONTHS, dateShort, dateTime, headlineFor, num, todayIso } from '../format';
 
 // The two heavy parts load only when they are used: the map (MapLibre) and the detailed charts (ECharts).
 const MapView = lazy(() => import('../components/MapView'));
@@ -379,16 +379,9 @@ function Hero({ data, area, status, asOf, updating, onUpdate }: {
 }) {
   const c = data.cards;
   const month = MONTHS[c.ref_month - 1];
-  const p = c.vs_avg_pct;
   const scope = c.partial ? `the first ${c.days_covered} days of ${month}` : month;
 
-  let headline: string;
-  if (!c.count) headline = `No fires detected around you in ${scope}`;
-  else if (p == null) headline = `${num(c.count)} fire-days around you in ${scope}`;
-  else if (p >= 200) headline = `Fire activity around you is ${(p / 100 + 1).toFixed(1)}× the normal level`;
-  else if (p >= 20) headline = `Fire activity around you is ${Math.round(p)}% above normal`;
-  else if (p <= -20) headline = `Fire activity around you is ${Math.abs(Math.round(p))}% below normal`;
-  else headline = 'Fire activity around you is close to normal';
+  const headline = headlineFor(c);
 
   const provisional = data.calendar.find((i) => i.year === c.ref_year && i.month === c.ref_month)?.provisional;
 
