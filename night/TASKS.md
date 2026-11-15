@@ -204,3 +204,5 @@ Global rules for this block:
   - One clause added (needs the usual quick human review of CLAUDE.md changes).
 - [x] Phone map mode: the fire-strength legend ran ~8px under the Globe/Map switch
   - Legend max width leaves 184px for the switch; 27px clear gap at 375.
+- [x] Landing app frame on tablets: the calendar pane cut through the open month (2020) and the frame left a big empty band below
+  - Tablet list pane 312px (whole calendar, open month visible) and frame up to 660px (56svh); #tool still one 820×1180 screen.
