@@ -261,11 +261,11 @@ abbr { text-decoration: none; }
 .season-bars.is-hot li.is-ahead.is-lit .season-col i { opacity: 0.6; }
 /* "Estimate" sits over the coming months, in the middle of them */
 .season-est { position: absolute; left: calc(50% + 3px); right: 0; top: 0; height: 56px; display: grid; place-content: center; pointer-events: none; }
-.season-est b { padding: 2px 10px; background: var(--card); border-radius: var(--r-pill, 999px); font-family: var(--mono); font-size: 15px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink); }
+.season-est b { font-family: var(--mono); font-size: 15px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink); }
 .season-split { display: grid; grid-template-columns: 5fr 1fr 6fr; gap: 6px; margin-top: 6px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-2); }
 .season-split span { padding-top: 5px; border-top: 1px solid var(--line-strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .season-split span:nth-child(2) { border-top-color: var(--fire); color: var(--ink); text-align: center; }
-.season-split span:nth-child(3) { border-top-style: dashed; }
+.season-split span:nth-child(3) { border-top-style: dashed; text-align: right; }
 .season-mon { font-size: var(--t-xs); color: var(--ink-2); text-align: center; transition: color 0.2s ease; }
 .season-bars li.is-lit .season-mon { color: var(--ink); font-weight: 600; }
 .season-bars li.is-now .season-mon { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; text-decoration-color: var(--fire); }
@@ -273,7 +273,6 @@ abbr { text-decoration: none; }
 .season-src { color: var(--ink-2); font-size: var(--t-sm); }
 .hero-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px var(--s-4); font-size: var(--t-sm); color: var(--ink-2); margin-top: var(--s-5); }
 .hero-meta-upd { display: inline-flex; align-items: center; gap: var(--s-2); white-space: nowrap; }
-.hero-smoke { font-size: var(--t-sm); color: var(--ink-2); margin-top: var(--s-1); }
 #fc-title { scroll-margin-top: 84px; }
 #fc-title:focus { outline: none; }
 
