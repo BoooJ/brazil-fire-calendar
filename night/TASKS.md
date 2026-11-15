@@ -2,7 +2,8 @@
 
 - [x] Tool (#/app) at 375px width: no horizontal scroll anywhere; controls, sheet and globe stack cleanly; tap targets ≥ 44px
   - Checked 375px (no overflow); phone media query makes seg/ghost/textlink/map buttons and brand link ≥ 44px.
-- [ ] Tool at 820px and 1366px: check spacing, alignment and that nothing overlaps the globe/map stage
+- [x] Tool at 820px and 1366px: check spacing, alignment and that nothing overlaps the globe/map stage
+  - 1366 fine. Tablet (600–899px): taller map band in map mode, compact map caption, month card centred (max 560px).
 - [ ] Landing page at 1440×900, 1366×768, 820×1180, 390×844: every section fits one screen, no clipped text
 - [ ] Loading state: consistent skeletons/spinners for the sheet, the calendar and the detailed view (no layout jump when data arrives)
 - [ ] Zero-fires state: a clear, friendly empty state in the calendar and map instead of an empty grid

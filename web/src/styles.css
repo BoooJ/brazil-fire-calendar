@@ -326,6 +326,15 @@ button.day:hover { transform: scale(1.08); }
   .map-caption button { min-height: 44px; padding: 0 6px; }
 }
 
+/* ---------- tablet: a taller map band, compact caption, the month card centred ---------- */
+@media (min-width: 600px) and (max-width: 899px) {
+  .tool--map .globe-wrap { height: 560px; }
+  .tool--map .col { padding-top: 504px; }
+  .map-caption { right: auto; max-width: calc(100% - 32px); }
+  .map-caption button { margin-left: 12px; }
+  .detail { margin: 0 auto; max-width: 560px; }
+}
+
 /* ---------- desktop ---------- */
 @media (min-width: 900px) {
   .topbar { padding: 18px 32px; }
