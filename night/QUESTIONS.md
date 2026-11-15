@@ -17,6 +17,9 @@
 - 2026-11-15 (06:55 run): The forecast map shows the top `limit` cells (API default 2,000; mock 300) as dots about one 5 km cell wide, coloured with viridis (0–10 / 10–25 / 25–50 / 50%+). The class breaks are a display choice, not from the science team: OK, or should science/ give the breaks?
 - 2026-11-15 (06:55 run): Added a small "Next week: model estimate ↓" link at the end of the hero's "not a forecast" bullet, so the forecast panel is findable from the first screen. Mike: keep it, or is the hero better without it?
 
+- 2026-11-15 (07:55 run): The map now moves by itself in two new cases: it zooms to the next-week cells when they are shown, and on desktop it re-fits the area beside the month card when a month's hotspots arrive. Mike: OK, or should the map keep the whole-area view and let people zoom?
+- 2026-11-15 (07:55 run): Under the satellite names the tool now says "ended 2 Nov 2026" (S-NPP) or "from 20 Jan 2012", read from `/api/status` coverage. Paul: the real `/api/status` must keep `to` = 2026-11-02 for `viirs_snpp` for this to show.
+
 ## For Paul (infra/)
 
 - **Fire season per area** (for the first screen: "is this the usual fire season, when does it usually end?"): please add to `/api/analysis` something like `season: { start_month: int, peak_month: int, end_month: int, rule: "months whose mean is ≥ X% of the yearly total" } | null`. Today the UI only shows `cards.peak_month`.
