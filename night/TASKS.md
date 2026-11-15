@@ -1,6 +1,7 @@
 # Night tasks (UI/UX, web/)
 
-- [ ] Tool (#/app) at 375px width: no horizontal scroll anywhere; controls, sheet and globe stack cleanly; tap targets ≥ 44px
+- [x] Tool (#/app) at 375px width: no horizontal scroll anywhere; controls, sheet and globe stack cleanly; tap targets ≥ 44px
+  - Checked 375px (no overflow); phone media query makes seg/ghost/textlink/map buttons and brand link ≥ 44px.
 - [ ] Tool at 820px and 1366px: check spacing, alignment and that nothing overlaps the globe/map stage
 - [ ] Landing page at 1440×900, 1366×768, 820×1180, 390×844: every section fits one screen, no clipped text
 - [ ] Loading state: consistent skeletons/spinners for the sheet, the calendar and the detailed view (no layout jump when data arrives)

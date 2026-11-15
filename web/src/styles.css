@@ -317,6 +317,15 @@ button.day:hover { transform: scale(1.08); }
 .sk-block { height: 420px; }
 @keyframes shimmer { to { background-position: -200% 0; } }
 
+/* ---------- phone: every tap target at least 44px ---------- */
+@media (max-width: 899px) {
+  .brand { min-height: 44px; }
+  .seg button, .btn-ghost, .btn-small { min-height: 44px; }
+  .stage-switch button { min-height: 44px; min-width: 52px; }
+  .textlink { min-height: 44px; padding: 0 4px; }
+  .map-caption button { min-height: 44px; padding: 0 6px; }
+}
+
 /* ---------- desktop ---------- */
 @media (min-width: 900px) {
   .topbar { padding: 18px 32px; }
