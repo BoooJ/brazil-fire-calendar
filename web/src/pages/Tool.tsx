@@ -402,7 +402,7 @@ function Hero({ data, area, status, asOf, updating, onUpdate }: {
         )}
         <li>
           {data.average_period
-            ? <>Compared with {scope} in the {data.average_period.from}–{data.average_period.to} years.</>
+            ? <>Compared with {scope} in {data.average_period.from}–{data.average_period.to}.</>
             : <>There is no complete earlier year to compare with.</>}
           {' '}History from satellite detections, not a forecast{provisional ? '; recent days may still change' : ''}.
         </li>
