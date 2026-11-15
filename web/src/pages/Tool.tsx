@@ -300,7 +300,8 @@ export default function Tool() {
               <button onClick={clearMap} aria-label="Clear the hotspots from the map">Clear</button>
             </div>
           )}
-          {fcMap && (
+          {/* the globe does not draw forecast cells, so their caption shows only with the map */}
+          {fcMap && stage === 'map' && (
             <div className="map-caption" role="status">
               <span className="dot dot-fc" />
               <span className="map-caption-text">Next week</span>
