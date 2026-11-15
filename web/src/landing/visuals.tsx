@@ -1,7 +1,7 @@
 // The landing page's data pictures, drawn as live HTML from the same data the tool shows
 // (api.getShowcase: the Pantanal preset from the API, or the demo files when there is no API).
 // Nothing is computed here but positions and colour levels: every number is the API's.
-// The pictures of the tool itself are real screenshots (landing/shots/), not redrawn here.
+// The pictures of the tool itself are real screenshots (landing/pictures/), not redrawn here.
 import type { Showcase } from '../api';
 import type { CalendarItem, SatelliteKey } from '../types';
 import { SATELLITES } from '../types';
