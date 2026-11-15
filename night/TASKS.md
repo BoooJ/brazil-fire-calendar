@@ -279,3 +279,5 @@ Global rules for this block:
   - Desktop map caption is capped clear of the switch (`max-width: calc(100% - 196px)`, also protects the hotspots caption); the forecast caption is just "Next week" + "showing 300 of 7,774" + Clear, the dates moved to the legend title. Checked 375, 1366.
 - [x] Switching to Globe with the forecast cells shown left a "Next week" caption over a globe that does not draw them
   - The forecast caption shows only on the map; the panel button then offers "Show the cells on the map" again.
+- [x] web/CLAUDE.md: MapView's forecast `cells` layer
+  - One table cell updated (needs the usual quick human review of CLAUDE.md changes).

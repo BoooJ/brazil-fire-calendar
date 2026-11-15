@@ -60,7 +60,7 @@ npm run preview    # serve the build
 | `src/pages/Tool.tsx` | The tool: location step, the one message, dates, the sheet, the globe/map stage |
 | `src/components/LocationGate.tsx` | "Where should we look?": location, region, point + radius, or draw on the map |
 | `src/components/Globe.tsx` | Globe: Brazil lit, area outline, hotspot points, the picked point's marker (`pick`) |
-| `src/components/MapView.tsx` | The map: hotspots by fire strength, popups, drawing a rectangle or polygon (no draw plugin); if the GIBS imagery fails it says so and shows the globe's country outlines instead (`loadWorld()` from Globe.tsx) |
+| `src/components/MapView.tsx` | The map: hotspots by fire strength, or next week's forecast cells by chance (`cells`, viridis `CHANCE_STOPS`), popups, drawing a rectangle or polygon (no draw plugin); if the GIBS imagery fails it says so and shows the globe's country outlines instead (`loadWorld()` from Globe.tsx) |
 | `src/components/FireCalendar.tsx` | Quick view calendar, GitHub style: a row per year, a rounded brick per month (filled = happened, dotted = typical, hatched = provisional), a card anchored to the clicked brick; the average row is labelled as next year's typical row (not a forecast); newest 3 years first; bricks per year set by `--n` (ready for weeks) |
 | `src/components/Detailed.tsx` | Detailed view: `BurningCalendar.tsx` (heatmap), `Charts.tsx` (typical year, year by year), PNG downloads |
 | `src/components/Controls.tsx`, `Panels.tsx`, `MonthDetail.tsx` | Dates and view switch · key numbers, reliability, data sources · one month's details (`useClosing.ts`: their close animation) |
