@@ -215,41 +215,30 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* 2. the idea, with the two satellites on one time line */}
-        <section className="l-sec" id="idea" aria-labelledby="idea-h">
+        {/* 2. the idea: the two satellites on one time line, above what they reported against our one record */}
+        <section className="l-sec l-sec--band" id="idea" aria-labelledby="idea-h">
           <div className="l-wrap l-split">
             <div className="l-col">
               <p className="l-eyebrow">The idea</p>
-              <h2 id="idea-h"><span>Satellites come and go.</span> Your fire record stays whole.</h2>
+              <h2 id="idea-h"><span>A harmonized dataset</span> from two different instruments.</h2>
               <p className="l-body">
-                NASA has watched Brazil’s fires since 2000, first with MODIS, then with the sharper VIIRS sensor,
-                which catches many small fires MODIS misses. Stitch them together untouched and the years after the
-                newer satellite arrived look like worse fire years. We bring both onto one scale, so when the calendar
-                rises, there really was more fire.
+                NASA has watched Brazil’s fires since 2000 with the MODIS instrument. In 2012, a second
+                instrument, VIIRS, joined it. MODIS sees the ground in 1 km pixels, while VIIRS uses 375 m pixels,
+                so it catches many smaller fires that MODIS misses. Without context, this can look like fire suddenly
+                increased when VIIRS started working. That is why we need to bring both onto one scale. In the chart,
+                the bars show what the satellites reported each year. They jump in 2018, when a newer VIIRS
+                satellite, NOAA-20, arrived.
               </p>
               <a className="l-link" href="#method">How we do it<Arrow /></a>
             </div>
-            <div className="l-card l-col"><Timeline /></div>
-          </div>
-        </section>
-
-        {/* 3. raw against harmonized */}
-        <section className="l-sec l-sec--band" id="statement" aria-labelledby="statement-h">
-          <div className="l-wrap l-split">
-            <div className="l-col">
-              <p className="l-eyebrow">Why it matters</p>
-              <h2 id="statement-h"><span>A bad year,</span> or just a better satellite?</h2>
-              <p className="l-body">
-                The bars are what the satellites reported each year. They leap in 2018, when the sharper
-                sensor arrived. The dark line is our single record: the same fires, counted the same way
-                every year. Now 2005 and 2025 can be compared fairly.
-              </p>
+            <div className="l-card l-card--white l-col l-duo">
+              <Timeline />
+              <RawVsCorrected show={show} />
             </div>
-            <div className="l-card l-card--white l-col"><RawVsCorrected show={show} /></div>
           </div>
         </section>
 
-        {/* 4. three steps, each with the real screen behind a folder face */}
+        {/* 3. three steps, each with the real screen behind a folder face */}
         <section className="l-sec" id="how" aria-labelledby="how-h">
           <div className="l-wrap">
             <p className="l-eyebrow">How it works</p>
@@ -268,7 +257,7 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* 5. the call to action */}
+        {/* 4. the call to action */}
         <section className="l-sec l-sec--tight" id="start" aria-labelledby="start-h">
           <div className="l-wrap">
             <div className="l-cta">
@@ -279,7 +268,7 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* 6. who it is for, with the tool in a frame */}
+        {/* 5. who it is for, with the tool in a frame */}
         <section className="l-sec" id="tool" aria-labelledby="tool-h">
           <div className="l-wrap">
             <div className="l-split l-split--top">
@@ -306,7 +295,7 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* 7. the method */}
+        {/* 6. the method */}
         <section className="l-sec l-sec--band" id="method" aria-labelledby="method-h">
           <div className="l-wrap">
             <p className="l-eyebrow">Method</p>
@@ -332,7 +321,7 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* 8. questions */}
+        {/* 7. questions */}
         <section className="l-sec" id="questions" aria-labelledby="questions-h">
           <div className="l-wrap l-split l-split--top">
             <div className="l-col">
@@ -345,7 +334,7 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* 9. team and tools */}
+        {/* 8. team and tools */}
         <section className="l-sec l-sec--band" id="team" aria-labelledby="team-h">
           <div className="l-wrap">
             <p className="l-eyebrow">Team</p>
@@ -369,7 +358,7 @@ export default function Landing() {
         </section>
       </main>
 
-      {/* 10. the close and the credits */}
+      {/* 9. the close and the credits */}
       <footer className="l-foot" aria-labelledby="close-h">
         <div className="l-wrap">
           <div className="l-foot__cta">
