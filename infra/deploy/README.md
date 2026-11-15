@@ -4,7 +4,16 @@
 **Live API:** https://fire-api.37-187-37-74.sslip.io (docs: `/docs`)
 Both run on the team's OVH VPS behind its Caddy (automatic HTTPS).
 
-## Update the website (about 1 minute)
+## Update the website: automatic
+
+**Merging a pull request into `main` puts the website online by itself**, about 1–2 minutes later. The GitHub Action [`.github/workflows/deploy-web.yml`](../../.github/workflows/deploy-web.yml) builds `web/` and uploads it to the VPS whenever something under `web/` changes on `main` (not for `.md` files or `web/mocks/`). Pushing to any other branch changes nothing online.
+
+- **Watch it / re-run it:** GitHub > Actions > "Deploy website". "Run workflow" (on `main`) redeploys without a code change.
+- **If the build fails** (type error…), nothing is uploaded: the site stays on the previous version. Fix it on a branch and merge again.
+- **The key:** the action uses its own SSH key, stored as the secret `VPS_DEPLOY_KEY` in the GitHub environment `website`, which only `main` can use. On the VPS that key is limited in `~ubuntu/.ssh/authorized_keys` to `command="/usr/bin/rrsync -wo /var/www/brazil-fire-site",restrict`: it can only upload files into the website folder (no shell, no sudo, no API, no tunnels).
+- **Turn it off:** delete the line ending in `github-actions-deploy-web brazil-fire-calendar` from `~ubuntu/.ssh/authorized_keys` (backup: `authorized_keys.before-deploy-web-*`) and the `website` environment on GitHub. To make a new key, repeat both steps with a fresh `ssh-keygen -t ed25519` key.
+
+### By hand (fallback, about 1 minute)
 
 From the repo root, on `main` with the latest changes, with `VITE_API_BASE_URL=https://fire-api.37-187-37-74.sslip.io` in `.env`:
 

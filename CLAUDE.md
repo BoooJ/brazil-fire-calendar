@@ -19,12 +19,14 @@ A web app that turns NASA FIRMS active-fire hotspots over **Brazil** (2003 → t
 5. **`docs/api-contract.md` is frozen (v0.2).** If it must change: update the contract, regenerate the mocks (`python infra/tools/make_mocks.py`), bump the version, and say so in the PR description.
 6. **One forecast only, always labelled.** The calendar, averages and "coming months" are history ("not a forecast"); recent months are *provisional*. The only forecast is `POST /api/forecast` (the science team's next-week model), always shown with its `label` "Model estimate (experimental), not an official fire warning."
 7. **Git:** work on a branch (`infra/…`, `web/…`, `science/…`) and open small PRs to `main`. `main` must always run. Never force-push `main`.
+8. **Merging to `main` publishes the website.** A merge that changes `web/` goes live within about a minute (see Status). Run `cd web && npm run build` before merging a web PR: if the build fails, the site stays on the last good version.
 
 ## Layout
 
 ```
 CLAUDE.md                this file
 README.md                human overview + the 17 MVP features
+.github/workflows/deploy-web.yml   builds web/ and puts it online on every merge to main → infra/deploy/README.md
 docs/api-contract.md     contract between infra/api and web (source of truth)
 docs/TEAM_RULES.md       team rules (EN) · docs/REGRAS_DA_EQUIPE.md (PT)
 docs/GIT_GUIDE.md        how the team uses branches, pull requests, conflicts
@@ -98,6 +100,10 @@ python -m uvicorn main:app --app-dir infra/api --port 8000
 # website (React + Vite + MapLibre + ECharts): landing page at #/, the tool at #/app
 cd web && npm install && npm run dev   # http://localhost:5173 (mocks while VITE_API_BASE_URL is empty)
 cd web && npm run build                # type-check + production build
+
+# website deploys (automatic on merge to main; these need the gh CLI)
+gh run list --workflow deploy-web.yml --limit 3   # last deploys and whether they passed
+gh workflow run deploy-web.yml --ref main         # redeploy main without a code change
 ```
 
 **Add new commands here when you create them.**
@@ -121,7 +127,7 @@ cd web && npm run build                # type-check + production build
 - [ ] Daily update from the FIRMS API. By hand for now: `01c_download_recent.py`, steps 3–4, then the data update in `infra/deploy/README.md` (last run: data updated 2026-11-15 04:18 UTC)
 - [x] Next-week fire chance: science model in `science/forecast/`, served by `POST /api/forecast` (contract v0.2, mock `web/mocks/forecast.pantanal.json`). Website panel: done (PR #9)
 - [x] API deployed online: https://fire-api.37-187-37-74.sslip.io (OVH VPS, Docker + Caddy; see `infra/deploy/README.md`)
-- [x] Website deployed online: https://fire.37-187-37-74.sslip.io (static build served by the VPS's Caddy). **Pushing or merging to GitHub does not update it:** after each merge to `main`, redeploy by hand (about 1 minute, steps in `infra/deploy/README.md`). Last deploy: 2026-11-15, `main` after PR #9
+- [x] Website deployed online: https://fire.37-187-37-74.sslip.io (static build served by the VPS's Caddy). **Every merge to `main` that changes `web/` redeploys it automatically** (GitHub Action `.github/workflows/deploy-web.yml`; first run 2026-11-15 after PR #11: 25 s, passed). Pushes to other branches, `.md` files and `web/mocks/` change nothing online. The API is **not** auto-deployed: redeploy it by hand. Details and the by-hand fallbacks: `infra/deploy/README.md`
 
 ## Maintaining this file
 
