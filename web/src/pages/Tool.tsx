@@ -57,7 +57,7 @@ export default function Tool() {
   const [hoverState, setHoverState] = useState<string | null>(null);
   // a day picked with "Select a day": the calendar scrolls to its month and lights it (nothing is hidden or reloaded)
   const [day, setDay] = useState<string | null>(null);
-  const [jump, setJump] = useState<{ year: number; month: number; n: number } | null>(null);
+  const [jump, setJump] = useState<{ year: number; month: number; day?: string; n: number } | null>(null);
   const [fromYear, setFromYear] = useState(FIRST_YEAR);
   const [detailed, setDetailed] = useState(false);
   const [mode, setMode] = useState<Mode>('counts');
@@ -147,7 +147,7 @@ export default function Tool() {
       return;
     }
     if (detailed) setSelected(item);
-    else setJump((j) => ({ year: y, month: m, n: (j?.n ?? 0) + 1 }));
+    else setJump((j) => ({ year: y, month: m, day: d ?? (load.kind === 'ok' ? load.data.query.ref_date : undefined), n: (j?.n ?? 0) + 1 }));
   };
 
   const selectedRef = useRef(selected);

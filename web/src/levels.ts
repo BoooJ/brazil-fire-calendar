@@ -1,15 +1,13 @@
 // Intensity levels of the calendar's bricks, shared by the calendar, the first screen and the coming months.
 // Display only: the thresholds are quantiles of this area's own months, so colours and words always mean
 // "for this place". The numbers themselves are the API's.
-import type { CalendarItem } from './types';
-
 export interface Levels {
   thresholds: number[];
   /** 0 = lowest … 4 = highest */
   level: (count: number | null | undefined) => number;
 }
 
-export function makeCountLevels(items: CalendarItem[]): Levels {
+export function makeCountLevels(items: { count: number | null }[]): Levels {
   const v = items.map((i) => i.count).filter((c): c is number => c != null && c > 0).sort((a, b) => a - b);
   const q = (p: number) => (v.length ? v[Math.min(v.length - 1, Math.floor(p * v.length))] : Infinity);
   const t = [q(0.5), q(0.75), q(0.9), q(0.97)];
