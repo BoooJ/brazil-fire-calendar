@@ -277,7 +277,8 @@ strong { font-weight: 650; }
 .yr:has(.now-tag) { margin-bottom: 8px; }
 .cal-table-wrap { overflow-x: auto; border-radius: var(--r-lg); border: 1px solid var(--sheet-line); }
 .cal-table { width: 100%; border-collapse: collapse; font-size: var(--t-sm); font-variant-numeric: tabular-nums; }
-.cal-table caption { text-align: left; padding: var(--s-3) var(--s-4); color: var(--sheet-ink-2); }
+.cal-table-note { margin: 0 0 var(--s-2); font-size: var(--t-sm); color: var(--sheet-ink-2); }
+.cal-table th[scope="row"], .cal-table thead th:first-child { position: sticky; left: 0; z-index: 1; background: var(--sheet); } /* the year stays in view while the months scroll */
 .cal-table th, .cal-table td { padding: 2px; text-align: center; border-top: 1px solid var(--sheet-line); }
 .cal-table th[scope='row'] { padding: 0 var(--s-3); text-align: left; }
 .cal-table button { width: 100%; min-width: 44px; min-height: 36px; border: 0; border-radius: var(--r-xs); background: none; color: var(--sheet-ink); font: inherit; }

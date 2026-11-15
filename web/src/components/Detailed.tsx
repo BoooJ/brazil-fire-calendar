@@ -122,9 +122,12 @@ function CalendarTable({ data, mode, onPick }: { data: Analysis; mode: Mode; onP
   const years = [...new Set(data.calendar.map((c) => c.year))].sort((a, b) => b - a);
   const by = new Map(data.calendar.map((c) => [`${c.year}-${c.month}`, c]));
   return (
+    <>
+    {/* the words sit outside the scrolling box, so a phone shows them whole; the caption stays for screen readers */}
+    <p className="cal-table-note" aria-hidden="true">{mode === 'counts' ? 'Corrected count (fire-days)' : 'Compared with the average'} per month, * provisional. Choose a month for details and the map.</p>
     <div className="cal-table-wrap">
       <table className="cal-table">
-        <caption>Burning calendar as a table: {mode === 'counts' ? 'corrected count (fire-days)' : 'compared with the average'} per month, * provisional. Choose a month for details and the map.</caption>
+        <caption className="sr-only">Burning calendar as a table: {mode === 'counts' ? 'corrected count (fire-days)' : 'compared with the average'} per month, * provisional. Choose a month for details and the map.</caption>
         <thead><tr><th scope="col">Year</th>{MON.map((m) => <th scope="col" key={m}>{m}</th>)}</tr></thead>
         <tbody>
           {years.map((y) => (
@@ -147,5 +150,6 @@ function CalendarTable({ data, mode, onPick }: { data: Analysis; mode: Mode; onP
         </tbody>
       </table>
     </div>
+    </>
   );
 }

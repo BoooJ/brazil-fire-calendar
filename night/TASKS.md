@@ -190,3 +190,5 @@ Global rules for this block:
   - The ground tokens are overridden in landing.css to a calm pastel blue (#dfe7f1) with dark ink; axe still clean.
 - [x] Typical (dotted) bricks showed the browser's plain title box while filled bricks have the styled tooltip
   - Typical bricks use the same styled tooltip on mouse hover ("August 2027 · usually ≈ 794 · Typical month, 2003–2025 average · History, not a forecast"); screen readers keep their aria-label.
+- [x] Detailed view table on phones: the caption scrolled away with the months (cut off) and the year column scrolled out of view
+  - The explanation sits above the scrolling box (caption kept for screen readers, visually hidden); the Year column is sticky while the months scroll.
