@@ -355,3 +355,6 @@ strong { font-weight: 650; }
 .bfc-pane-sheet .bfc-how-ui { box-shadow: none; padding: 0; }
 .app > .app__pane--open::after { display: none; }
 .bfc-qc__d.is-sel { outline: 2px solid #14151a; outline-offset: 2px; }
+
+/* the closing band: the kit's "painting" ground is a mid blue; a calm pastel of the same hue fits the flat light palette */
+html[data-ground="painting"] { --ground-bg: #dfe7f1; --ground-surface: #ccd8e8; --ground-ink: #16212c; --ground-muted: #3b4a5c; }

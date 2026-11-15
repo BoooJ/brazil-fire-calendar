@@ -186,3 +186,5 @@ Global rules for this block:
   - Under 900px the name gets the location pill's dark translucent ground; both top-bar items now match.
 - [x] Detailed view "Year by year" chart at 375px: the right axis name "corrected fire-days" was cut off at the edge
   - Axis names align inward (left axis starts at its line, right axis ends at its line); on phones the right one reads "corrected".
+- [x] Landing closing band (footer) used the kit's mid-blue "painting" ground, louder than the rest of the flat light palette
+  - The ground tokens are overridden in landing.css to a calm pastel blue (#dfe7f1) with dark ink; axe still clean.
