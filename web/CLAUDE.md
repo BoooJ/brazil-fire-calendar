@@ -61,9 +61,10 @@ npm run preview    # serve the build
 | `src/components/LocationGate.tsx` | "Where should we look?": location, region, point + radius, or draw on the map |
 | `src/components/Globe.tsx` | Globe: Brazil lit, area outline, hotspot points |
 | `src/components/MapView.tsx` | The map: hotspots by fire strength, popups, drawing a rectangle or polygon (no draw plugin) |
-| `src/components/FireCalendar.tsx` | Quick view calendar (filled = happened, dotted = typical, hatched = provisional) |
+| `src/components/FireCalendar.tsx` | Quick view calendar, GitHub style: a row per year, a rounded brick per month (filled = happened, dotted = typical, hatched = provisional), a card anchored to the clicked brick; newest 3 years first; bricks per year set by `--n` (ready for weeks) |
 | `src/components/Detailed.tsx` | Detailed view: `BurningCalendar.tsx` (heatmap), `Charts.tsx` (typical year, year by year), PNG downloads |
-| `src/components/Controls.tsx`, `Panels.tsx`, `MonthDetail.tsx` | Dates and view switch · key numbers, reliability, data sources · one month's details |
+| `src/components/Controls.tsx`, `Panels.tsx`, `MonthDetail.tsx` | Dates and view switch · key numbers, reliability, data sources · one month's details (`useClosing.ts`: their close animation) |
+| `src/format.ts` | Number/date formats and the one message's wording (`headlineFor`, `trendOf`, `rankLine`), shared by the tool and the landing page |
 | `src/pages/Landing.tsx`, `src/landing/` | The landing page: markup, the kit loader, its stylesheet, the product UI drawn from the data |
 
 **Display only, never for numbers:** country outlines on the globe (Natural Earth, `world-atlas` npm package) and the map's imagery (NASA GIBS). Never use them to select, clip or count data. Both are credited on the landing page and in the data sources dialog.
