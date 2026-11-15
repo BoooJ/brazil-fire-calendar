@@ -273,3 +273,5 @@ Global rules for this block:
   - One bullet (shown while `forecast_available` is not false): the team's experimental model on 5 km cells, fed only with the last 28 days of VIIRS NOAA-20 detections + the usual pattern for that week; a model estimate, not an official warning. axe clean at 375 and 1440 with the cells on the map; 820 map checked.
 - [x] Forecast map button was disabled once the cells were shown, so keyboard focus fell to the page
   - It stays enabled and toggles: "Show the cells on the map" ↔ "Hide the cells from the map" (hide = Clear).
+- [x] Demo data: replaying 14 Sep 2020 showed the forecast mock's "14–20 Nov 2026" week under a 2020 page
+  - api.ts (mocks only): a past `ref_date` returns MOCK_ONLY; the panel shows it as a quiet note ("Demo data has a next-week estimate only for the latest data…"). The real API replays past dates itself and says so in `notes[]`.

@@ -15,6 +15,7 @@ type Load =
   | { kind: 'loading' }
   | { kind: 'ok'; data: Forecast }
   | { kind: 'unavailable' }
+  | { kind: 'note'; message: string }
   | { kind: 'error'; message: string };
 
 const pct1 = (p: number) => p.toLocaleString('en-GB', { maximumFractionDigits: p < 10 ? 1 : 0 });
@@ -45,6 +46,7 @@ export default function ForecastPanel({ area, refDate, available, onShowMap, onH
       .catch((e) => {
         if (!alive) return;
         if (e instanceof ApiError && e.code === 'FORECAST_UNAVAILABLE') setLoad({ kind: 'unavailable' });
+        else if (e instanceof ApiError && e.code === 'MOCK_ONLY') setLoad({ kind: 'note', message: e.message });
         else setLoad({ kind: 'error', message: e instanceof ApiError ? e.message : 'Something went wrong while loading the estimate.' });
       });
     return () => {
@@ -70,6 +72,8 @@ export default function ForecastPanel({ area, refDate, available, onShowMap, onH
         <div className="fc-stats" aria-label="Loading the model estimate">
           <div className="sk fc-sk" /><div className="sk fc-sk" /><div className="sk fc-sk" />
         </div>
+      ) : load.kind === 'note' ? (
+        <p className="muted">{load.message}</p>
       ) : load.kind === 'unavailable' ? (
         <div className="fc-quiet" role="status">
           <p className="muted">The model is starting up on the server (it takes about 20 seconds). Try again in a moment.</p>

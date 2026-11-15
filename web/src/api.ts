@@ -122,6 +122,10 @@ export async function getHotspots(req: {
 export async function getForecast(req: ForecastRequest): Promise<Forecast> {
   if (usingMocks) {
     await pause(600);
+    // the demo file is for 13 Nov 2026: a replayed past date would show next week's dates for a week years later
+    if (req.ref_date && req.ref_date < '2026-11-13') {
+      throw new ApiError('MOCK_ONLY', 'Demo data has a next-week estimate only for the latest data, not for past dates.');
+    }
     const m = await import('../mocks/forecast.pantanal.json');
     return m.default as unknown as Forecast;
   }
