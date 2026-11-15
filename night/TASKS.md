@@ -247,3 +247,5 @@ Global rules for this block:
   - When the imagery fails, the map adds the globe's Natural Earth outlines (display only, same `loadWorld()` now exported from Globe.tsx) under the area: Brazil dark grey, neighbours dark blue. The note says "Showing plain country outlines instead."
 - [x] web/CLAUDE.md file table: MapView's outline fallback, Globe's `pick` marker
   - Two table cells updated (needs the usual quick human review of CLAUDE.md changes).
+- [x] Phone toast ("Update now" answer): a three-line message in a pill shape looked like a blob
+  - Under 600px the toast is a full-width card (16px gutters, --r-lg corners, above the safe area). Desktop pill unchanged.
