@@ -167,3 +167,5 @@ Global rules for this block:
   - In vs Average the typical bricks and their legend key are neutral grey dotted (they are the average); Counts unchanged.
 - [x] Landing "Real change, not sensor change" chart: the corrected marks were yellow, almost the same as the NOAA-20 amber bars
   - Corrected marks (and their key) are white with a thin dark edge; satellite colours unchanged.
+- [x] Landing method step 3 (one-year strip): three-letter month names collided on phones ("MayJun", "NovDec")
+  - The strip shows month initials and rounded bricks with a 3px gap, like the tool's calendar.

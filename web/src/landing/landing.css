@@ -278,7 +278,11 @@ strong { font-weight: 650; }
 .bfc-step--prov { padding: 0 20px; }
 .bfc-cal--one { width: 100%; max-width: 360px; padding: 12px; background: rgba(13, 16, 23, 0.86); border: 1px solid var(--fc-line); border-radius: 12px; }
 .bfc-cal--one .bfc-cal__row { grid-template-columns: 30px repeat(12, minmax(0, 1fr)); }
-.bfc-cal--one .bfc-cal__c { height: 24px; font-size: 0; }
+.bfc-cal--one .bfc-cal__c { height: 24px; font-size: 0; border-radius: 4px; }
+/* one-year strip: month initials (three-letter names collide in ~360px), rounded bricks like the tool */
+.bfc-cal--one .bfc-cal__row { gap: 3px; }
+.bfc-cal--one .bfc-cal__head b { font-size: 0; }
+.bfc-cal--one .bfc-cal__head b::before { content: attr(data-i); font-size: 11px; }
 .bfc-keys { list-style: none; margin: 0; padding: 10px 12px; display: grid; gap: 6px; font-size: 13px; background: rgba(13, 16, 23, 0.86); border: 1px solid var(--fc-line); border-radius: 12px; }
 .bfc-keys li { display: flex; gap: 8px; align-items: center; }
 .bfc-keys i { flex: none; width: 16px; height: 12px; border-radius: 2px; background: #e45a31; }

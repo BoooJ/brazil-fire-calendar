@@ -57,7 +57,7 @@ function CalendarRows({ show, years }: { show: Show; years: number[] }) {
   const data = show && calendarOf(show);
   return (
     <>
-      <div className="bfc-cal__row bfc-cal__head"><span />{MON.map((m) => <b key={m}>{m}</b>)}</div>
+      <div className="bfc-cal__row bfc-cal__head"><span />{MON.map((m) => <b key={m} data-i={m[0]}>{m}</b>)}</div>
       {years.map((y) => (
         <div className="bfc-cal__row" key={y}>
           <span>{show ? y : ''}</span>
