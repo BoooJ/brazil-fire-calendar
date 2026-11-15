@@ -1,6 +1,6 @@
 // The landing page: our own light, flat stylesheet (landing/landing.css), real screenshots of the tool
 // (landing/pictures/) and a few data pictures drawn live from the API (landing/visuals.tsx).
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import '../landing/landing.css';
 import { getShowcase, type Showcase } from '../api';
 import { RawVsCorrected, StepConvert, StepGrid, StepProvisional, Timeline } from '../landing/visuals';
@@ -10,6 +10,9 @@ import shotHow1 from '../landing/pictures/how-1.png';
 import shotHow2 from '../landing/pictures/how-2.png';
 import shotHow3 from '../landing/pictures/how-3.png';
 import shotTool from '../landing/pictures/tool.png';
+import heroVideo from '../landing/media/hero.mp4';
+import heroVideoSmall from '../landing/media/hero-720.mp4';
+import heroPoster from '../landing/media/hero-poster.jpg';
 
 const TOOL = '#/app';
 const REPO = 'https://github.com/BoooJ/brazil-fire-calendar';
@@ -83,6 +86,51 @@ function Folder({ n, title, text, children, label }: { n: string; title: string;
   );
 }
 
+/** The hero's background film: muted, looping, behind a flat dark scrim. It never starts with reduced motion
+ *  (the poster frame shows instead), and a small button pauses or plays it. Decoration only, no data. */
+function HeroVideo() {
+  const ref = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(false);
+
+  useEffect(() => {
+    const v = ref.current;
+    if (!v) return;
+    v.src = window.matchMedia('(max-width: 900px)').matches ? heroVideoSmall : heroVideo;
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) v.play().catch(() => setPlaying(false));
+  }, []);
+
+  const toggle = () => {
+    const v = ref.current;
+    if (!v) return;
+    if (v.paused) v.play().catch(() => {});
+    else v.pause();
+  };
+
+  return (
+    <div className="l-hero__media">
+      <video
+        ref={ref}
+        className="l-hero__video"
+        poster={heroPoster}
+        muted
+        loop
+        playsInline
+        preload="auto"
+        aria-hidden="true"
+        tabIndex={-1}
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
+      />
+      <div className="l-hero__scrim" aria-hidden="true" />
+      <button className="l-hero__pause" type="button" onClick={toggle} aria-label={playing ? 'Pause background video' : 'Play background video'}>
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor">
+          {playing ? <path d="M4 3h3v10H4zM9 3h3v10H9z" /> : <path d="M4 2.5v11l9.5-5.5z" />}
+        </svg>
+      </button>
+    </div>
+  );
+}
+
 export default function Landing() {
   const [show, setShow] = useState<Showcase | null>(null);
   const [menu, setMenu] = useState(false);
@@ -123,7 +171,8 @@ export default function Landing() {
       <main id="top">
         {/* 1. the promise, with the product itself as the picture */}
         <section className="l-hero" aria-labelledby="hero-h">
-          <div className="l-wrap">
+          <HeroVideo />
+          <div className="l-wrap l-hero__text">
             <p className="l-eyebrow">NASA Space Apps 2026 · MODIS + VIIRS, one record</p>
             <h1 id="hero-h">Know your fire season.</h1>
             <p className="l-lead l-hero__lead">
@@ -134,6 +183,11 @@ export default function Landing() {
               <Go>See my area</Go>
               <a className="l-btn" href="#how">How it works</a>
             </div>
+          </div>
+        </section>
+
+        <section className="l-hero-more" aria-label="The tool">
+          <div className="l-wrap">
             <figure className="l-shot l-hero__shot">
               <img src={shotHero} alt="The Brazil Fire Calendar tool: a one-line answer about this month’s fire activity, the burning calendar and the map of the chosen area." width="2160" height="1350" />
             </figure>
