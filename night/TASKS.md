@@ -202,3 +202,5 @@ Global rules for this block:
   - Now --t-2xs (10px), a little more room under that row. Type scale has no literal sizes left in styles.css.
 - [x] web/CLAUDE.md: FireCalendar line mentions that the average row doubles as next year's typical row
   - One clause added (needs the usual quick human review of CLAUDE.md changes).
+- [x] Phone map mode: the fire-strength legend ran ~8px under the Globe/Map switch
+  - Legend max width leaves 184px for the switch; 27px clear gap at 375.
