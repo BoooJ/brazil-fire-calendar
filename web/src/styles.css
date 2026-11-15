@@ -133,19 +133,29 @@ abbr { text-decoration: none; }
 .globe--pick { cursor: crosshair; }
 .globe--state { cursor: pointer; }
 .globe-tip { position: absolute; z-index: 2; transform: translate(-50%, calc(-100% - 18px)); padding: 5px 10px; border-radius: var(--r-sm); background: var(--ink); color: #fff; font-size: var(--t-sm); font-weight: 550; white-space: nowrap; pointer-events: none; animation: tip-in 0.14s var(--ease); }
-/* decorative flames over the chosen area (Standard and Satellite views; random places, never data) */
+/* decorative flames over the chosen area (Standard and Satellite views; random places, never data):
+   tiny balls of fire with a white-hot core, a red bloom, tongues that rise and fade, and glints (components/Flames.tsx) */
 .flames-layer { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
-.flame { display: block; width: var(--fs, 20px); height: calc(var(--fs, 20px) * 1.25); pointer-events: none !important; animation: flame-in 0.5s var(--ease) both; animation-delay: var(--fd, 0s); }
-.flames-layer .flame { position: absolute; transform: translate(-50%, -100%); width: calc(var(--fs, 20px) * 0.7); height: calc(var(--fs, 20px) * 0.875); }
-.flame svg { display: block; width: 100%; height: 100%; overflow: visible; transform-origin: 50% 100%; filter: drop-shadow(0 1px 1.5px rgba(29, 29, 31, 0.35)); animation: flame-flicker var(--fr, 1s) ease-in-out infinite alternate; animation-delay: var(--fd, 0s); }
-.flame .flame-mid, .flame .flame-in { transform-origin: 50% 100%; transform-box: fill-box; animation: flame-core calc(var(--fr, 1s) * 0.6) ease-in-out infinite alternate; animation-delay: var(--fd, 0s); }
-@keyframes flame-flicker {
-  0% { transform: scale(1, 1) skewX(0deg); }
-  30% { transform: scale(0.94, 1.08) skewX(-3deg); }
-  60% { transform: scale(1.04, 0.95) skewX(2deg); }
-  100% { transform: scale(0.97, 1.1) skewX(-1deg); }
-}
-@keyframes flame-core { 0% { transform: scale(1, 1); opacity: 1; } 100% { transform: scale(0.85, 1.15); opacity: 0.85; } }
+.flame { display: block; width: var(--fs, 26px); height: var(--fs, 26px); pointer-events: none !important; animation: flame-in 0.6s var(--ease) both; animation-delay: var(--fd, 0s); }
+.flames-layer .flame { position: absolute; transform: translate(-50%, -60%); width: calc(var(--fs, 26px) * 0.8); height: calc(var(--fs, 26px) * 0.8); }
+.flame svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.flame svg * { transform-box: fill-box; }
+.flame .flame-halo { opacity: 0.55; transform-origin: 50% 50%; animation: flame-halo var(--fr, 1.3s) ease-in-out infinite alternate; animation-delay: calc(var(--fd, 0s) * -1); }
+.flame .flame-out, .flame .flame-mid { transform-origin: 50% 90%; animation: flame-breathe calc(var(--fr, 1.3s) * 0.6) ease-in-out infinite alternate; animation-delay: calc(var(--fd, 0s) * -1.4); }
+.flame .flame-mid { animation-duration: calc(var(--fr, 1.3s) * 0.45); animation-direction: alternate-reverse; }
+.flame .flame-hot, .flame .flame-core { transform-origin: 50% 70%; animation: flame-pulse calc(var(--fr, 1.3s) * 0.35) ease-in-out infinite alternate; animation-delay: calc(var(--fd, 0s) * -0.6); }
+.flame .flame-tongue { transform-origin: 50% 100%; animation: flame-tongue var(--fr, 1.3s) ease-out infinite; }
+.flame .t1 { animation-delay: calc(var(--fd, 0s) * -1); }
+.flame .t2 { animation-delay: calc(var(--fd, 0s) * -1 - 0.45s); animation-duration: calc(var(--fr, 1.3s) * 1.2); }
+.flame .t3 { animation-delay: calc(var(--fd, 0s) * -1 - 0.8s); animation-duration: calc(var(--fr, 1.3s) * 0.9); }
+.flame .flame-glint { transform-origin: 50% 50%; animation: flame-glint calc(var(--fr, 1.3s) * 1.7) ease-in-out infinite; }
+.flame .g1 { animation-delay: calc(var(--fd, 0s) * -2); }
+.flame .g2 { animation-delay: calc(var(--fd, 0s) * -2 - 0.9s); }
+@keyframes flame-halo { 0% { opacity: 0.4; transform: scale(0.92); } 100% { opacity: 0.65; transform: scale(1.08); } }
+@keyframes flame-breathe { 0% { transform: scale(1, 1); } 100% { transform: scale(1.06, 1.1); } }
+@keyframes flame-pulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(0.82, 0.9); opacity: 0.85; } }
+@keyframes flame-tongue { 0% { transform: translateY(2px) scale(0.6); opacity: 0; } 25% { opacity: 1; } 100% { transform: translateY(-5px) scale(1.1, 1.3); opacity: 0; } }
+@keyframes flame-glint { 0%, 55%, 100% { transform: scale(0); opacity: 0; } 70% { transform: scale(1.2) rotate(20deg); opacity: 1; } 85% { transform: scale(0.4); opacity: 0.6; } }
 @keyframes flame-in { from { opacity: 0; } to { opacity: 1; } }
 .stage-map { position: absolute; inset: 0; z-index: 1; background: var(--stage); animation: fade 0.3s ease-out; }
 .stage-map .map { position: absolute; inset: 0; width: 100%; height: 100%; }
