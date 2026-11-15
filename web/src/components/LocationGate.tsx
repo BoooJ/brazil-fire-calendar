@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import type { Preset } from '../types';
 import { circleArea, insideBox, presetArea, type Area } from '../geo';
 import type { DrawMode } from './MapView';
@@ -19,6 +19,16 @@ export default function LocationGate({ presets, picked, onPickedChange, onDone, 
   const [radius, setRadius] = useState(100);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // after "Use my location" the result (the button, or the outside-Brazil note) is far below on a phone: bring it into view
+  const goRef = useRef<HTMLButtonElement>(null);
+  const showResult = () =>
+    requestAnimationFrame(() => {
+      const b = goRef.current;
+      if (!b) return;
+      const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      b.scrollIntoView({ block: 'center', behavior: still ? 'auto' : 'smooth' });
+      if (!b.disabled) b.focus({ preventScroll: true });
+    });
   const brazil = presets.find((p) => p.id === 'brazil');
 
   const lat = picked ? String(Math.round(picked.lat * 1000) / 1000) : '';
@@ -35,6 +45,7 @@ export default function LocationGate({ presets, picked, onPickedChange, onDone, 
   const outside = valid && brazil != null && !insideBox(picked!.lon, picked!.lat, brazil.area);
 
   const locate = () => {
+    if (busy) return; // aria-disabled, not disabled: focus stays on the button while we wait
     setError(null);
     if (!navigator.geolocation) {
       setError('This browser cannot share a location. Pick a region or type coordinates instead.');
@@ -45,6 +56,7 @@ export default function LocationGate({ presets, picked, onPickedChange, onDone, 
       (pos) => {
         setBusy(false);
         onPickedChange({ lon: pos.coords.longitude, lat: pos.coords.latitude });
+        showResult();
       },
       () => {
         setBusy(false);
@@ -64,9 +76,11 @@ export default function LocationGate({ presets, picked, onPickedChange, onDone, 
       </p>
 
       <div className="gate-or gate-or--first" aria-hidden="true"><span>your location</span></div>
-      <button className="btn btn-light btn-wide" onClick={locate} disabled={busy}>
+      <button className="btn btn-light btn-wide" onClick={locate} aria-disabled={busy || undefined}>
         <PinIcon /> {busy ? 'Finding you…' : 'Use my location'}
       </button>
+      {/* right under the button that caused it, so a phone shows it without scrolling */}
+      {error && <p className="note note-warn" role="alert">{error}</p>}
 
       <div className="gate-or"><span>or pick a region</span></div>
       <div className="chips">
@@ -110,9 +124,8 @@ export default function LocationGate({ presets, picked, onPickedChange, onDone, 
           That point is outside Brazil, the only region we cover for now. Pick a region above or another point.
         </p>
       )}
-      {error && <p className="note note-warn" role="alert">{error}</p>}
 
-      <button className="btn btn-fire btn-wide" disabled={!valid || outside}
+      <button ref={goRef} className="btn btn-fire btn-wide" disabled={!valid || outside}
         onClick={() => onDone(circleArea(picked!.lon, picked!.lat, radius))}>
         {valid ? 'Show my fire calendar' : 'Tap the globe or type a point first'}
       </button>
