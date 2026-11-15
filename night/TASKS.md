@@ -140,4 +140,5 @@ Global rules for this block:
   - Under 600px the four state keys sit in a "What the marks mean ▾" disclosure; the colour steps with values stay visible. Desktop unchanged.
 - [x] web/CLAUDE.md file table: describe FireCalendar as bricks + anchored card, `headlineFor`/`trendOf`/`rankLine` in format.ts, `components/useClosing.ts`
   - Done (needs the usual quick human review of CLAUDE.md changes).
-
+- [x] Calendar keyboard: arrow keys move between bricks (←/→ months, ↑/↓ years, skipping empty cells)
+  - onKeyDown on .cal-grid; Tab still reaches every brick, Enter opens the brick card.

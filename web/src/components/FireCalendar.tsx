@@ -82,6 +82,26 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
     };
   }, [pop]);
 
+  // arrow keys move between bricks (left/right = months, up/down = years), as in a data grid
+  const moveFocus = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const dirs: Record<string, [number, number]> = { ArrowLeft: [0, -1], ArrowRight: [0, 1], ArrowUp: [-1, 0], ArrowDown: [1, 0] };
+    const d = dirs[e.key];
+    const from = e.target as HTMLElement;
+    if (!d || !from.matches('button.day')) return;
+    const rows = [...e.currentTarget.querySelectorAll<HTMLElement>('.yr')].filter((r) => r.querySelector('button.day'));
+    const r = rows.findIndex((row) => row.contains(from));
+    const cellsOf = (row: HTMLElement) => [...row.querySelectorAll<HTMLElement>('.yr-months > .cell')];
+    const c = cellsOf(rows[r]).findIndex((cell) => cell.contains(from));
+    for (let rr = r + d[0], cc = c + d[1]; rr >= 0 && rr < rows.length && cc >= 0 && cc < 12; rr += d[0], cc += d[1]) {
+      const btn = cellsOf(rows[rr])[cc]?.querySelector<HTMLElement>('button.day');
+      if (btn) {
+        e.preventDefault();
+        btn.focus();
+        return;
+      }
+    }
+  };
+
   const popShown = !!(pop && popPos);
   useEffect(() => {
     if (popShown) popRef.current?.querySelector<HTMLElement>('button')?.focus({ preventScroll: true });
@@ -144,7 +164,7 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
 
       {/* Bricks are laid out per period: 12 months now. Weekly bricks need weekly values from the API (we never
           build weeks from hotspots in the browser): set data-period="week" and --n to 52/53 once they exist. */}
-      <div className="cal-grid" data-period="month" style={{ '--n': 12 } as React.CSSProperties}>
+      <div className="cal-grid" data-period="month" style={{ '--n': 12 } as React.CSSProperties} onKeyDown={moveFocus}>
         <div className="yr yr-colhead" aria-hidden="true">
           <div className="yr-label" />
           <div className="yr-months">{MON.map((m) => <span key={m} data-i={m[0]}>{m}</span>)}</div>
