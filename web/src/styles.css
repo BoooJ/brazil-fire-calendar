@@ -144,7 +144,7 @@ strong { font-weight: 650; }
 .tool { min-height: 100vh; }
 .tool-grid { position: relative; max-width: 1500px; margin: 0 auto; }
 .globe-wrap { position: absolute; top: -72px; left: 0; right: 0; height: 430px; z-index: 0; }
-.globe-wrap::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(4, 5, 11, 0) 55%, var(--bg) 100%); pointer-events: none; }
+.globe-wrap::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(4, 5, 11, 0) 45%, rgba(4, 5, 11, 0.04) 55%, rgba(4, 5, 11, 0.14) 64%, rgba(4, 5, 11, 0.32) 73%, rgba(4, 5, 11, 0.56) 82%, rgba(4, 5, 11, 0.8) 91%, var(--bg) 100%); /* eased: no edge over the light Brazil fill */ pointer-events: none; }
 .globe { width: 100%; height: 100%; display: block; }
 .globe--pick { cursor: crosshair; }
 .stage-map { position: absolute; inset: 0; z-index: 1; background: var(--bg); animation: fade 0.35s ease-out; }

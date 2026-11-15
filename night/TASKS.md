@@ -180,3 +180,5 @@ Global rules for this block:
   - Notes are `<dd class="kc-note">` (same look); the month card is a `<div role="dialog">`. No axe violations left on the six screens checked at 375px. Also: the "last card spans the row" rule no longer touches the two reliability cards.
 - [x] Fire briefing "Copy text": no screen-reader feedback and a silent failure when the clipboard is blocked
   - Button shows "✓ Copied"; a status line announces it (hidden visually) or says "Could not copy here: select the text above instead" when the clipboard fails.
+- [x] Phone/tablet globe: the bottom fade made a visible grey band across Brazil (same issue as the desktop edge)
+  - Bottom fade eased over seven stops (45% → 100%); no edge over the light Brazil fill at 820 and 375.
