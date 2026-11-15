@@ -110,7 +110,7 @@ export default function Landing() {
                 <a className="pill" href="#idea"><span>Space Apps 2026</span><span className="muted">MODIS + VIIRS, one record</span></a>
                 <h1 id="hero-h">Brazil Fire Calendar</h1>
                 <p className="hero__lead">
-                  Twenty years of NASA fire detections over Brazil, turned into one burning calendar for the place you care about.
+                  More than twenty years of NASA fire detections over Brazil, turned into one burning calendar for the place you care about.
                   See when fires usually come, whether this month is unusual, and which months are critical.
                 </p>
                 <div className="btn-row">

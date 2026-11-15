@@ -194,3 +194,5 @@ Global rules for this block:
   - The explanation sits above the scrolling box (caption kept for screen readers, visually hidden); the Year column is sticky while the months scroll.
 - [x] Phone: after "Show this month on the map" the month card still covered almost the whole map
   - Once the hotspots are shown, the card shrinks to 44vh on phones (scrolls inside), so the map band with the points stays visible above it.
+- [x] Landing hero at 1366×768: the three facts sat glued under the buttons; "Twenty years" undersold 2003 → today
+  - Facts keep at least 32px above them; lead says "More than twenty years". All sections still one screen at the four sizes.
