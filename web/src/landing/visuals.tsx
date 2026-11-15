@@ -99,7 +99,7 @@ export function AppFrame({ show }: { show: Show }) {
   return (
     <div className="ui app fill bfc-app" role="img" aria-label={label}>
       <div className="app__pane app__pane--list bfc-pane-sheet">
-        <HowCalendar show={show} rows={sel ? Math.max(10, show.analysis.cards.ref_year - sel.year + 1) : 10} mark={sel} />
+        <HowCalendar show={show} rows={sel ? Math.max(8, show.analysis.cards.ref_year - sel.year + 1) : 8} mark={sel} />
       </div>
       <div className="app__pane app__pane--open">
         <div className="bfc-pane-head">
@@ -295,7 +295,7 @@ export function HowAnswer({ show }: { show: Show }) {
 }
 
 /** Step 3, the quick-view calendar on the white sheet (FireCalendar.tsx): rounded bricks, same level rule. */
-export function HowCalendar({ show, rows = 6, mark }: { show: Show; rows?: number; mark?: CalendarItem | null }) {
+export function HowCalendar({ show, rows = 5, mark }: { show: Show; rows?: number; mark?: CalendarItem | null }) {
   const items = show?.analysis.calendar ?? [];
   const v = items.map((i) => i.count).filter((n): n is number => n != null && n > 0).sort((a, b) => a - b);
   const q = (p: number) => (v.length ? v[Math.min(v.length - 1, Math.floor(p * v.length))] : Infinity);
