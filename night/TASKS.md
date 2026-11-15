@@ -192,3 +192,5 @@ Global rules for this block:
   - Typical bricks use the same styled tooltip on mouse hover ("August 2027 · usually ≈ 794 · Typical month, 2003–2025 average · History, not a forecast"); screen readers keep their aria-label.
 - [x] Detailed view table on phones: the caption scrolled away with the months (cut off) and the year column scrolled out of view
   - The explanation sits above the scrolling box (caption kept for screen readers, visually hidden); the Year column is sticky while the months scroll.
+- [x] Phone: after "Show this month on the map" the month card still covered almost the whole map
+  - Once the hotspots are shown, the card shrinks to 44vh on phones (scrolls inside), so the map band with the points stays visible above it.

@@ -39,7 +39,7 @@ export default function MonthDetail({ item, map, onShowMap, onCsv, onClose }: Pr
   }, [close]);
 
   return (
-    <div className={'detail' + (closing ? ' is-closing' : '')} role="dialog" aria-label={`${MONTHS[item.month - 1]} ${item.year}`}>
+    <div className={'detail' + (closing ? ' is-closing' : '') + (map.kind === 'shown' ? ' has-map' : '')} role="dialog" aria-label={`${MONTHS[item.month - 1]} ${item.year}`}>
       <button ref={closeRef} className="detail-close" onClick={close} aria-label="Close details">×</button>
       <p className="eyebrow dark">
         {MONTHS[item.month - 1]} {item.year}

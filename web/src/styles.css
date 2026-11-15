@@ -339,6 +339,8 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
 /* ---------- month detail (bottom sheet) ---------- */
 .detail { position: fixed; z-index: 20; left: 0; right: 0; bottom: 0; max-height: 82vh; overflow: auto; padding: 22px 18px 20px; border-radius: var(--r-2xl) var(--r-2xl) 0 0; background: var(--surface-2); color: var(--ink); box-shadow: var(--shadow-sheet); animation: rise 0.22s ease-out; }
 @keyframes rise { from { transform: translateY(24px); opacity: 0; } }
+/* phones: once the month's hotspots are on the map, the card shrinks (it scrolls inside) so the map shows above it */
+@media (max-width: 599px) { .detail.has-map { max-height: 44vh; transition: max-height 0.25s ease; } }
 .detail.is-closing { animation: sink 0.16s ease-in forwards; pointer-events: none; }
 @keyframes sink { to { transform: translateY(24px); opacity: 0; } }
 .modal-backdrop.is-closing { animation: fade-out 0.16s ease-in forwards; pointer-events: none; }
