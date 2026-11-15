@@ -60,8 +60,9 @@ export default function Detailed({ data, mode, onMode, selected, onSelect, slug,
               <button role="radio" aria-checked={mode === 'counts'} className={mode === 'counts' ? 'on' : ''} onClick={() => onMode('counts')}>Counts</button>
               <button role="radio" aria-checked={mode === 'vs'} className={mode === 'vs' ? 'on' : ''} onClick={() => onMode('vs')}>vs Average</button>
             </div>
+            {/* view switch beside the mode, then the downloads; the label says what you get, so no pressed state */}
+            <button className="btn btn-ghost" onClick={() => setTable((t) => !t)} aria-label={table ? 'Show the heatmap' : 'Show as a table'}>{table ? 'Heatmap' : 'Table'}</button>
             <button className="btn btn-ghost" onClick={() => savePng(calRef.current, `burning-calendar-${slug}-${mode}.png`)} aria-label="Download the burning calendar as a PNG image">PNG</button>
-            <button className="btn btn-ghost" onClick={() => setTable((t) => !t)} aria-pressed={table}>{table ? 'Heatmap' : 'Table'}</button>
             <button className="btn btn-ghost" onClick={onCsv} aria-label="Download the calendar as a CSV file">CSV</button>
           </div>
         </div>

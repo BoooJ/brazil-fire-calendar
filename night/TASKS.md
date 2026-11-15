@@ -225,3 +225,5 @@ Global rules for this block:
   - Under 600px both labels reserve two lines; the two values share one baseline.
 - [x] Calendar: hovering or focusing the current brick grew its ring over its own "SO FAR" tag
   - The tag sits above the brick (own white ground) and steps down 4px while its brick is hovered, focused or open.
+- [x] Detailed view on phones: the calendar tools wrapped as [Counts | vs Average] [PNG] / [Table] [CSV], splitting the downloads; the Table button said "Heatmap, pressed"
+  - Order is now view (Counts/vs Average, Table/Heatmap) then downloads (PNG, CSV), so phones wrap into those two groups. The switch has no pressed state; its name says what it shows ("Show as a table" / "Show the heatmap").
