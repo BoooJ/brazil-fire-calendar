@@ -492,7 +492,7 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
 
 .chart-card { border-radius: var(--r-lg); background: var(--panel); color: var(--panel-ink); padding: 14px 12px 12px; overflow: hidden; }
 .chart-scroll { overflow-x: auto; }
-.chart-scroll > div { min-width: 300px; }
+.chart-scroll > div { min-width: 256px; } /* fits a 320px phone without an inner scroll (cells ~17px there) */
 .hm-legend { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 14px 18px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #262d3e; }
 .hm-scale { flex: 1 1 260px; max-width: 420px; }
 .hm-bar { height: 10px; border-radius: 5px; }

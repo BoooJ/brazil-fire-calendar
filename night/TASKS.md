@@ -314,3 +314,5 @@ Global rules for this block:
   - The phone row label is "Ended" (desktop table header stays "To").
 - [x] Detailed charts: the month in progress (Nov 2026, 14 days) and the unfinished year (2026) were drawn like full values, so they read as a sudden drop
   - Typical year and Year by year: finished points are solid yellow, the month/year not finished is a hollow ring; each chart's subtitle says "A hollow point: month (year) not finished". Values unchanged (the API's). Checked 1440.
+- [x] 320px phones: the detailed heatmap scrolled sideways inside its card, and that scroll box could not be reached with the keyboard (axe: scrollable-region-focusable)
+  - The heatmap's minimum width is 256px (was 300), so it fits a 320px phone (cells ~17px) with no inner scroll. axe clean at 320 and 820 (sheet, month card, detailed view).
