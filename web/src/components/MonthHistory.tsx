@@ -1,10 +1,11 @@
 // "November over the years": one month, every year since the calendar starts, as bars on one scale.
-// Its own card under the first screen: the page's month, each year's against a typical one.
+// Its own card under the first screen: the page's month first, any other month one click away;
+// each year's against a typical one.
 // Display only: every number is the API's (calendar counts, vs_avg_pct, rank, average_by_month).
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { KeyboardEvent } from 'react';
 import type { Analysis, CalendarItem } from '../types';
-import { MONTHS, num, ordinal, pctShort } from '../format';
+import { MON, MONTHS, num, ordinal, pctShort } from '../format';
 import './MonthHistory.css';
 
 const still = () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -33,13 +34,17 @@ function step(key: string, at: number, n: number): number | null {
 
 export default function MonthHistory({ data }: { data: Analysis }) {
   const c = data.cards;
-  const month = c.ref_month; // always the page's month (the current month by default)
+  const [month, setMonth] = useState(c.ref_month); // starts on the page's month; the chips pick any other
   const [active, setActive] = useState<number | null>(null); // the year under the pointer or keyboard focus
   const [grown, setGrown] = useState(still);
+  const chips = useRef<(HTMLButtonElement | null)[]>([]);
   const bars = useRef<(HTMLButtonElement | null)[]>([]);
 
   // follow the page when its reference month changes ("Select a day")
-  useEffect(() => setActive(null), [c.ref_month, c.ref_year]);
+  useEffect(() => {
+    setMonth(c.ref_month);
+    setActive(null);
+  }, [c.ref_month, c.ref_year]);
   // bars grow from the baseline on first show; later month changes animate height to height
   useEffect(() => {
     if (grown) return;
@@ -65,6 +70,17 @@ export default function MonthHistory({ data }: { data: Analysis }) {
   const last = items[items.length - 1]?.year;
   const isNow = (i: CalendarItem) => i.year === c.ref_year && i.month === c.ref_month;
 
+  const pick = (m: number) => {
+    setMonth(m);
+    setActive(null);
+  };
+  const chipKey = (e: KeyboardEvent, at: number) => {
+    const to = step(e.key, at, 12);
+    if (to == null) return;
+    e.preventDefault();
+    pick(to + 1);
+    chips.current[to]?.focus();
+  };
   const barKey = (e: KeyboardEvent, at: number) => {
     const to = step(e.key, at, items.length);
     if (to == null) return;
@@ -79,6 +95,19 @@ export default function MonthHistory({ data }: { data: Analysis }) {
     <section className="mh" aria-labelledby="mh-title">
       <div className="mh-head">
         <h2 id="mh-title">{name} over the years</h2>
+        <p className="mh-hint">Pick a month</p>
+      </div>
+
+      <div className="mh-months" role="radiogroup" aria-label="Month to compare across years">
+        {MONTHS.map((m, i) => (
+          <button key={m} type="button" role="radio" aria-checked={month === i + 1} tabIndex={month === i + 1 ? 0 : -1}
+            ref={(el) => { chips.current[i] = el; }}
+            className={(month === i + 1 ? 'on' : '') + (c.ref_month === i + 1 ? ' is-now' : '')}
+            aria-label={`${m}${c.ref_month === i + 1 ? ', this month' : ''}`}
+            onClick={() => pick(i + 1)} onKeyDown={(e) => chipKey(e, i)}>
+            {MON[i]}
+          </button>
+        ))}
       </div>
 
       {!anyFire ? (
