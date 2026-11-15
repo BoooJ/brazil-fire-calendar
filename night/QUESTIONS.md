@@ -13,6 +13,9 @@
 - 2026-11-15 (05:55 run): On phones, once a point is picked, "Show my fire calendar" is pinned to the bottom of the screen until its place in the steps is reached. Mike: keep it?
 - 2026-11-15 (05:55 run): The landing's Team list says Infrastructure does "daily updates", but root CLAUDE.md lists the daily FIRMS update as not done yet. Left as is (it describes the role); change to "updates" if the daily job does not ship.
 
+- 2026-11-15 (06:55 run): Built the next-week fire chance panel (README feature 18) on the sheet under "coming months", plus its cells on the map. Root `CLAUDE.md` status still says "Website panel: to do (web/)": I did not edit the root file (outside web/); please tick it when this branch is merged. Mike: placement OK (after the history cards, before the briefing)?
+- 2026-11-15 (06:55 run): The forecast map shows the top `limit` cells (API default 2,000; mock 300) as dots about one 5 km cell wide, coloured with viridis (0–10 / 10–25 / 25–50 / 50%+). The class breaks are a display choice, not from the science team: OK, or should science/ give the breaks?
+
 ## For Paul (infra/)
 
 - **Fire season per area** (for the first screen: "is this the usual fire season, when does it usually end?"): please add to `/api/analysis` something like `season: { start_month: int, peak_month: int, end_month: int, rule: "months whose mean is ≥ X% of the yearly total" } | null`. Today the UI only shows `cards.peak_month`.

@@ -113,6 +113,9 @@ export function SourcesDialog({ status, onClose }: { status: Status | null; onCl
         <ul className="points">
           <li>Final (science-quality) data until <strong>{status?.final_until ? dateShort(status.final_until) : '–'}</strong>. Later days are near-real-time and marked provisional.</li>
           <li>Areas are plain boxes, circles or shapes you draw. No outside border data is used.</li>
+          {status?.forecast_available !== false && (
+            <li>Next week’s fire chance: the team’s experimental model on 5&nbsp;km cells, fed only with the last 28 days of VIIRS NOAA-20 detections and the usual pattern for that week of the year. A model estimate, not an official fire warning.</li>
+          )}
           <li>For display only, never for the numbers: map imagery from NASA GIBS (Blue Marble), country outlines on the globe (and on the map if its imagery fails) from Natural Earth (public domain).</li>
         </ul>
         <p className="modal-links">
