@@ -341,3 +341,5 @@ Global rules for this block:
   - EChart.tsx turns chart animation off and Tool.tsx jumps instead of smooth-scrolling (`scrollMotion()`) when the visitor asks for reduced motion. Normal motion unchanged. Checked 1440 with reduced motion emulated.
 - [x] Drawing an area on a phone: the map banner said "Esc to cancel" / "Enter to finish" (no keys on a phone) and the only way out was the chip scrolled off under the map
   - The map banner has a Cancel button (all screens); on touch screens it and the gate note say "Tap the corners, then the first again" / "Drag to draw a box" without key names. Desktop wording unchanged. Checked iPhone 13 emulation and 1440; Cancel ends drawing.
+- [x] Detailed view on phones said "Click a month for details and the map"
+  - Says "Tap" on touch screens, "Click" with a mouse (Detailed.tsx subtitle only; other copy unchanged).

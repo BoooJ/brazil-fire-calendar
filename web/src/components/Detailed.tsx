@@ -53,7 +53,7 @@ export default function Detailed({ data, mode, onMode, selected, onSelect, slug,
         <div className="cal-head">
           <div>
             <h2 id="hm-title">Burning calendar</h2>
-            <p className="muted">Every month since {firstYear}, as a heatmap. Click a month for details and the map.</p>
+            <p className="muted">Every month since {firstYear}, as a heatmap. {window.matchMedia('(pointer: coarse)').matches ? 'Tap' : 'Click'} a month for details and the map.</p>
           </div>
           <div className="tools">
             <div className="seg seg-dark" role="radiogroup" aria-label="Calendar mode">
