@@ -420,6 +420,8 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
 .kc .kc-vs.is-up dd:not(.kc-note) { color: #b34700; }
 .kc .kc-vs.is-down dd:not(.kc-note) { color: var(--vs0); }
 .kc-2 { margin-bottom: 14px; }
+/* phones: the two reliability labels wrap differently; two label lines each keep both values on one baseline */
+@media (max-width: 599px) { .kc-2 dt { min-height: 2.6em; } }
 /* type hierarchy of the panels: label 12/600 · value 18–40/700+ · note 12/1.35; numbers always tabular */
 .detail, .kc, .sats, .next, .sources, .cal-tip { font-variant-numeric: tabular-nums; }
 .kc dd.kc-note { line-height: 1.35; margin-top: 2px; }

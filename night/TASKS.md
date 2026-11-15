@@ -221,3 +221,5 @@ Global rules for this block:
   - After 3 failed imagery tiles (and none loaded) a small status note above the zoom buttons says "Satellite imagery could not load. The area and its hotspots are still shown."; it clears if a tile loads. Phones show only the first sentence; 220px wide so the month card never cuts it.
 - [x] Landing calendars (How it works step 3, app frame): the dotted "2027" row had no tag, so it read like real 2027 data
   - A small "typ." under its year label, as the tool's "2027 · typical". Sections still exactly one screen at 1440×900, 1366×768, 820×1180.
+- [x] Phone "can make mistakes" cards: "Typical conversion error" wrapped to two lines, so ±12% sat a line lower than "2016, 2019"
+  - Under 600px both labels reserve two lines; the two values share one baseline.
