@@ -310,7 +310,7 @@ export default function Tool() {
 
         <main className="col">
           {!area ? (
-            <LocationGate presets={presets} picked={picked} onPickedChange={setPicked} onDone={chooseArea} drawMode={drawMode} onDraw={startDraw} />
+            <LocationGate presets={presets} picked={picked} onPickedChange={setPicked} onDone={chooseArea} drawMode={drawMode} onDraw={startDraw} onSources={() => setShowSources(true)} />
           ) : (
             <>
               {data?._mock && (

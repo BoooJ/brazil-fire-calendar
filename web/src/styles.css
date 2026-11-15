@@ -522,6 +522,7 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
   .map-caption button { min-height: 44px; padding: 0 6px; }
 }
 
+.gate-sources { margin-top: var(--s-1); margin-left: -4px; }
 /* small phones with an area chosen: the name folds to the flame so the area name in the pill is readable */
 @media (max-width: 519px) {
   .topbar--area .brand { width: 44px; padding: 0; justify-content: center; }
@@ -552,6 +553,7 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
   .map-legend { left: 24px; top: 148px; max-width: calc(100% - 48px); }
   .stage-switch, .tool--map .stage-switch { right: 24px; top: 92px; bottom: auto; }
   .toplink { display: inline-flex; align-items: center; }
+  .gate-sources { display: none; } /* the top bar shows "Data sources" here */
   .col { grid-column: 1; grid-row: 1; padding: 24px 32px 0; pointer-events: auto; }
   .hero { padding-top: 24px; }
   .sheet { border-radius: var(--r-3xl); margin: 0 0 var(--s-7); padding: var(--s-8) var(--s-8) var(--s-7); }

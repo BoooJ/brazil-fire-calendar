@@ -255,3 +255,5 @@ Global rules for this block:
   - The time and "Update now" are one no-wrap group (it moves under the tags as a whole); phones say "Updated …" instead of "Data updated …" so the pair fits 375.
 - [x] "▲ 1% above average" in the brick card / month card while the legends call ±20% "near average" (and the Key numbers card used ±15% for its colour)
   - format.ts: `pctLong` shows ● inside ±20% ("● 1% above average"), ▲/▼ outside; `pctShort` uses +/− inside the band; the Key numbers colour uses the same ±20% as `trendOf`. Wording only, values are the API's.
+- [x] Phones/tablets: the location step had no way to the data sources (the top bar hides "Data sources" under 900px; only the result sheet's footer has it)
+  - LocationGate takes `onSources`; under 900px a "Data sources" text link (44px) sits under the privacy line and opens the same dialog. Hidden on desktop, where the top bar has it.

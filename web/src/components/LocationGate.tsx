@@ -13,9 +13,11 @@ interface Props {
   /** drawing happens on the map beside this panel: 'none' while the globe is shown */
   drawMode: DrawMode;
   onDraw: (m: DrawMode) => void;
+  /** phones and tablets: the top bar has no room for "Data sources", so the step links to it */
+  onSources?: () => void;
 }
 
-export default function LocationGate({ presets, picked, onPickedChange, onDone, drawMode, onDraw }: Props) {
+export default function LocationGate({ presets, picked, onPickedChange, onDone, drawMode, onDraw, onSources }: Props) {
   const [radius, setRadius] = useState(100);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -150,6 +152,7 @@ export default function LocationGate({ presets, picked, onPickedChange, onDone, 
       )}
 
       <p className="fineprint">Your location is only used to draw this area. It is not stored on a server.</p>
+      {onSources && <button className="textlink gate-sources" onClick={onSources}>Data sources</button>}
     </section>
   );
 }
