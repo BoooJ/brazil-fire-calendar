@@ -321,3 +321,7 @@ strong { font-weight: 650; }
   .bfc-credits { grid-template-columns: 7fr 5fr; }
   .bfc-credits > p:first-child { grid-row: span 2; max-width: 74ch; }
 }
+
+/* ---------- the "Source code" link: GitHub's mark at the size of the text ---------- */
+.bfc-src { display: inline-flex; align-items: center; gap: 0.5em; }
+.bfc-gh { width: 1.05em; height: 1.05em; flex: none; }

@@ -20,7 +20,8 @@ Global rules for this block:
   - Timeline now sits on a flat light card (no painted ground), thin pastel pill bars, bolder labels, "Ended" (S-NPP) and "Reference scale" (NOAA-20) badges. Demo chip, step numbers, hot KPI and mini-map lost their dashes/gradients for flat fills.
 - [x] **"How it works" images must match the real product.** Replace/redraw the step visuals so they show the tool as it really looks now (location step, the answer, the calendar). No invented UI. Use the image + text card pattern from the scrolltide folder-card reference.
   - #how is now three folder cards (tabbed light card with the screen drawn in HTML, then number + words): the location step, the one message (same `headlineFor()` as the tool, moved to format.ts) and the quick-view calendar (same level rule and colours). Old painted window removed. **When the calendar/first screen are redesigned, update `HowAnswer`/`HowCalendar` in landing/visuals.tsx too.**
-- [ ] **Source code button:** label "Source code" with a small GitHub mark icon (inline SVG, monochrome, sized to the text).
+- [x] **Source code button:** label "Source code" with a small GitHub mark icon (inline SVG, monochrome, sized to the text).
+  - Method button and footer link now read "Source code" with an inline monochrome GitHub mark (1.05em, currentColor).
 - [ ] **Smooth scroll** for the top nav (The idea, How it works, Method, Questions, Team): gentle scroll instead of a jump; respect `prefers-reduced-motion`; keep the hash in the URL working.
 - [ ] **Start/CTA button**: interactive hover/press behaviour adapted from the antimetal reference, in our palette.
 
