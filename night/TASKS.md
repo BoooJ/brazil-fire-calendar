@@ -304,3 +304,5 @@ Global rules for this block:
   - Under 361px the date and view switches use 9px side padding and the small text size. No page overflow at 320 (gate, sheet, detailed view; the heatmap keeps its own inner scroll). 375+ unchanged.
 - [x] Map on 320px phones: the forecast legend was a 136px column beside the Globe/Map switch, the caption cut "Next week" to "Ne…", and the "imagery could not load" note hid under the legend
   - Under 361px the legend sits under the switch at full width and the caption badge reads "300 of 7,774" (the word "showing" is hidden there, both captions). On phones the imagery note sits beside the zoom buttons instead of above them. Checked 320 / 375, no page overflow at 320 on landing and tool.
+- [x] Desktop: "Show this month on the map" put half the hotspots under the month card on the right of the map
+  - When a month's hotspots arrive and the month card sits on the right of the map (desktop), MapView fits the area in the space left of the card (at least 200px of map). Phones/tablets unchanged. Checked 1440 (Sep 2020 replay).

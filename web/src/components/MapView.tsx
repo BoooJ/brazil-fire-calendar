@@ -336,6 +336,7 @@ export default function MapView({ area, hotspots, cells = null, cellsLabel = '',
   // ---------- data ----------
   const lastAreaKey = useRef('');
   const lastCells = useRef<Forecast['cells'] | null>(null);
+  const lastHotspots = useRef<Hotspots | null>(null);
   function apply(a: AreaGeometry | null, h: Hotspots | null, c: Forecast['cells'] | null, first = false) {
     const m = map.current;
     if (!m || !ready.current) return;
@@ -368,11 +369,17 @@ export default function MapView({ area, hotspots, cells = null, cellsLabel = '',
       }
       if (had) lastAreaKey.current = '';
     }
+    // a month's hotspots just shown on desktop: the month card (right side) covers part of the map, so fit the area beside it
+    const shownHotspots = h != null && h !== lastHotspots.current;
+    lastHotspots.current = h;
+    const card = shownHotspots && !phone ? document.querySelector('.detail')?.getBoundingClientRect() : undefined;
+    const box = m.getContainer().getBoundingClientRect();
+    const cardRight = card && card.width > 0 && card.left > box.left + 160 && card.right > box.right - 80 && card.top < box.bottom ? Math.min(box.right - card.left + 24, box.width - padding.left - 200) : 0;
     const key = a ? JSON.stringify(a.coordinates).slice(0, 200) : '';
-    if (a && key !== lastAreaKey.current) {
+    if (a && (key !== lastAreaKey.current || cardRight > padding.right)) {
       lastAreaKey.current = key;
       const [w, s, e, n] = areaBbox(a);
-      m.fitBounds([[w, s], [e, n]], { padding, duration, maxZoom: 8 });
+      m.fitBounds([[w, s], [e, n]], { padding: { ...padding, right: Math.max(padding.right, cardRight) }, duration, maxZoom: 8 });
     }
   }
 
