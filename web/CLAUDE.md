@@ -50,7 +50,7 @@ npm run preview    # serve the build
 - **One look, two stylesheets:** light theme, flat colours, **no gradients anywhere** (`grep -rn gradient src` must stay empty). Shared tokens: canvas `#fff`, bands `#f5f5f7`, ink `#1d1d1f`, secondary `#6e6e73`, hairline `#e6e6e8`/`#d6d6d6`, one accent (ember `#d9480f`); radii 10 / 20 / 28 / pill; 4 px spacing base; Inter, with JetBrains Mono uppercase for small labels; cards are flat with a hairline, only floating things (popovers, the month card, toasts) have a shadow.
 - **The tool** uses plain CSS (`src/styles.css`, design tokens at the top). The globe is a canvas drawn with `d3-geo`; the quick calendar is plain HTML buttons. Two heavy parts load on demand: the map (MapLibre GL 5; basemap NASA GIBS Blue Marble, imagery only) and the detailed view's charts (Apache ECharts 5, tree-shaken in `components/EChart.tsx`).
 - **The landing page** is plain React and CSS too (`src/landing/landing.css`). The tasteskill kit in `public/assets/` is **no longer loaded** (it painted gradients and forced one-screen sections); the files are still there, untouched.
-  - Its pictures of the tool are **real screenshots** in `src/landing/shots/` (never redraw the tool by hand). After the tool's look changes, re-shoot them with Playwright (location step, first screen, calendar, whole tool) and check 1440×900, 1366×768, 820×1180 and 390×844.
+  - Its pictures of the tool are **real screenshots** in `src/landing/pictures/` (never redraw the tool by hand). After the tool's look changes, re-shoot them with Playwright (location step, first screen, calendar, whole tool) and check 1440×900, 1366×768, 820×1180 and 390×844.
 - **Quick view speaks plainly:** no "fire-days", "corrected count" or "rank" there. Intensity is a colour and a word (`src/levels.ts`); the numbers and their one-line explanations live in the Detailed view and the month card.
 
 | File | What |
@@ -70,7 +70,7 @@ npm run preview    # serve the build
 | `src/components/Controls.tsx`, `Panels.tsx`, `MonthDetail.tsx` | Dates and view switch · key numbers, reliability, data sources · one month's details (`useClosing.ts`: their close animation) |
 | `src/components/ForecastPanel.tsx` | Next-week fire chance (`POST /api/forecast`, the only forecast): always with its `label`, hidden while `forecast_available` is false |
 | `src/format.ts` | Number/date formats and the status line's wording (`headlineParts`, `headlineFor`, `trendOf`, `rankLine`, `vsTypical`) |
-| `src/pages/Landing.tsx`, `src/landing/` | The landing page: markup, its stylesheet, the screenshots of the tool (`shots/`), the data pictures drawn from the API (`visuals.tsx`) |
+| `src/pages/Landing.tsx`, `src/landing/` | The landing page: markup, its stylesheet, the screenshots of the tool (`pictures/`), the data pictures drawn from the API (`visuals.tsx`) |
 
 **State borders (decided by Mike, UI/UX owner, 15 Nov 2026; overrides root rule 1 for this one dataset):** Brazil's state borders from Natural Earth (public domain) are shown on the globe and the map AND may select the data area: picking a state sends its border to the API as a `Polygon`/`MultiPolygon` in `[lon, lat]` order (under 1,000 points), like any drawn area. Every fire number is still NASA FIRMS only.
 

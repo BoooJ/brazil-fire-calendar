@@ -1,15 +1,15 @@
 // The landing page: our own light, flat stylesheet (landing/landing.css), real screenshots of the tool
-// (landing/shots/) and a few data pictures drawn live from the API (landing/visuals.tsx).
+// (landing/pictures/) and a few data pictures drawn live from the API (landing/visuals.tsx).
 import { useEffect, useState, type ReactNode } from 'react';
 import '../landing/landing.css';
 import { getShowcase, type Showcase } from '../api';
 import { RawVsCorrected, StepConvert, StepGrid, StepProvisional, Timeline } from '../landing/visuals';
 import { Flame } from '../components/Brand';
-import shotHero from '../landing/shots/hero.png';
-import shotHow1 from '../landing/shots/how-1.png';
-import shotHow2 from '../landing/shots/how-2.png';
-import shotHow3 from '../landing/shots/how-3.png';
-import shotTool from '../landing/shots/tool.png';
+import shotHero from '../landing/pictures/hero.png';
+import shotHow1 from '../landing/pictures/how-1.png';
+import shotHow2 from '../landing/pictures/how-2.png';
+import shotHow3 from '../landing/pictures/how-3.png';
+import shotTool from '../landing/pictures/tool.png';
 
 const TOOL = '#/app';
 const REPO = 'https://github.com/BoooJ/brazil-fire-calendar';
