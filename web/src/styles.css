@@ -197,7 +197,7 @@ abbr { text-decoration: none; }
 @keyframes sink { to { transform: translateY(24px); opacity: 0; } }
 @keyframes fade-out { to { opacity: 0; } }
 @keyframes tip-in { from { opacity: 0; transform: translate(-50%, calc(-100% - 12px)); } }
-@keyframes pop-in { from { opacity: 0; scale: 0.96; } }
+@keyframes pop-in { from { opacity: 0; scale: 0.94; transform: translateY(6px); } }
 @keyframes brick { from { opacity: 0; scale: 0.6; } }
 @keyframes pulse { 50% { opacity: 0.55; } }
 .view-swap, .gate-panel { animation: swap 0.32s var(--ease); }
@@ -290,8 +290,6 @@ abbr { text-decoration: none; }
 /* GitHub-contributions style: a row per year (label · 12 bricks). --n = bricks per year (12 months today, 52/53 for weeks) */
 .cal-grid { position: relative; display: grid; gap: 6px; }
 .yr { display: grid; grid-template-columns: 52px minmax(0, 1fr); align-items: center; column-gap: var(--s-2); }
-.yr-colhead { font-size: var(--t-xs); color: var(--ink-2); padding-bottom: 2px; }
-.yr-colhead .yr-months span { text-align: center; }
 .yr-label { font-size: var(--t-sm); font-weight: 550; font-variant-numeric: tabular-nums; line-height: 1.15; }
 .yr-label small { display: block; font-size: var(--t-2xs); font-weight: 400; color: var(--ink-2); }
 .yr-ahead .yr-label { color: var(--ink-2); }
@@ -301,17 +299,18 @@ abbr { text-decoration: none; }
 .cal-grid[data-period='week'] { --brick-gap: 4px; row-gap: 12px; }
 .cal-grid[data-period='week'] .day { border-radius: 4px; }
 /* weeks: month names sit over the week where the month starts */
-.cal-grid[data-period='week'] .yr-colhead .yr-months span { text-align: left; white-space: nowrap; overflow: hidden; }
-.cal-grid[data-period='week'] .yr-colhead .yr-months span { font-size: var(--t-xs); }
-.cal-grid[data-period='week'] .yr-colhead .yr-months span::before { content: none; }
-.cal-grid[data-period='week'] .day.is-now, .cal-grid[data-period='week'] .day.is-sel { outline-width: 2px; outline-offset: 1px; }
+.cal-grid[data-period='week'] .cal-grid[data-period='week'] .cal-grid[data-period='week'] .cal-grid[data-period='week'] .day.is-now, .cal-grid[data-period='week'] .day.is-sel { outline-width: 2px; outline-offset: 1px; }
 /* coming weeks/months: the same colours as the past, faded (an estimate from the average, not a forecast) */
 .day.est { opacity: 0.38; }
 .day.est.lv0, .day.est.vs2 { opacity: 0.6; }
-.cal-est { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 1px; pointer-events: none; text-align: center; }
-.cal-est b, .cal-est span { padding: 1px 10px; background: var(--card); border-radius: var(--r-pill, 999px); }
-.cal-est b { font-family: var(--mono); font-size: 15px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink); }
-.cal-est span { font-size: var(--t-xs); color: var(--ink-2); white-space: nowrap; }
+/* next year floats above the record, spaced away from it, with ESTIMATE over it (never over the bricks) */
+.cal-future { display: grid; gap: 6px; margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px dashed var(--line-strong); }
+.cal-est { margin: 0; }
+.cal-est b { font-family: var(--mono); font-size: 15px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink); text-align: center; max-width: calc(var(--per, 12) * 46px); }
+/* coming bricks float: lifted a little; the rest of this year also steps away from its past weeks */
+.cell.is-future .day.est { transform: translateY(-3px); cursor: pointer; }
+.cell.is-rest { translate: 6px 0; }
+span.day.est:hover { transform: translateY(-5px) scale(1.14); z-index: 2; box-shadow: 0 6px 14px rgba(29, 29, 31, 0.2); }
 .cell { position: relative; display: grid; place-items: center; }
 .day { position: relative; width: 100%; max-width: 40px; aspect-ratio: 1; border-radius: var(--r-brick); display: block; padding: 0; border: 0; background-color: var(--lv0); font-size: 0; cursor: pointer; transition: background-color 0.3s ease, transform 0.16s var(--ease), box-shadow 0.16s ease, opacity 0.16s ease; }
 span.day { cursor: default; }
@@ -349,15 +348,16 @@ button.day:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px;
 .cal-keys { display: flex; flex-wrap: wrap; gap: 6px var(--s-4); margin-top: var(--s-4); padding-top: var(--s-4); border-top: 1px solid var(--line); font-size: var(--t-xs); color: var(--ink-2); }
 .cal-keys li { display: inline-flex; align-items: center; gap: 6px; }
 /* tooltip (hover, keyboard focus) and the month's small card, anchored to its brick */
-.cal-tip { position: fixed; z-index: 30; transform: translate(-50%, calc(-100% - 12px)); max-width: 300px; text-align: center; white-space: nowrap; pointer-events: none; animation: tip-soft 0.45s ease 0.18s both; }
+.cal-tip { position: fixed; z-index: 30; transform: translate(-50%, calc(-100% - 12px)); max-width: 300px; text-align: center; white-space: nowrap; pointer-events: none; animation: tip-soft 0.34s cubic-bezier(0.16, 1, 0.3, 1) both; }
 @keyframes tip-soft { from { opacity: 0; transform: translate(-50%, calc(-100% - 8px)); } }
 .cal-tip b { font-weight: 550; }
 .cal-tip span { opacity: 0.75; white-space: normal; }
 .cal-tip span .nowrap { opacity: 1; white-space: nowrap; }
-.cal-pop { position: fixed; z-index: 31; width: 300px; translate: -50% 0; padding: var(--s-5); border-radius: var(--r-lg); background: var(--card); color: var(--ink); border: 1px solid var(--line); box-shadow: var(--shadow-float); font-size: var(--t-base); line-height: 1.4; display: grid; gap: 6px; font-variant-numeric: tabular-nums; transform-origin: 50% 0; animation: pop-in 0.18s var(--ease); }
+.cal-pop { position: fixed; z-index: 31; width: 300px; translate: -50% 0; padding: var(--s-5); border-radius: var(--r-lg); background: var(--card); color: var(--ink); border: 1px solid var(--line); box-shadow: var(--shadow-float); font-size: var(--t-base); line-height: 1.4; display: grid; gap: 6px; font-variant-numeric: tabular-nums; transform-origin: 50% 0; animation: pop-in 0.34s cubic-bezier(0.16, 1, 0.3, 1); }
 .cal-pop.is-above { translate: -50% -100%; transform-origin: 50% 100%; }
 .cal-pop-title { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); }
 .cal-pop-main { display: flex; align-items: center; gap: var(--s-2); font-size: var(--t-lg); font-weight: 500; letter-spacing: -0.015em; }
+.cal-pop-num { font-variant-numeric: tabular-nums; color: var(--ink); }
 .cal-pop-flag { font-size: var(--t-sm); color: var(--ink-2); }
 .cal-pop-act { display: flex; gap: var(--s-2); margin-top: var(--s-2); }
 .cal-pop-act .btn { flex: 1; }
@@ -594,9 +594,7 @@ button.day:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px;
   .yr { grid-template-columns: 40px minmax(0, 1fr); column-gap: 6px; }
   .yr-months { gap: 3px; }
   .day { border-radius: 5px; }
-  .yr-colhead .yr-months span { font-size: 0; }
-  .yr-colhead .yr-months span::before { content: attr(data-i); font-size: var(--t-2xs); }
-  .legend { margin-left: 0; }
+      .legend { margin-left: 0; }
   .states { max-height: 280px; }
 }
 /* small phones with an area chosen: the name folds to the flame so the area name in the pill is readable */
