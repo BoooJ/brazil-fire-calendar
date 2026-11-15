@@ -4,7 +4,7 @@ import { ApiError, downloadCsv, getAnalysis, getHotspots, getPresets, getStatus,
 import type { Polygon } from 'geojson';
 import type { Analysis, AnalysisRequest, CalendarItem, Coverage, Forecast, Hotspots, Preset, Status } from '../types';
 import { SATELLITES, SAT_NAMES } from '../types';
-import { drawnArea, pointCount, type Area } from '../geo';
+import { drawnArea, pointCount, scatterIn, type Area } from '../geo';
 import Globe, { BRAZIL_CENTER, zoomForRadius } from '../components/Globe';
 import LocationGate, { PinIcon, type Way } from '../components/LocationGate';
 import StatusHero from '../components/Status';
@@ -69,6 +69,8 @@ export default function Tool() {
   const [mapMonth, setMapMonth] = useState<{ year: number; month: number } | null>(null);
   // next week's fire chance cells on the map (the only forecast), instead of a month's hotspots
   const [fcMap, setFcMap] = useState<Forecast | null>(null);
+  // the latest next-week estimate for this area (loaded by ForecastPanel): what "Fire cells" puts on the map
+  const [forecast, setForecast] = useState<Forecast | null>(null);
   const [stage, setStage] = useState<Stage>('globe');
   const [drawMode, setDrawMode] = useState<DrawMode>('none');
   const [showSources, setShowSources] = useState(false);
@@ -193,6 +195,21 @@ export default function Tool() {
     if (isPhone()) window.scrollTo({ top: 0, behavior: scrollMotion() });
   }, []);
 
+  // ---------- the map switch: Standard (globe) · Satellite (imagery) · Fire cells (next week's estimate) ----------
+  const view: 'standard' | 'satellite' | 'cells' = stage === 'globe' ? 'standard' : fcMap ? 'cells' : 'satellite';
+  const cellsReady = !!forecast && forecast.returned > 0;
+  const toStandard = () => {
+    setFcMap(null);
+    setStage('globe');
+  };
+  const toSatellite = () => {
+    setFcMap(null);
+    setStage('map');
+  };
+  const toCells = () => {
+    if (forecast && cellsReady) showForecastMap(forecast);
+  };
+
   // ---------- drawing an area on the map ----------
   const startDraw = (m: DrawMode) => {
     setDrawMode(m);
@@ -266,6 +283,12 @@ export default function Tool() {
     [area, picked],
   );
 
+  // little animated flames scattered over the chosen area on Standard and Satellite (decoration, random places);
+  // off while real hotspots or the fire cells are on show, so they are never mistaken for data
+  const flames = useMemo(() => (area ? scatterIn(area.polygon, 12, area.label) : []), [area]);
+  const globeFlames = area && stage === 'globe' && !points.length ? flames : undefined;
+  const mapFlames = area && view === 'satellite' && !hotspots && drawMode === 'none' ? flames : undefined;
+
   const data = load.kind === 'ok' ? load.data : null;
   const wide = typeof window !== 'undefined' && window.matchMedia('(min-width: 900px)').matches;
   const closeSources = useCallback(() => setShowSources(false), []);
@@ -301,6 +324,7 @@ export default function Tool() {
             hover={hoverState}
             onHover={setHoverState}
             originY={selected && wide ? 0.3 : 0.5}
+            flames={globeFlames}
             label={area ? `Globe centred on ${area.label}. Click another state to switch to it.` : way === 'point' ? 'Globe of Brazil. Click to choose a point.' : 'Globe of Brazil with its states. Click a state to choose it, or use the list.'}
           />
           {stage === 'map' && (
@@ -316,6 +340,7 @@ export default function Tool() {
                   onDrawCancel={() => startDraw('none')}
                   onUnavailable={mapUnavailable}
                   onState={selectState}
+                  flames={mapFlames}
                 />
               </div>
             </Suspense>
@@ -394,9 +419,22 @@ export default function Tool() {
             </div>
           )}
           {area && drawMode === 'none' && (
-            <div className="stage-switch seg" role="radiogroup" aria-label="Globe or map">
-              <button role="radio" aria-checked={stage === 'globe'} className={stage === 'globe' ? 'on' : ''} onClick={() => setStage('globe')}>Globe</button>
-              <button role="radio" aria-checked={stage === 'map'} className={stage === 'map' ? 'on' : ''} onClick={() => setStage('map')}>Map</button>
+            <div className="stage-switch seg" role="radiogroup" aria-label="Map view">
+              <button role="radio" aria-checked={view === 'standard'} className={view === 'standard' ? 'on' : ''} onClick={toStandard}>Standard</button>
+              <button role="radio" aria-checked={view === 'satellite'} className={view === 'satellite' ? 'on' : ''} onClick={toSatellite}>Satellite</button>
+              {status?.forecast_available !== false && (
+                /* aria-disabled, not disabled: it stays focusable and its title says why */
+                <button
+                  role="radio"
+                  aria-checked={view === 'cells'}
+                  aria-disabled={!cellsReady}
+                  className={(view === 'cells' ? 'on' : '') + (cellsReady ? '' : ' is-off')}
+                  onClick={toCells}
+                  title={cellsReady ? "Next week's chance of fire, per 5 km cell (model estimate)" : forecast ? 'No cells to show for this area' : "Loading next week's estimate…"}
+                >
+                  Fire cells
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -443,7 +481,7 @@ export default function Tool() {
                     )}
                     </div>
                     <Upcoming data={data} />
-                    <ForecastPanel area={area.polygon} refDate={null} available={status?.forecast_available !== false} refresh={attempt} onShowMap={showForecastMap} onHideMap={clearMap} onShown={!!fcMap && stage === 'map'} />
+                    <ForecastPanel area={area.polygon} refDate={null} available={status?.forecast_available !== false} refresh={attempt} onLoad={setForecast} />
                     <Briefing data={data} detailed={detailed} coverage={status?.coverage} />
                     {detailed && <Reliability data={data} status={status} />}
                     <footer className="sheet-foot">

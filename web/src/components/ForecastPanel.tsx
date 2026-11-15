@@ -20,7 +20,7 @@ type Load =
 
 const pct1 = (p: number) => p.toLocaleString('en-GB', { maximumFractionDigits: p < 10 ? 1 : 0 });
 
-export default function ForecastPanel({ area, refDate, available, refresh = 0, onShowMap, onHideMap, onShown }: {
+export default function ForecastPanel({ area, refDate, available, refresh = 0, onLoad }: {
   area: AreaGeometry;
   /** the past day the page is replayed on, null for today */
   refDate: string | null;
@@ -28,12 +28,8 @@ export default function ForecastPanel({ area, refDate, available, refresh = 0, o
   available: boolean;
   /** bumped when the page reloads its data (Try again, Update now): fetch the estimate again too */
   refresh?: number;
-  /** puts the returned cells on the map */
-  onShowMap: (f: Forecast) => void;
-  /** takes them off again */
-  onHideMap: () => void;
-  /** true while these cells are on the map */
-  onShown: boolean;
+  /** the estimate once loaded (null while loading or failed): the map's "Fire cells" view draws its cells */
+  onLoad?: (f: Forecast | null) => void;
 }) {
   const [load, setLoad] = useState<Load>({ kind: 'loading' });
   const [attempt, setAttempt] = useState(0);
@@ -55,6 +51,10 @@ export default function ForecastPanel({ area, refDate, available, refresh = 0, o
       alive = false;
     };
   }, [area, refDate, available, tooEarly, attempt, refresh]);
+
+  useEffect(() => {
+    onLoad?.(available && !tooEarly && load.kind === 'ok' ? load.data : null);
+  }, [load, available, tooEarly, onLoad]);
 
   if (!available) return null;
 
@@ -86,7 +86,7 @@ export default function ForecastPanel({ area, refDate, available, refresh = 0, o
           <button className="btn btn-ghost" onClick={retry}>Try again</button>
         </div>
       ) : (
-        <ForecastBody f={load.data} onToggle={() => (onShown ? onHideMap() : onShowMap(load.data))} shown={onShown} />
+        <ForecastBody f={load.data} />
       )}
       {/* the API's own label, always with the numbers: small and quiet, under them */}
       <p className="quiet-note fc-label">{label}</p>
@@ -94,7 +94,7 @@ export default function ForecastPanel({ area, refDate, available, refresh = 0, o
   );
 }
 
-function ForecastBody({ f, onToggle, shown }: { f: Forecast; onToggle: () => void; shown: boolean }) {
+function ForecastBody({ f }: { f: Forecast }) {
   const s = f.summary;
   const [copied, setCopied] = useState<null | 'ok' | 'fail'>(null);
   // the API's own briefing (it already ends with the label), for sharing in a message or a report
@@ -131,10 +131,7 @@ function ForecastBody({ f, onToggle, shown }: { f: Forecast; onToggle: () => voi
       )}
       <div className="fc-map-row">
         {f.returned > 0 && (
-          /* stays enabled (a disabled button would drop keyboard focus): it hides them again */
-          <button className="btn btn-dark fc-map-btn" onClick={onToggle}>
-            <MapIcon /> {shown ? 'Hide the cells from the map' : 'Show the cells on the map'}
-          </button>
+          <p className="muted fc-map-hint"><MapIcon /> To see these cells, choose <strong>Fire cells</strong> on the map.</p>
         )}
         {f.briefing && <button className="textlink fc-copy" onClick={copy}>{copied === 'ok' ? '✓ Copied' : 'Copy as text'}</button>}
         <span className="sr-only" role="status">
@@ -160,7 +157,7 @@ function ForecastBody({ f, onToggle, shown }: { f: Forecast; onToggle: () => voi
 
 function MapIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z" /><path d="M9 4v13.5M15 6.5V20" />
     </svg>
   );

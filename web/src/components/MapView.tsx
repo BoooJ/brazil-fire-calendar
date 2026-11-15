@@ -11,6 +11,7 @@ import { areaBbox, closeRing, rectPolygon } from '../geo';
 import { timeUtc } from '../format';
 import { loadWorld, OCEAN } from './Globe';
 import { STATES, stateById, type StateFeature } from '../states';
+import { flameElement } from './Flames';
 
 export type DrawMode = 'none' | 'rect' | 'polygon';
 
@@ -28,6 +29,8 @@ interface Props {
   onUnavailable?: () => void;
   /** with this, the state under the pointer highlights and lifts, and a click (or tap) selects it */
   onState?: (s: StateFeature) => void;
+  /** decorative animated flames at these places (never data) */
+  flames?: [number, number][];
 }
 
 // Basemap: NASA GIBS (Blue Marble shaded relief) — imagery only, never used for the numbers.
@@ -56,7 +59,7 @@ const STYLE: maplibregl.StyleSpecification = {
 const EMPTY: FeatureCollection = { type: 'FeatureCollection', features: [] };
 const esc = (s: unknown) => String(s ?? '').replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
-export default function MapView({ area, hotspots, cells = null, cellsLabel = '', drawMode, onDrawDone, onDrawCancel, onUnavailable, onState }: Props) {
+export default function MapView({ area, hotspots, cells = null, cellsLabel = '', drawMode, onDrawDone, onDrawCancel, onUnavailable, onState, flames }: Props) {
   const el = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const ready = useRef(false);
@@ -347,6 +350,14 @@ export default function MapView({ area, hotspots, cells = null, cellsLabel = '',
       alive = false;
     };
   }, [noImagery]);
+
+  // ---------- decorative flames (markers: HTML over the map, never data) ----------
+  useEffect(() => {
+    const m = map.current;
+    if (!m || !flames?.length) return;
+    const markers = flames.map((at, i) => new maplibregl.Marker({ element: flameElement(i), anchor: 'bottom' }).setLngLat(at).addTo(m));
+    return () => markers.forEach((mk) => mk.remove());
+  }, [flames]);
 
   // ---------- draw mode toggling ----------
   useEffect(() => {
