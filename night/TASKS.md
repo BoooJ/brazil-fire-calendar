@@ -172,4 +172,5 @@ Global rules for this block:
 - [x] Data sources dialog at 375px: the four-column satellite table was cut off on the right
   - Under 600px each satellite is a two-line row (name + instrument | From date + To date / "still active"); header kept for screen readers. Desktop table unchanged ("still active" instead of "active").
   - Follow-up: with the 2027 row the how-it-works card shows 5 past years (was 6) and the app frame 8 (was 10), so both keep their height.
-- [ ] Landing at 1366×768: statement (807), tool (875), method (777) and questions (816) are taller than one screen; at 820×1180 #how is 1195 and card 1 is clipped. Tighten so each fits (measured before tonight's changes too)
+- [x] Landing at 1366×768: statement (807), tool (875), method (777) and questions (816) are taller than one screen; at 820×1180 #how is 1195 and card 1 is clipped. Tighten so each fits (measured before tonight's changes too)
+  - Short laptop screens (≥1280 wide, <860 high): section padding 104/48, app frame 49svh, tighter FAQ rows → every section is exactly 768. Tablet folder images 222px → #how is 1180. 1440×900 unchanged.
