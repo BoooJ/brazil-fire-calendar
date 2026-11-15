@@ -326,3 +326,5 @@ Global rules for this block:
   - A `.cal-head` that ends with one button no longer wraps: the text block shrinks and the PNG button stays at the right, bottom-aligned, at every width. The heatmap's tool row (Counts / vs Average / Table / PNG / CSV) still wraps as before. Checked 320 / 375 / 1440, no page overflow.
 - [x] Month card on phones: "▼ 25% below average · rank 13 of 17" left the word "years" alone on the next line
   - "rank N of M years" is one unbreakable piece (`.detail-line .nobr`), so it moves to the next line whole. Checked 320 / 375.
+- [x] Landing "How the years stay comparable" (1024+): the third step's text is 3 lines, so its picture sat 24px lower than the other two
+  - landing.css (kit untouched): at 1024+ the step texts take 3 lines' height, so the three panels line up. Sections still one screen at 1440×900 and 1366×768; 820 unchanged.

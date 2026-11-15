@@ -303,6 +303,8 @@ strong { font-weight: 650; }
 .bfc-keys .k-part { opacity: 0.5; outline: 1.5px solid #fff; outline-offset: -1.5px; }
 .bfc-method-act { margin-top: var(--s-7); }
 @media (min-width: 640px) and (max-width: 1023px) { #method { --h: 2; } }
+/* three columns: the step texts take the same height (the longest is 3 lines), so the three panels line up */
+@media (min-width: 1024px) { #method .card--row > p { min-height: 3lh; } }
 /* a 768px-high laptop: shorter panels so the three steps and the button fit one screen */
 @media (min-width: 1280px) and (max-height: 859px) {
   /* less air above and below each section, a shorter app frame and tighter questions: one screen each */
