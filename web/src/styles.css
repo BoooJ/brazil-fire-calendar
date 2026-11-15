@@ -45,7 +45,7 @@
   --panel-edge: #3a4152;
   --panel-flag: #f9cb35; /* provisional/uncertain notes in tooltips */
   /* spacing scale */
-  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 20px; --s-6: 24px; --s-7: 32px;
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 20px; --s-6: 24px; --s-7: 32px; --s-8: 40px; --s-9: 56px;
   font-family: 'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   font-size: var(--t-md);
   line-height: 1.5;
@@ -210,10 +210,11 @@ strong { font-weight: 650; }
 /* ---------- white sheet ---------- */
 .sheet { background: var(--sheet); color: var(--sheet-ink); border-radius: var(--r-3xl) var(--r-3xl) 0 0; margin: 0 -16px; padding: 24px 16px 140px; }
 .sheet h2 { font-size: var(--t-xl); letter-spacing: -0.02em; line-height: 1.2; }
-.sheet h3 { font-size: var(--t-md); margin: 22px 0 8px; }
-.sheet section + section { margin-top: 28px; padding-top: 28px; border-top: 1px solid var(--sheet-line); }
+.sheet h3 { font-size: var(--t-md); margin: var(--s-6) 0 var(--s-2); }
+/* one rhythm between the sheet's parts: calendar, coming months, briefing, satellites, reliability */
+.sheet section + section, .sheet .view-swap + section, .sheet .view-swap > section + section { margin-top: var(--s-8); padding-top: var(--s-8); border-top: 1px solid var(--sheet-line); }
 
-.upcoming-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.upcoming-head { display: flex; flex-wrap: wrap; gap: var(--s-3); align-items: center; justify-content: space-between; margin-bottom: var(--s-4); }
 .next { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
 .next li { display: flex; flex-direction: column; padding: 12px; border-radius: var(--r-lg); border: 2px dotted #d9a13a; }
 .next-mon { font-size: var(--t-sm); font-weight: 650; }
@@ -221,9 +222,9 @@ strong { font-weight: 650; }
 .next .muted { font-size: var(--t-xs); line-height: 1.35; }
 
 /* ---------- calendar ---------- */
-.cal-head { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; justify-content: space-between; margin-bottom: 14px; }
+.cal-head { display: flex; flex-wrap: wrap; gap: var(--s-3); align-items: flex-end; justify-content: space-between; margin-bottom: var(--s-4); }
 .tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.legend { display: grid; gap: 8px; padding: 12px 14px; border-radius: var(--r-lg); background: var(--sheet-soft); font-size: var(--t-sm); color: var(--sheet-ink-2); margin-bottom: 8px; }
+.legend { display: grid; gap: var(--s-2); padding: var(--s-3) var(--s-4); border-radius: var(--r-lg); background: var(--sheet-soft); font-size: var(--t-sm); color: var(--sheet-ink-2); margin-bottom: var(--s-4); }
 .legend-title { display: block; font-weight: 650; color: var(--sheet-ink); margin-bottom: 6px; }
 .legend ul { display: flex; flex-wrap: wrap; gap: 6px 14px; }
 .legend li { display: inline-flex; align-items: center; gap: 6px; }
@@ -244,7 +245,7 @@ strong { font-weight: 650; }
 .cell-mon { display: none; }
 .now-tag { position: absolute; bottom: -12px; z-index: 1; font-size: 8px; font-weight: 800; letter-spacing: 0.06em; white-space: nowrap; color: var(--sheet-ink-2); }
 .yr:has(.now-tag) { margin-bottom: 8px; }
-.cal-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+.cal-foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); margin-top: var(--s-4); }
 .day { width: 100%; max-width: 36px; aspect-ratio: 1; border-radius: var(--r-brick); display: block; padding: 0; border: 2px solid transparent; background-color: var(--brick-0); font-size: 0; cursor: pointer; }
 span.day { cursor: default; }
 button.day { transition: transform 0.12s ease, box-shadow 0.12s ease; }
@@ -286,7 +287,8 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
 .sats > div { padding: 10px 12px; border-radius: var(--r-md); background: var(--sheet-soft); }
 .sats dt { font-size: var(--t-xs); color: var(--sheet-ink-2); }
 .sats dd { font-size: var(--t-lg); font-weight: 700; font-variant-numeric: tabular-nums; }
-.briefing p { max-width: 68ch; }
+.briefing h2 { margin-bottom: var(--s-3); }
+.briefing p { max-width: 68ch; line-height: 1.55; }
 .briefing .btn { margin-top: 12px; }
 /* zero fires: a calm, hollow calendar instead of an empty grid */
 .empty-state { display: grid; justify-items: center; gap: 10px; text-align: center; padding: 40px 0 32px; }
@@ -455,7 +457,7 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
   .toplink { display: inline-flex; align-items: center; }
   .col { grid-column: 1; grid-row: 1; padding: 24px 32px 0; pointer-events: auto; }
   .hero { padding-top: 24px; }
-  .sheet { border-radius: var(--r-3xl); margin: 0 0 32px; padding: 32px 28px; }
+  .sheet { border-radius: var(--r-3xl); margin: 0 0 var(--s-7); padding: var(--s-8) var(--s-8) var(--s-7); }
   .gate { padding-top: 24px; }
 
 
@@ -483,7 +485,6 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
   .yr-colhead .yr-months span::before { content: attr(data-i); font-size: var(--t-2xs); }
   .yr-label { font-size: var(--t-xs); }
 }
-.view-swap + .upcoming { margin-top: 32px; }
 .yr-ahead .yr-label { color: var(--sheet-ink-2); }
 .yr-ahead + .yr { margin-top: 2px; }
 .cal-ahead-note { margin: 2px 0 6px 68px; font-size: var(--t-xs); color: var(--sheet-ink-2); }
