@@ -19,7 +19,7 @@ type Load =
 
 const pct1 = (p: number) => p.toLocaleString('en-GB', { maximumFractionDigits: p < 10 ? 1 : 0 });
 
-export default function ForecastPanel({ area, refDate, available, onShowMap, onShown }: {
+export default function ForecastPanel({ area, refDate, available, onShowMap, onHideMap, onShown }: {
   area: AreaGeometry;
   /** the past day the page is replayed on, null for today */
   refDate: string | null;
@@ -27,6 +27,8 @@ export default function ForecastPanel({ area, refDate, available, onShowMap, onS
   available: boolean;
   /** puts the returned cells on the map */
   onShowMap: (f: Forecast) => void;
+  /** takes them off again */
+  onHideMap: () => void;
   /** true while these cells are on the map */
   onShown: boolean;
 }) {
@@ -79,13 +81,13 @@ export default function ForecastPanel({ area, refDate, available, onShowMap, onS
           <button className="btn btn-ghost" onClick={retry}>Try again</button>
         </div>
       ) : (
-        <ForecastBody f={load.data} onShowMap={onShowMap} shown={onShown} />
+        <ForecastBody f={load.data} onToggle={() => (onShown ? onHideMap() : onShowMap(load.data))} shown={onShown} />
       )}
     </section>
   );
 }
 
-function ForecastBody({ f, onShowMap, shown }: { f: Forecast; onShowMap: (f: Forecast) => void; shown: boolean }) {
+function ForecastBody({ f, onToggle, shown }: { f: Forecast; onToggle: () => void; shown: boolean }) {
   const s = f.summary;
   return (
     <>
@@ -115,8 +117,9 @@ function ForecastBody({ f, onShowMap, shown }: { f: Forecast; onShowMap: (f: For
       )}
       {f.returned > 0 && (
         <p className="fc-map-row">
-          <button className="btn btn-ghost" onClick={() => onShowMap(f)} disabled={shown}>
-            {shown ? 'Shown on the map' : 'Show the cells on the map'}
+          {/* stays enabled (a disabled button would drop keyboard focus): it hides them again */}
+          <button className="btn btn-ghost" onClick={onToggle}>
+            {shown ? 'Hide the cells from the map' : 'Show the cells on the map'}
           </button>
           {f.truncated && <span className="muted">The {num(f.returned)} cells with the highest chance, of {num(f.total)}.</span>}
         </p>

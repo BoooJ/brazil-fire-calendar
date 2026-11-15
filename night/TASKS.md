@@ -271,3 +271,5 @@ Global rules for this block:
   - Tool section: "The calendar is history, not a forecast … The one look ahead, next week’s fire chance, is labelled a model estimate." FAQ answer names the experimental next-week chance. Section heights unchanged at 1440×900, 1366×768, 820×1180, 390×844.
 - [x] Data sources dialog said nothing about the new next-week model
   - One bullet (shown while `forecast_available` is not false): the team's experimental model on 5 km cells, fed only with the last 28 days of VIIRS NOAA-20 detections + the usual pattern for that week; a model estimate, not an official warning. axe clean at 375 and 1440 with the cells on the map; 820 map checked.
+- [x] Forecast map button was disabled once the cells were shown, so keyboard focus fell to the page
+  - It stays enabled and toggles: "Show the cells on the map" ↔ "Hide the cells from the map" (hide = Clear).
