@@ -239,19 +239,19 @@ export default function Landing() {
                 <span className="step-num">1</span>
                 <h3>Count fire-days, not hotspots</h3>
                 <p>Many hotspots in one 1 km cell on one day count once, so a sharper sensor can’t inflate the total.</p>
-                <div className="panel" data-fx="grain-gradient" data-fx-seed="11"><StepGrid /></div>
+                <div className="panel bfc-panel"><StepGrid /></div>
               </article>
               <article className="card card--row card--open m-nolift span-4">
                 <span className="step-num">2</span>
                 <h3>Put every satellite on one scale</h3>
                 <p>Months seen by two satellites at once set the conversion to NOAA-20; held-out years check it.</p>
-                <div className="panel" data-fx="grain-gradient" data-fx-seed="23"><StepConvert /></div>
+                <div className="panel bfc-panel"><StepConvert /></div>
               </article>
               <article className="card card--row card--open m-nolift span-4">
                 <span className="step-num">3</span>
                 <h3>Flag months that may still change</h3>
                 <p>NASA replaces near-real-time data with final data about five months later. Until then the month is hatched as provisional.</p>
-                <div className="panel" data-fx="grain-gradient" data-fx-seed="37"><StepProvisional show={show} /></div>
+                <div className="panel bfc-panel"><StepProvisional show={show} /></div>
               </article>
             </div>
             <div className="btn-row bfc-method-act"><a className="btn btn--secondary bfc-src" href={REPO}><GitHubMark />Source code</a></div>

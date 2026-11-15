@@ -345,3 +345,8 @@ strong { font-weight: 650; }
 @media (prefers-reduced-motion: no-preference) {
   html:root { scroll-behavior: smooth; }
 }
+
+/* ---------- method panels: the same flat light card as the satellite timeline (no painted ground) ---------- */
+#method .panel.bfc-panel { background: #eef0f6; box-shadow: none; }
+#method .panel.bfc-panel::before { content: none; display: none; }
+#method .bfc-panel .bfc-conv__arrow { background: #4f5462; opacity: 1; }
