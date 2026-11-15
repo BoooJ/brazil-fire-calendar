@@ -4,7 +4,8 @@
   - Checked 375px (no overflow); phone media query makes seg/ghost/textlink/map buttons and brand link ≥ 44px.
 - [x] Tool at 820px and 1366px: check spacing, alignment and that nothing overlaps the globe/map stage
   - 1366 fine. Tablet (600–899px): taller map band in map mode, compact map caption, month card centred (max 560px).
-- [ ] Landing page at 1440×900, 1366×768, 820×1180, 390×844: every section fits one screen, no clipped text
+- [x] Landing page at 1440×900, 1366×768, 820×1180, 390×844: every section fits one screen, no clipped text
+  - Measured all four sizes: no horizontal scroll, no clipped text. Method now fits one 1366×768 screen (smaller panels). Method on tablets stays two screens by design (--h: 2); tall phone sections grow as the kit intends.
 - [ ] Loading state: consistent skeletons/spinners for the sheet, the calendar and the detailed view (no layout jump when data arrives)
 - [ ] Zero-fires state: a clear, friendly empty state in the calendar and map instead of an empty grid
 - [ ] API error state: one consistent error message component with a retry button

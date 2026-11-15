@@ -246,6 +246,12 @@ strong { font-weight: 650; }
 .bfc-keys .k-part { opacity: 0.5; outline: 1.5px solid #fff; outline-offset: -1.5px; }
 .bfc-method-act { margin-top: var(--s-7); }
 @media (min-width: 640px) and (max-width: 1023px) { #method { --h: 2; } }
+/* a 768px-high laptop: shorter panels so the three steps and the button fit one screen */
+@media (min-width: 1280px) and (max-height: 859px) {
+  #method .panel { --p-h: 256px; }
+  #method .bfc-step { transform: scale(0.84); }
+  .bfc-method-act { margin-top: var(--s-5); }
+}
 @media (max-width: 639px) {
   .bfc-win__src { display: none; }
   .bfc-cal__c { font-size: 0; height: 14px; }
