@@ -22,16 +22,16 @@ const TEAM = [
 
 const TOOLS = [
   ['NASA FIRMS', 'Active-fire hotspots: the only data source'],
-  ['MODIS C6.1', 'Terra and Aqua, 1 km, since 2000'],
-  ['VIIRS', 'S-NPP and NOAA-20, 375 m, since 2012'],
+  ['MODIS C6.1', 'Terra and Aqua, 1 km, since 2000'],
+  ['VIIRS', 'S-NPP and NOAA-20, 375 m, since 2012'],
   ['Python · DuckDB · FastAPI', 'Data pipeline and API'],
   ['React · Vite · D3 · MapLibre · ECharts', 'This website, its globe, map and charts'],
   ['Claude Code', 'AI coding assistant used during the hackathon'],
 ];
 
 const FAQ = [
-  ['Where does the data come from?', 'Only NASA FIRMS: MODIS 6.1 and VIIRS 375 m hotspots. The map imagery and the country outlines on the globe are not used in any number.'],
-  ['What is a fire-day?', 'A grid cell of about 1 km with at least one valid hotspot on one UTC day.'],
+  ['Where does the data come from?', 'Only NASA FIRMS: MODIS 6.1 and VIIRS 375 m hotspots. The map imagery and the country outlines on the globe are not used in any number.'],
+  ['What is a fire-day?', 'A grid cell of about 1 km with at least one valid hotspot on one UTC day.'],
   ['Why are recent calendar months hatched?', 'They use near-real-time data, which NASA replaces with final data about five months later.'],
   ['Which areas does the calendar cover?', 'Your own location, a point with a radius, four ready-made regions of Brazil, or a rectangle or polygon you draw on the map.'],
   ['Does the calendar forecast fires?', 'No. What is normal for the coming months comes from past years and is labelled as history, not a forecast.'],
@@ -135,7 +135,7 @@ export default function Landing() {
                 <p className="bfc-eyebrow">The idea</p>
                 <h2 id="idea-h">Satellites change. Your fire history doesn’t.</h2>
                 <p className="t-lead">
-                  MODIS has watched Brazil since 2000 at 1 km. The sharper VIIRS sensors joined in 2012 at 375 m and
+                  MODIS has watched Brazil since 2000 at 1 km. The sharper VIIRS sensors joined in 2012 at 375 m and
                   spot many more small fires. Left raw, every new satellite looks like a worse fire season. We put them
                   all on one scale, so a jump in the calendar means a change on the ground.
                 </p>
@@ -157,7 +157,7 @@ export default function Landing() {
             </div>
             <div className="grid grid--top bfc-stmt">
               <p className="span-5">
-                Every detection becomes a <strong className="bfc-nowrap">fire-day</strong>: a 1 km square that burned on a given day, counted
+                Every detection becomes a <strong className="bfc-nowrap">fire-day</strong>: a 1 km square that burned on a given day, counted
                 once and converted to the NOAA-20 scale. So 2005 and 2025 sit side by side, and the comparison is fair.
               </p>
               <div className="frame frame--lit span-6 start-7 bfc-rc-frame" data-visual>
@@ -238,7 +238,7 @@ export default function Landing() {
               <article className="card card--row card--open m-nolift span-4">
                 <span className="step-num">1</span>
                 <h3>Count fire-days, not hotspots</h3>
-                <p>Many hotspots in one 1 km cell on one day count once, so a sharper sensor can’t inflate the total.</p>
+                <p>Many hotspots in one 1 km cell on one day count once, so a sharper sensor can’t inflate the total.</p>
                 <div className="panel bfc-panel"><StepGrid /></div>
               </article>
               <article className="card card--row card--open m-nolift span-4">
@@ -319,7 +319,7 @@ export default function Landing() {
               <div className="bfc-credits">
                 <p>
                   Fire data: NASA FIRMS (Fire Information for Resource Management System), MODIS Collection 6.1 and VIIRS
-                  375 m active fire products. We acknowledge the use of data from NASA FIRMS, part of NASA Earth Science
+                  375 m active fire products. We acknowledge the use of data from NASA FIRMS, part of NASA Earth Science
                   Data and Information System (ESDIS).
                 </p>
                 <p>Map imagery: NASA GIBS. Country outlines on the globe: Natural Earth, public domain. Both are used for display only, never for the numbers.</p>

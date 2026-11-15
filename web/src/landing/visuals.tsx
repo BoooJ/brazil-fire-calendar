@@ -12,10 +12,10 @@ type Show = Showcase | null; // null while the numbers load: the frames stand, e
 
 // The satellites as the landing page draws them (the lit frames are light, so these are a little warmer than the charts').
 const SAT: Record<SatelliteKey, { name: string; px: string; colour: string }> = {
-  modis_terra: { name: 'MODIS Terra', px: '1 km', colour: '#56b4e9' },
-  modis_aqua: { name: 'MODIS Aqua', px: '1 km', colour: '#2b8fd6' },
-  viirs_snpp: { name: 'VIIRS S-NPP', px: '375 m', colour: '#e8789f' },
-  viirs_noaa20: { name: 'VIIRS NOAA-20', px: '375 m', colour: '#f0b44c' },
+  modis_terra: { name: 'MODIS Terra', px: '1 km', colour: '#56b4e9' },
+  modis_aqua: { name: 'MODIS Aqua', px: '1 km', colour: '#2b8fd6' },
+  viirs_snpp: { name: 'VIIRS S-NPP', px: '375 m', colour: '#e8789f' },
+  viirs_noaa20: { name: 'VIIRS NOAA-20', px: '375 m', colour: '#f0b44c' },
 };
 
 const hex = (c: string) => [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16));

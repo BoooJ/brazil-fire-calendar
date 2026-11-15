@@ -233,3 +233,5 @@ Global rules for this block:
   - The location error now sits right under its button. On success the page scrolls (smoothly, instant with reduced motion) to "Show my fire calendar" and focuses it, or shows the outside-Brazil note above it. The button is aria-disabled while waiting, so focus stays on it.
 - [x] Data sources dialog: the closing credit line ("Built for the NASA Space Apps Challenge…") was 18px, bigger than the bullets above it, because `.modal p` beat `.fineprint`
   - `.modal p.fineprint` is 13px fine print with 16px above it.
+- [x] "375 m" / "1 km" broke across lines on phones (landing FAQ: "VIIRS 375 / m hotspots")
+  - Every "1 km" and "375 m" in the tool and landing text now uses a no-break space. Landing sections unchanged in height at the four sizes.

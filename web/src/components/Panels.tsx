@@ -22,7 +22,7 @@ export function KeyCards({ data }: { data: Analysis }) {
         <div className="kc-hot">
           <dt>Fire-days</dt>
           <dd>{num(c.count)}</dd>
-          <dd className="kc-note">1 km squares with fire on a day, on the NOAA-20 scale</dd>
+          <dd className="kc-note">1 km squares with fire on a day, on the NOAA-20 scale</dd>
         </div>
         <div className={'kc-vs' + tone}>
           <dt>{avg ? `Against the ${avg} average` : 'Against the average'}</dt>
@@ -69,7 +69,7 @@ export function Reliability({ data, status }: { data: Analysis; status: Status |
       <p className="muted">{r.note}</p>
       <ul className="points">
         <li><strong>Why correct at all?</strong> Newer satellites see smaller fires. VIIRS (2012 onwards) records many more hotspots than MODIS for the same burning, so raw counts jump when a satellite is added even if nothing changed on the ground.</li>
-        <li><strong>What we count:</strong> fire-days, the 1 km squares that burned on a given day, converted to one common scale (NOAA-20 equivalent).</li>
+        <li><strong>What we count:</strong> fire-days, the 1 km squares that burned on a given day, converted to one common scale (NOAA-20 equivalent).</li>
         {status?.final_until && (
           <li><strong>Provisional:</strong> data after {dateShort(status.final_until)} is NASA's near-real-time version and may still change.</li>
         )}
@@ -93,7 +93,7 @@ export function SourcesDialog({ status, onClose }: { status: Status | null; onCl
         <h2 id="sources-title">Every number comes from NASA FIRMS</h2>
         <p>
           Fire data: <strong>NASA FIRMS</strong> (Fire Information for Resource Management System) active-fire hotspots,
-          MODIS Collection 6.1 and VIIRS 375 m. Nothing else goes into the counts.
+          MODIS Collection 6.1 and VIIRS 375 m. Nothing else goes into the counts.
         </p>
         <div className="table-scroll">
           <table className="sources">
@@ -102,7 +102,7 @@ export function SourcesDialog({ status, onClose }: { status: Status | null; onCl
               {(status?.coverage ?? []).map((c) => (
                 <tr key={c.satellite}>
                   <td><span className="sat-dot" style={{ background: SAT_COLOR[c.satellite] }} />{SAT_NAMES[c.satellite] ?? c.satellite}</td>
-                  <td>{c.satellite.startsWith('modis') ? 'MODIS C6.1, 1 km' : 'VIIRS, 375 m'}</td>
+                  <td>{c.satellite.startsWith('modis') ? 'MODIS C6.1, 1 km' : 'VIIRS, 375 m'}</td>
                   <td data-label="From">{dateShort(c.from)}</td>
                   <td data-label={c.to ? 'To' : undefined}>{c.to ? dateShort(c.to) : 'still active'}</td>
                 </tr>

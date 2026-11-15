@@ -316,7 +316,7 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
       })()}
       <p className="fineprint">
         {mode === 'counts'
-          ? 'Colour shows how much burned: the corrected count of 1 km squares with fire each day (NOAA-20 scale; see Detailed view).'
+          ? 'Colour shows how much burned: the corrected count of 1 km squares with fire each day (NOAA-20 scale; see Detailed view).'
           : `Colour shows each month against the same month in the ${period} average: orange above, purple below.`}
         {' '}Year totals on the right, * year not complete. Typical = the {period} average.
       </p>
