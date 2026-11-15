@@ -306,3 +306,5 @@ Global rules for this block:
   - Under 361px the legend sits under the switch at full width and the caption badge reads "300 of 7,774" (the word "showing" is hidden there, both captions). On phones the imagery note sits beside the zoom buttons instead of above them. Checked 320 / 375, no page overflow at 320 on landing and tool.
 - [x] Desktop: "Show this month on the map" put half the hotspots under the month card on the right of the map
   - When a month's hotspots arrive and the month card sits on the right of the map (desktop), MapView fits the area in the space left of the card (at least 200px of map). Phones/tablets unchanged. Checked 1440 (Sep 2020 replay).
+- [x] web/CLAUDE.md: MapView's zoom to the forecast cells and fit beside the month card
+  - One table cell updated (needs the usual quick human review of CLAUDE.md changes).
