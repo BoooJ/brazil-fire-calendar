@@ -4,9 +4,9 @@ import { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { FeatureCollection, Point, Polygon } from 'geojson';
-import type { AreaGeometry, Hotspots, SatelliteKey } from '../types';
+import type { AreaGeometry, Forecast, Hotspots, SatelliteKey } from '../types';
 import { SAT_NAMES } from '../types';
-import { FRP_STOPS } from '../colors';
+import { CHANCE_STOPS, FRP_STOPS } from '../colors';
 import { areaBbox, closeRing, rectPolygon } from '../geo';
 import { timeUtc } from '../format';
 import { loadWorld } from './Globe';
@@ -16,6 +16,10 @@ export type DrawMode = 'none' | 'rect' | 'polygon';
 interface Props {
   area: AreaGeometry | null;
   hotspots: Hotspots | null;
+  /** next-week fire chance cells (POST /api/forecast), shown instead of hotspots */
+  cells?: Forecast['cells'] | null;
+  /** the forecast's label, repeated in its popups */
+  cellsLabel?: string;
   drawMode: DrawMode;
   onDrawDone: (p: Polygon) => void;
   onDrawCancel: () => void;
@@ -49,11 +53,13 @@ const STYLE: maplibregl.StyleSpecification = {
 const EMPTY: FeatureCollection = { type: 'FeatureCollection', features: [] };
 const esc = (s: unknown) => String(s ?? '').replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
-export default function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCancel, onUnavailable }: Props) {
+export default function MapView({ area, hotspots, cells = null, cellsLabel = '', drawMode, onDrawDone, onDrawCancel, onUnavailable }: Props) {
   const el = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const ready = useRef(false);
-  const pending = useRef<{ area: AreaGeometry | null; hotspots: Hotspots | null }>({ area, hotspots });
+  const pending = useRef<{ area: AreaGeometry | null; hotspots: Hotspots | null; cells: Forecast['cells'] | null }>({ area, hotspots, cells });
+  const fcLabel = useRef(cellsLabel);
+  fcLabel.current = cellsLabel;
   const draw = useRef({ mode: drawMode, start: null as maplibregl.LngLat | null, pts: [] as [number, number][] });
   const cb = useRef({ onDrawDone, onDrawCancel, onUnavailable });
   cb.current = { onDrawDone, onDrawCancel, onUnavailable };
@@ -105,6 +111,18 @@ export default function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCa
       m.addLayer({ id: 'area-fill', type: 'fill', source: 'area', paint: { 'fill-color': '#ff6a1f', 'fill-opacity': 0.06 } });
       m.addLayer({ id: 'area-line', type: 'line', source: 'area', paint: { 'line-color': '#ff6a1f', 'line-width': 2 } });
 
+      // forecast cells (5 km): a dot about one cell wide at every zoom, coloured by the model's chance
+      m.addSource('fc', { type: 'geojson', data: EMPTY });
+      m.addLayer({
+        id: 'fc', type: 'circle', source: 'fc',
+        paint: {
+          'circle-radius': ['interpolate', ['exponential', 2], ['zoom'], 5, 2.2, 9, 17, 11, 68],
+          'circle-color': ['interpolate', ['linear'], ['get', 'probability'], ...CHANCE_STOPS.flat()] as any,
+          'circle-opacity': 0.85,
+          'circle-stroke-color': '#04050b', 'circle-stroke-width': 0.4,
+        },
+      });
+
       m.addSource('hotspots', { type: 'geojson', data: EMPTY });
       m.addLayer({
         id: 'hotspots-glow', type: 'circle', source: 'hotspots',
@@ -154,8 +172,33 @@ export default function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCa
       m.on('mousemove', 'hotspots', show);
       m.on('click', 'hotspots', show); // touch screens have no hover
 
+      const showCell = (e: maplibregl.MapLayerMouseEvent) => {
+        if (draw.current.mode !== 'none') return;
+        const f = e.features?.[0];
+        if (!f) return;
+        const p = f.properties as Record<string, unknown>;
+        const chance = Number(p.probability);
+        const strength = p.intensity_if_fire == null || p.intensity_if_fire === 'null' ? null : String(p.intensity_if_fire);
+        popup
+          .setLngLat((f.geometry as Point).coordinates as [number, number])
+          .setHTML(
+            `<b class="pt-title">Next week · this 5&nbsp;km cell</b>` +
+              `<span class="pt-big">${isFinite(chance) ? Math.round(chance * 100) : '–'}% <small>chance of fire</small></span>` +
+              (strength ? `<span>Likely strength if it burns: ${esc(strength)}</span>` : '') +
+              `<span class="pt-flag">${esc(fcLabel.current)}</span>`,
+          )
+          .addTo(m);
+      };
+      m.on('mouseenter', 'fc', () => (m.getCanvas().style.cursor = 'pointer'));
+      m.on('mouseleave', 'fc', () => {
+        m.getCanvas().style.cursor = draw.current.mode === 'none' ? '' : 'crosshair';
+        popup.remove();
+      });
+      m.on('mousemove', 'fc', showCell);
+      m.on('click', 'fc', showCell);
+
       ready.current = true;
-      apply(pending.current.area, pending.current.hotspots, true);
+      apply(pending.current.area, pending.current.hotspots, pending.current.cells, true);
     };
     m.once('style.load', init);
     m.once('load', init);
@@ -292,13 +335,14 @@ export default function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCa
 
   // ---------- data ----------
   const lastAreaKey = useRef('');
-  function apply(a: AreaGeometry | null, h: Hotspots | null, first = false) {
+  function apply(a: AreaGeometry | null, h: Hotspots | null, c: Forecast['cells'] | null, first = false) {
     const m = map.current;
     if (!m || !ready.current) return;
     (m.getSource('area') as maplibregl.GeoJSONSource).setData(
       a ? { type: 'FeatureCollection', features: [{ type: 'Feature', properties: {}, geometry: a }] } : EMPTY,
     );
     (m.getSource('hotspots') as maplibregl.GeoJSONSource).setData((h as unknown as FeatureCollection) ?? EMPTY);
+    (m.getSource('fc') as maplibregl.GeoJSONSource).setData((c as unknown as FeatureCollection) ?? EMPTY);
     const key = a ? JSON.stringify(a.coordinates).slice(0, 200) : '';
     if (a && key !== lastAreaKey.current) {
       lastAreaKey.current = key;
@@ -311,14 +355,14 @@ export default function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCa
   }
 
   useEffect(() => {
-    pending.current = { area, hotspots };
-    apply(area, hotspots);
+    pending.current = { area, hotspots, cells };
+    apply(area, hotspots, cells);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [area, hotspots]);
+  }, [area, hotspots, cells]);
 
   return (
     <>
-      <div ref={el} className="map" aria-label="Map of fire hotspots for the selected month" role="region" />
+      <div ref={el} className="map" aria-label={cells ? "Map of next week's fire chance (model estimate)" : "Map of fire hotspots for the selected month"} role="region" />
       {noImagery && (
         <p className="map-imagery-note" role="status">Satellite imagery could not load.<span className="map-imagery-more"> Showing plain country outlines instead.</span></p>
       )}

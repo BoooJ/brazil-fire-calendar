@@ -1,7 +1,7 @@
 import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import '../styles.css';
 import { ApiError, downloadCsv, getAnalysis, getHotspots, getPresets, getStatus, requestUpdate } from '../api';
-import type { Analysis, AnalysisRequest, CalendarItem, Hotspots, Preset, Status } from '../types';
+import type { Analysis, AnalysisRequest, CalendarItem, Forecast, Hotspots, Preset, Status } from '../types';
 import { SATELLITES, SAT_NAMES } from '../types';
 import { drawnArea, pointCount, type Area } from '../geo';
 import Globe, { BRAZIL_CENTER, zoomForRadius } from '../components/Globe';
@@ -14,8 +14,8 @@ import DateControls, { FIRST_YEAR } from '../components/Controls';
 import { KeyCards, Reliability, SourcesDialog } from '../components/Panels';
 import { Flame } from '../components/Brand';
 import type { DrawMode } from '../components/MapView';
-import { FRP_STOPS } from '../colors';
-import { MON, MONTHS, dateShort, dateTime, headlineFor, num, rankLine, todayIso, trendOf } from '../format';
+import { CHANCE_STOPS, FRP_STOPS } from '../colors';
+import { MON, MONTHS, dateRange, dateShort, dateTime, headlineFor, num, rankLine, todayIso, trendOf } from '../format';
 
 // The two heavy parts load only when they are used: the map (MapLibre) and the detailed charts (ECharts).
 const MapView = lazy(() => import('../components/MapView'));
@@ -55,6 +55,8 @@ export default function Tool() {
   const [map, setMap] = useState<MapState>({ kind: 'idle' });
   const [hotspots, setHotspots] = useState<Hotspots | null>(null);
   const [mapMonth, setMapMonth] = useState<{ year: number; month: number } | null>(null);
+  // next week's fire chance cells on the map (the only forecast), instead of a month's hotspots
+  const [fcMap, setFcMap] = useState<Forecast | null>(null);
   const [stage, setStage] = useState<Stage>('globe');
   const [drawMode, setDrawMode] = useState<DrawMode>('none');
   const [showSources, setShowSources] = useState(false);
@@ -88,6 +90,7 @@ export default function Tool() {
     setMap({ kind: 'idle' });
     setHotspots(null);
     setMapMonth(null);
+    setFcMap(null);
     setStage('globe');
   }, []);
 
@@ -135,6 +138,7 @@ export default function Tool() {
     getHotspots({ area: area.polygon, year: selected.year, month: selected.month })
       .then((h) => {
         setHotspots(h);
+        setFcMap(null);
         setMapMonth({ year: selected.year, month: selected.month });
         setMap({ kind: 'shown', total: h.total, returned: h.returned, truncated: h.truncated });
         setStage('map');
@@ -142,6 +146,16 @@ export default function Tool() {
       })
       .catch((e) => setMap({ kind: 'error', message: message(e, 'Could not load the hotspots.') }));
   }, [area, selected]);
+
+  const showForecastMap = useCallback((f: Forecast) => {
+    setSelected(null);
+    setMap({ kind: 'idle' });
+    setHotspots(null);
+    setMapMonth(null);
+    setFcMap(f);
+    setStage('map');
+    if (isPhone()) window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
   // ---------- drawing an area on the map ----------
   const startDraw = (m: DrawMode) => {
@@ -255,6 +269,8 @@ export default function Tool() {
                 <MapView
                   area={area?.polygon ?? presets.find((p) => p.id === 'brazil')?.area ?? null}
                   hotspots={hotspots}
+                  cells={fcMap?.cells ?? null}
+                  cellsLabel={fcMap?.label}
                   drawMode={drawMode}
                   onDrawDone={drawDone}
                   onDrawCancel={() => startDraw('none')}
@@ -282,6 +298,30 @@ export default function Tool() {
                 </span>
               )}
               <button onClick={clearMap} aria-label="Clear the hotspots from the map">Clear</button>
+            </div>
+          )}
+          {fcMap && (
+            <div className="map-caption" role="status">
+              <span className="dot dot-fc" />
+              <span className="map-caption-text">Next week · {dateRange(fcMap.period.from, fcMap.period.to)}</span>
+              {fcMap.truncated && (
+                <span className="map-badge" title="The cells with the highest chance first.">
+                  showing {num(fcMap.returned)} of {num(fcMap.total)}
+                </span>
+              )}
+              <button onClick={clearMap} aria-label="Clear the fire chance cells from the map">Clear</button>
+            </div>
+          )}
+          {stage === 'map' && fcMap && (
+            <div className="map-legend map-legend--fc" aria-label="Map legend: chance of fire next week, per 5 km cell">
+              <span>Chance of fire, 5&nbsp;km cell</span>
+              {CHANCE_STOPS.map(([from, colour], i) => (
+                <span key={from} className="map-legend-item">
+                  <i style={{ background: colour }} />
+                  {i === CHANCE_STOPS.length - 1 ? `${from * 100}%+` : `${from * 100}–${CHANCE_STOPS[i + 1][0] * 100}%`}
+                </span>
+              ))}
+              <span className="map-legend-label">{fcMap.label}</span>
             </div>
           )}
           {stage === 'map' && map.kind === 'shown' && map.total === 0 && mapMonth && (
@@ -352,7 +392,7 @@ export default function Tool() {
                     )}
                     </div>
                     <Upcoming data={data} />
-                    <ForecastPanel area={area.polygon} refDate={refDate} available={status?.forecast_available !== false} />
+                    <ForecastPanel area={area.polygon} refDate={refDate} available={status?.forecast_available !== false} onShowMap={showForecastMap} onShown={!!fcMap && stage === 'map'} />
                     <Briefing data={data} short={!detailed} />
                     {detailed && <Reliability data={data} status={status} />}
                     <footer className="sheet-foot">

@@ -262,7 +262,8 @@ Global rules for this block:
 
 ## Found on the 06:55 run
 
-- [ ] Next-week fire chance panel (README feature 18, root CLAUDE.md status "Website panel: to do"): `POST /api/forecast` on the sheet, always with its `label`, hidden while `forecast_available` is false
+- [x] Next-week fire chance panel (README feature 18, root CLAUDE.md status "Website panel: to do"): `POST /api/forecast` on the sheet, always with its `label`, hidden while `forecast_available` is false
   - [x] Sub-task 1: types + `getForecast()` in api.ts (mock: `forecast.pantanal.json`), a "Next week" section on the sheet: period, expected cells with fire, highest chance, likely intensity, based on N detections, `notes[]`, reliability note; loading / unavailable / error states
     - components/ForecastPanel.tsx under "coming months": label tag beside the heading, period + cells, three stat boxes (API values, only formatted), notes, based-on + reliability note. Hidden when `forecast_available` is false; skeleton, "model is starting up" (FORECAST_UNAVAILABLE) and error states with Try again; dates before 2018-04-29 explain why there is no estimate. Checked 375 / 1440.
-  - [ ] Sub-task 2: show the forecast cells on the map (sequential colour-blind-safe ramp for `probability`, legend with values, "showing N of M" when truncated)
+  - [x] Sub-task 2: show the forecast cells on the map (sequential colour-blind-safe ramp for `probability`, legend with values, "showing N of M" when truncated)
+    - "Show the cells on the map" in the panel → MapView `cells` layer (dot ≈ one 5 km cell at every zoom), viridis `CHANCE_STOPS` in colors.ts (distinct from the hotspots' inferno), popup with the cell's chance + the label, caption "Next week · 14–20 Nov 2026" + "showing 300 of 7,774" + Clear, legend 0–10 / 10–25 / 25–50 / 50%+ with the label under it. Hotspots and cells replace each other; a new area/date clears both. `dateRange()` moved to format.ts.

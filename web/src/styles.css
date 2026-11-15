@@ -167,6 +167,7 @@ strong { font-weight: 650; }
 .map-legend > span:first-child { color: var(--ink); font-weight: 650; }
 .map-legend-item { display: inline-flex; align-items: center; gap: 5px; }
 .map-legend i { width: 9px; height: 9px; border-radius: 50%; }
+.map-legend .map-legend-label { flex-basis: 100%; color: var(--panel-flag); font-weight: 500; }
 .stage-switch { position: absolute; z-index: 3; right: 16px; bottom: 104px; background: var(--overlay); backdrop-filter: blur(8px); border: 1px solid var(--line); }
 .stage-switch button { min-height: 34px; padding: 0 12px; font-size: var(--t-sm); }
 /* hotspot popup: same look as the calendar tooltip */
@@ -194,6 +195,7 @@ strong { font-weight: 650; }
 .map-caption { position: absolute; left: 16px; right: 16px; bottom: 104px; z-index: 3; display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: var(--r-md); background: var(--overlay); backdrop-filter: blur(8px); font-size: var(--t-sm); font-weight: 600; }
 .map-caption-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .map-caption .dot { flex: none; width: 9px; height: 9px; border-radius: 50%; background: #d61f26; }
+.map-caption .dot-fc { background: #5ec962; }
 .map-badge { flex: none; padding: 2px 9px; border-radius: var(--r-pill); border: 1px solid var(--fire); background: rgba(255, 106, 31, 0.16); color: var(--fire-ink); font-size: var(--t-xs); font-weight: 650; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .map-caption button { margin-left: auto; border: 0; background: transparent; color: var(--fire); font-weight: 650; min-height: 32px; }
 .col { position: relative; z-index: 1; padding: 270px 16px 0; pointer-events: none; }
@@ -357,6 +359,8 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
 .fc-notes li + li { margin-top: var(--s-1); }
 .fc-notes li::before { content: ''; position: absolute; left: 0; top: 0.55em; width: 6px; height: 6px; border-radius: 50%; background: #d9a13a; }
 .fc-fine { font-size: var(--t-sm); line-height: 1.5; max-width: 72ch; }
+.fc-map-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2) var(--s-3); margin-bottom: var(--s-4); }
+.fc-map-row .muted { font-size: var(--t-sm); }
 .fc-quiet { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3); }
 .fc-quiet .muted { flex: 1 1 280px; }
 @media (max-width: 599px) {

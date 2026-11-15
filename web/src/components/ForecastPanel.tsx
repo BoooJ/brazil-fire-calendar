@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ApiError, getForecast } from '../api';
 import type { AreaGeometry, Forecast } from '../types';
-import { dateShort, num } from '../format';
+import { dateRange, dateShort, num } from '../format';
 
 // Next-week fire chance: the science team's model (POST /api/forecast), the ONLY forecast in the app.
 // Every number is the API's; the browser only formats them. Its `label` is always shown next to them.
@@ -17,24 +17,18 @@ type Load =
   | { kind: 'unavailable' }
   | { kind: 'error'; message: string };
 
-/** "2026-11-14", "2026-11-20" -> "14–20 Nov 2026" (same month) or "28 Nov – 4 Dec 2026" */
-function period(from: string, to: string): string {
-  const a = dateShort(from).split(' ');
-  const b = dateShort(to).split(' ');
-  if (a.length !== 3 || b.length !== 3) return `${from} – ${to}`;
-  if (a[2] !== b[2]) return `${dateShort(from)} – ${dateShort(to)}`;
-  if (a[1] !== b[1]) return `${a[0]} ${a[1]} – ${b.join(' ')}`;
-  return `${a[0]}–${b.join(' ')}`;
-}
-
 const pct1 = (p: number) => p.toLocaleString('en-GB', { maximumFractionDigits: p < 10 ? 1 : 0 });
 
-export default function ForecastPanel({ area, refDate, available }: {
+export default function ForecastPanel({ area, refDate, available, onShowMap, onShown }: {
   area: AreaGeometry;
   /** the past day the page is replayed on, null for today */
   refDate: string | null;
   /** `/api/status` → `forecast_available`; false hides the panel */
   available: boolean;
+  /** puts the returned cells on the map */
+  onShowMap: (f: Forecast) => void;
+  /** true while these cells are on the map */
+  onShown: boolean;
 }) {
   const [load, setLoad] = useState<Load>({ kind: 'loading' });
   const [attempt, setAttempt] = useState(0);
@@ -85,18 +79,18 @@ export default function ForecastPanel({ area, refDate, available }: {
           <button className="btn btn-ghost" onClick={retry}>Try again</button>
         </div>
       ) : (
-        <ForecastBody f={load.data} />
+        <ForecastBody f={load.data} onShowMap={onShowMap} shown={onShown} />
       )}
     </section>
   );
 }
 
-function ForecastBody({ f }: { f: Forecast }) {
+function ForecastBody({ f, onShowMap, shown }: { f: Forecast; onShowMap: (f: Forecast) => void; shown: boolean }) {
   const s = f.summary;
   return (
     <>
       <p className="fc-period">
-        {period(f.period.from, f.period.to)} <span className="muted">· {num(s.cells)} cells of {f.cell_size_km}&nbsp;km that have burned before</span>
+        {dateRange(f.period.from, f.period.to)} <span className="muted">· {num(s.cells)} cells of {f.cell_size_km}&nbsp;km that have burned before</span>
       </p>
       {s.cells > 0 ? (
         <dl className="fc-stats">
@@ -118,6 +112,14 @@ function ForecastBody({ f }: { f: Forecast }) {
         </dl>
       ) : (
         <p className="muted">No 5&nbsp;km cell in this area has burned before, so the model has nothing to estimate here.</p>
+      )}
+      {f.returned > 0 && (
+        <p className="fc-map-row">
+          <button className="btn btn-ghost" onClick={() => onShowMap(f)} disabled={shown}>
+            {shown ? 'Shown on the map' : 'Show the cells on the map'}
+          </button>
+          {f.truncated && <span className="muted">The {num(f.returned)} cells with the highest chance, of {num(f.total)}.</span>}
+        </p>
       )}
       {f.notes.length > 0 && (
         <ul className="fc-notes">

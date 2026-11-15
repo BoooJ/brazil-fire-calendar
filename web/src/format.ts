@@ -55,6 +55,16 @@ export function dateShort(iso: string): string {
   return y && m && d ? `${d} ${MON[m - 1]} ${y}` : iso;
 }
 
+/** "2026-11-14", "2026-11-20" -> "14–20 Nov 2026" (same month) or "28 Nov – 4 Dec 2026" */
+export function dateRange(from: string, to: string): string {
+  const a = dateShort(from).split(' ');
+  const b = dateShort(to).split(' ');
+  if (a.length !== 3 || b.length !== 3) return `${from} – ${to}`;
+  if (a[2] !== b[2]) return `${dateShort(from)} – ${dateShort(to)}`;
+  if (a[1] !== b[1]) return `${a[0]} ${a[1]} – ${b.join(' ')}`;
+  return `${a[0]}–${b.join(' ')}`;
+}
+
 export const todayIso = () => new Date().toISOString().slice(0, 10);
 
 /** Up, down or near a typical month: drives the ▲/▼/● mark and its calm colour (display only). */
