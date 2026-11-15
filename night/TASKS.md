@@ -302,3 +302,5 @@ Global rules for this block:
   - The link hides for those dates (`FIRST_FORECAST_DAY` exported from ForecastPanel). Checked today / 2010 / 2019.
 - [x] 320px phones (iPhone SE 1st gen, small Androids): "Today / Replay 14 Sep 2020 / Other day" was 348px wide, so the whole page scrolled sideways
   - Under 361px the date and view switches use 9px side padding and the small text size. No page overflow at 320 (gate, sheet, detailed view; the heatmap keeps its own inner scroll). 375+ unchanged.
+- [x] Map on 320px phones: the forecast legend was a 136px column beside the Globe/Map switch, the caption cut "Next week" to "Ne…", and the "imagery could not load" note hid under the legend
+  - Under 361px the legend sits under the switch at full width and the caption badge reads "300 of 7,774" (the word "showing" is hidden there, both captions). On phones the imagery note sits beside the zoom buttons instead of above them. Checked 320 / 375, no page overflow at 320 on landing and tool.

@@ -303,7 +303,7 @@ export default function Tool() {
               </span>
               {map.truncated && (
                 <span className="map-badge" title="The map shows a sample; the CSV download has every hotspot.">
-                  showing {num(map.returned)} of {num(map.total)}
+                  <span className="hide-xs">showing </span>{num(map.returned)} of {num(map.total)}
                 </span>
               )}
               <button onClick={clearMap} aria-label="Clear the hotspots from the map">Clear</button>
@@ -316,7 +316,7 @@ export default function Tool() {
               <span className="map-caption-text">Next week</span>
               {fcMap.truncated && (
                 <span className="map-badge" title="The cells with the highest chance first.">
-                  showing {num(fcMap.returned)} of {num(fcMap.total)}
+                  <span className="hide-xs">showing </span>{num(fcMap.returned)} of {num(fcMap.total)}
                 </span>
               )}
               <button onClick={clearMap} aria-label="Clear the fire chance cells from the map">Clear</button>
