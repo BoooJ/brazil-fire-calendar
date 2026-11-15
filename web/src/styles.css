@@ -310,6 +310,10 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
 /* ---------- month detail (bottom sheet) ---------- */
 .detail { position: fixed; z-index: 20; left: 0; right: 0; bottom: 0; max-height: 82vh; overflow: auto; padding: 22px 18px 20px; border-radius: var(--r-2xl) var(--r-2xl) 0 0; background: var(--surface-2); color: var(--ink); box-shadow: var(--shadow-sheet); animation: rise 0.22s ease-out; }
 @keyframes rise { from { transform: translateY(24px); opacity: 0; } }
+.detail.is-closing { animation: sink 0.16s ease-in forwards; pointer-events: none; }
+@keyframes sink { to { transform: translateY(24px); opacity: 0; } }
+.modal-backdrop.is-closing { animation: fade-out 0.16s ease-in forwards; pointer-events: none; }
+@keyframes fade-out { to { opacity: 0; } }
 .detail-close { position: absolute; top: 10px; right: 12px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(255, 255, 255, 0.1); font-size: var(--t-xl); line-height: 1; }
 .detail-big { font-size: var(--t-4xl); font-weight: 750; letter-spacing: -0.03em; line-height: 1.1; margin-top: 4px; font-variant-numeric: tabular-nums; }
 .detail-big span { font-size: var(--t-md); font-weight: 600; color: var(--ink-2); letter-spacing: 0; }

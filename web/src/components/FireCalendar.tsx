@@ -274,7 +274,7 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
             <p>{i.vs_avg_pct == null ? 'No typical month to compare with' : <>{pctLong(i.vs_avg_pct)}</>}{typical != null && <> · typical {num(typical)}</>}</p>
             <p className="cal-pop-flag">{status}</p>
             <div className="cal-pop-act">
-              <button className="btn btn-fire" onClick={() => { setPop(null); onSelect(i); }}>Details and map</button>
+              <button className="btn btn-fire" onClick={() => { pop.el.focus({ preventScroll: true }); setPop(null); onSelect(i); }}>Details and map</button>
               <button className="btn btn-ghost" onClick={() => { setPop(null); pop.el.focus({ preventScroll: true }); }}>Close</button>
             </div>
           </div>

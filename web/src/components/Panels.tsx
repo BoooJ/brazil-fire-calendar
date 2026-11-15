@@ -1,5 +1,6 @@
 // Small panels of the tool: the key numbers and the reliability note of the detailed view, and the data sources dialog.
 import { useEffect } from 'react';
+import { useClosing } from './useClosing';
 import type { Analysis, Status } from '../types';
 import { SAT_NAMES } from '../types';
 import { SAT_COLOR } from '../colors';
@@ -78,15 +79,16 @@ export function Reliability({ data, status }: { data: Analysis; status: Status |
 }
 
 export function SourcesDialog({ status, onClose }: { status: Status | null; onClose: () => void }) {
+  const { closing, close } = useClosing(onClose);
   useEffect(() => {
-    const key = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    const key = (e: KeyboardEvent) => e.key === 'Escape' && close();
     window.addEventListener('keydown', key);
     return () => window.removeEventListener('keydown', key);
-  }, [onClose]);
+  }, [close]);
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div className={'modal-backdrop' + (closing ? ' is-closing' : '')} onClick={close}>
       <div className="modal" role="dialog" aria-modal="true" aria-labelledby="sources-title" onClick={(e) => e.stopPropagation()}>
-        <button className="detail-close" onClick={onClose} aria-label="Close" autoFocus>×</button>
+        <button className="detail-close" onClick={close} aria-label="Close" autoFocus>×</button>
         <p className="eyebrow">Data sources</p>
         <h2 id="sources-title">Every number comes from NASA FIRMS</h2>
         <p>

@@ -3,6 +3,7 @@ import type { CalendarItem } from '../types';
 import { SATELLITES, SAT_NAMES } from '../types';
 import { MONTHS, num, pctLong } from '../format';
 import ErrorNote from './ErrorNote';
+import { useClosing } from './useClosing';
 
 export type MapState =
   | { kind: 'idle' }
@@ -20,6 +21,7 @@ interface Props {
 
 export default function MonthDetail({ item, map, onShowMap, onCsv, onClose }: Props) {
   const closeRef = useRef<HTMLButtonElement>(null);
+  const { closing, close } = useClosing(onClose);
 
   // Keyboard: focus moves into the card when it opens and goes back to the calendar cell when it closes;
   // Escape closes it (unless the data sources dialog is open on top, which handles its own Escape).
@@ -27,18 +29,18 @@ export default function MonthDetail({ item, map, onShowMap, onCsv, onClose }: Pr
     const opener = document.activeElement as HTMLElement | null;
     closeRef.current?.focus({ preventScroll: true });
     const key = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !document.querySelector('.modal-backdrop')) onClose();
+      if (e.key === 'Escape' && !document.querySelector('.modal-backdrop')) close();
     };
     window.addEventListener('keydown', key);
     return () => {
       window.removeEventListener('keydown', key);
       if (opener && document.contains(opener)) opener.focus({ preventScroll: true });
     };
-  }, [onClose]);
+  }, [close]);
 
   return (
-    <aside className="detail" role="dialog" aria-label={`${MONTHS[item.month - 1]} ${item.year}`}>
-      <button ref={closeRef} className="detail-close" onClick={onClose} aria-label="Close details">×</button>
+    <aside className={'detail' + (closing ? ' is-closing' : '')} role="dialog" aria-label={`${MONTHS[item.month - 1]} ${item.year}`}>
+      <button ref={closeRef} className="detail-close" onClick={close} aria-label="Close details">×</button>
       <p className="eyebrow dark">
         {MONTHS[item.month - 1]} {item.year}
         {item.partial && ` · first ${item.days_covered} days`}

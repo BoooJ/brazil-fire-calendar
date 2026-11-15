@@ -119,7 +119,8 @@ Global rules for this block:
   - Tool.tsx Hero uses MONTHS instead of MON for that label.
 - [x] Desktop globe: the left fade over light-grey Brazil shows as a visible grey band at ~60% width (1366px). Soften the gradient or start it on the dark ocean
   - Longer, eased fade (0 → 8% → 18% → 36%) on the desktop globe edge; the hard band is gone.
-- [ ] Month card and data sources dialog: add a close animation (needs a short delayed unmount)
+- [x] Month card and data sources dialog: add a close animation (needs a short delayed unmount)
+  - New components/useClosing.ts: 160 ms sink/fade-out before unmount (instant with reduced motion). Month card focus now returns to its calendar brick even when opened from the brick card.
 - [ ] Detailed view heatmap is a canvas: cells are not reachable by keyboard (see night/QUESTIONS.md)
 - [ ] Gate on phones: the long single column could show the four ways as numbered steps (1 location · 2 region · 3 point · 4 draw)
 - [x] Landing "How it works" cards follow tonight's tool changes
