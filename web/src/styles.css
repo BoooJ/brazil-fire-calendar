@@ -454,6 +454,16 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
 .sources th, .sources td { text-align: left; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--line); }
 .sources th { font-size: var(--t-xs); font-weight: 600; color: var(--ink-2); }
 .sources td:nth-child(n + 3) { font-variant-numeric: tabular-nums; }
+/* phones: each satellite is a two-line row (name + instrument | from + to); the four columns don't fit in 375px */
+@media (max-width: 599px) {
+  .sources thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .sources tr { display: grid; grid-template-columns: 1fr auto; column-gap: var(--s-3); row-gap: 2px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .sources td { border: 0; padding: 0; }
+  .sources td:nth-child(2) { grid-row: 2; font-size: var(--t-sm); color: var(--ink-2); }
+  .sources td:nth-child(3) { grid-column: 2; grid-row: 1; text-align: right; }
+  .sources td:nth-child(4) { grid-column: 2; grid-row: 2; text-align: right; font-size: var(--t-sm); color: var(--ink-2); }
+  .sources td[data-label]::before { content: attr(data-label) ' '; color: var(--ink-2); font-size: var(--t-xs); }
+}
 .sat-dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; }
 .modal-links { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 14px; }
 .modal-links a { color: var(--fire); font-weight: 650; }

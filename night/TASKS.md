@@ -169,3 +169,5 @@ Global rules for this block:
   - Corrected marks (and their key) are white with a thin dark edge; satellite colours unchanged.
 - [x] Landing method step 3 (one-year strip): three-letter month names collided on phones ("MayJun", "NovDec")
   - The strip shows month initials and rounded bricks with a 3px gap, like the tool's calendar.
+- [x] Data sources dialog at 375px: the four-column satellite table was cut off on the right
+  - Under 600px each satellite is a two-line row (name + instrument | From date + To date / "still active"); header kept for screen readers. Desktop table unchanged ("still active" instead of "active").
