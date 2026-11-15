@@ -57,10 +57,12 @@ async function mockPresets(): Promise<Preset[]> {
   return m.default.presets as unknown as Preset[];
 }
 
-async function mockAnalysis(replay2020: boolean): Promise<Analysis> {
+async function mockAnalysis(replay2020: boolean, weekly = false): Promise<Analysis> {
   const m = replay2020
     ? await import('../mocks/analysis.pantanal.ref-2020-09-14.json')
-    : await import('../mocks/analysis.pantanal.json');
+    : weekly
+      ? await import('../mocks/analysis.pantanal.week.json')
+      : await import('../mocks/analysis.pantanal.json');
   return m.default as unknown as Analysis;
 }
 
@@ -84,12 +86,13 @@ export async function getStatus(): Promise<Status> {
   return http<Status>('/api/status');
 }
 
+/** The tool's one call: monthly fields plus the weekly calendar (contract v0.4, "period": "week"). */
 export async function getAnalysis(req: AnalysisRequest): Promise<Analysis> {
-  if (!usingMocks) return http<Analysis>('/api/analysis', req);
+  if (!usingMocks) return http<Analysis>('/api/analysis', { ...req, period: 'week' });
 
-  // Mocks: two reference dates exist, and every area returns the Pantanal file.
+  // Mocks: two reference dates exist, and every area returns the Pantanal file (weeks only for 2026-11-14).
   await pause();
-  const d = await mockAnalysis(!!req.ref_date && req.ref_date <= '2020-12-31');
+  const d = await mockAnalysis(!!req.ref_date && req.ref_date <= '2020-12-31', true);
   // Copy what the server does with start / end: it clips the period (display filter only, nothing is recomputed).
   if (!req.start && !req.end) return d;
   const [sy, sm] = (req.start ?? '2003-01-01').split('-').map(Number);
@@ -99,6 +102,8 @@ export async function getAnalysis(req: AnalysisRequest): Promise<Analysis> {
     ...d,
     calendar: d.calendar.filter((c) => inRange(c.year, c.month)),
     yearly: d.yearly.filter((r) => r.year >= sy && r.year <= ey),
+    // the server keeps the weeks that touch the period (ISO dates compare as text)
+    calendar_weekly: d.calendar_weekly?.filter((w) => w.end >= (req.start ?? '') && w.start <= (req.end ?? '9999-12-31')),
   };
 }
 

@@ -1,4 +1,4 @@
-// Shapes from docs/api-contract.md (v0.3). Keep in sync with the contract.
+// Shapes from docs/api-contract.md (v0.4). Keep in sync with the contract.
 // Missing values are null, never 0 (e.g. a satellite that was not in orbit yet).
 import type { Polygon, MultiPolygon } from 'geojson';
 
@@ -41,6 +41,8 @@ export interface AnalysisRequest {
   start?: string;
   end?: string;
   ref_date?: string;
+  /** `/api/analysis` only (v0.4): "week" adds calendar_weekly and average_by_week to the answer */
+  period?: 'month' | 'week';
 }
 
 export interface CalendarItem {
@@ -64,6 +66,29 @@ export interface MonthAverage {
   p10: number | null;
   p90: number | null;
   years?: number;
+}
+
+/** One ISO week (Monday → Sunday, UTC). `year` is the ISO year: 29 Dec 2025 is 2026 week 1. Contract v0.4. */
+export interface WeekItem {
+  year: number;
+  week: number;
+  start: string;
+  end: string;
+  count: number | null;
+  vs_avg_pct: number | null;
+  provisional: boolean;
+  uncertain: boolean;
+  partial: boolean;
+  days_covered: number;
+}
+
+export interface WeekAverage {
+  week: number;
+  mean: number | null;
+  median: number | null;
+  p10: number | null;
+  p90: number | null;
+  years: number;
 }
 
 export interface NextMonth extends MonthAverage {
@@ -109,6 +134,9 @@ export interface Analysis {
   next_months_label: string;
   briefing: string;
   reliability: { median_error_pct: number | null; validated_years: number[]; note: string };
+  /** only when asked with "period": "week" (v0.4) */
+  calendar_weekly?: WeekItem[];
+  average_by_week?: WeekAverage[];
 }
 
 export interface HotspotProps {

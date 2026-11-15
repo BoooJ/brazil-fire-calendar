@@ -1,9 +1,12 @@
-// The fire calendar, GitHub-contributions style: one row per year, a rounded brick per month.
-// Colour alone shows intensity (filled = happened, dashed outline = typical, not a forecast). No numbers in the grid:
-// hover names the month, a click opens a small card anchored to the brick, with a link to the map.
+// The fire calendar, GitHub-contributions style: one row per year, a brick per ISO week (53 columns; week 53 stays
+// empty in years without it). The weeks come from the API ("period": "week", contract v0.4): never built from hotspots
+// here. If an answer has no weeks, the same grid falls back to one brick per month.
+// Colour shows intensity (filled = happened, dashed outline = typical, not a forecast; hatched = provisional,
+// faded = uncertain). Hover names the week and its numbers; a click opens a small card anchored to the brick, with
+// its month on the map (the map, the cards and the charts stay monthly).
 // The detailed view draws the same months as a dense heatmap with the numbers: see BurningCalendar.tsx.
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { Analysis, CalendarItem } from '../types';
+import type { Analysis, CalendarItem, WeekItem } from '../types';
 import { MON, MONTHS, compact, num, pctLong, vsTypical } from '../format';
 import { LEVEL_WORDS, levelWord, makeCountLevels, vsLevel } from '../levels';
 
@@ -13,26 +16,119 @@ const VS_LABELS = ['−50%', '−20%', 'typical', '+20%', '+100%'];
 /** years shown before "See more" */
 const FIRST = 3;
 
+/** One brick: a week (from calendar_weekly) or a month (from calendar). Every number is the API's. */
+interface Brick {
+  key: string;
+  /** the row: calendar year for months, ISO year for weeks */
+  year: number;
+  /** 0-based column: month − 1, or ISO week − 1 */
+  col: number;
+  count: number | null;
+  vs_avg_pct: number | null;
+  provisional: boolean;
+  uncertain: boolean;
+  partial: boolean;
+  days_covered: number;
+  /** "Week 46 · 9–15 Nov 2026" or "November 2026" */
+  title: string;
+  /** the month this brick opens on the map and in the month card (a week: the month of its Thursday, ISO style) */
+  month: CalendarItem | undefined;
+  week?: WeekItem;
+}
+
+// ---------- ISO week dates (labels only: which days a week number covers) ----------
+const DAY = 86400000;
+const utc = (iso: string) => {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d));
+};
+/** 53 weeks when 1 Jan is a Thursday, or a Wednesday in a leap year */
+function isoWeeksIn(y: number) {
+  const jan1 = new Date(Date.UTC(y, 0, 1)).getUTCDay();
+  const leap = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+  return jan1 === 4 || (leap && jan1 === 3) ? 53 : 52;
+}
+/** Monday of ISO week w of ISO year y (week 1 holds 4 January, so it can start in late December) */
+function isoWeekStart(y: number, w: number) {
+  const jan4 = new Date(Date.UTC(y, 0, 4));
+  return new Date(jan4.getTime() - ((jan4.getUTCDay() + 6) % 7) * DAY + (w - 1) * 7 * DAY);
+}
+/** "9–15 Nov 2026", "27 Oct – 2 Nov 2026", "29 Dec 2025 – 4 Jan 2026" */
+function dayRange(a: Date, b: Date) {
+  const d = (x: Date) => x.getUTCDate();
+  const m = (x: Date) => MON[x.getUTCMonth()];
+  const y = (x: Date) => x.getUTCFullYear();
+  if (y(a) !== y(b)) return `${d(a)} ${m(a)} ${y(a)} – ${d(b)} ${m(b)} ${y(b)}`;
+  if (a.getUTCMonth() !== b.getUTCMonth()) return `${d(a)} ${m(a)} – ${d(b)} ${m(b)} ${y(b)}`;
+  return `${d(a)}–${d(b)} ${m(b)} ${y(b)}`;
+}
+const weekTitle = (y: number, w: number) => {
+  const a = isoWeekStart(y, w);
+  return `Week ${w} · ${dayRange(a, new Date(a.getTime() + 6 * DAY))}`;
+};
+/** "−93%", "+12%" */
+const signedPct = (p: number) => {
+  const r = Math.round(p);
+  return r === 0 ? '±0%' : `${r < 0 ? '−' : '+'}${Math.abs(r)}%`;
+};
+/** where each month's label sits above the 53 week columns (its 1st day ÷ 7) */
+const MONTH_COLS = MON.map((_, i) => Math.floor((Date.UTC(2025, i, 1) - Date.UTC(2025, 0, 1)) / DAY / 7));
+
 interface Props {
   data: Analysis;
   selected: CalendarItem | null;
   onSelect: (item: CalendarItem) => void;
   /** opens that month's hotspots on the map */
   onOpenMap: (item: CalendarItem) => void;
-  /** a month to bring into view and light briefly ("Select a day"); `n` changes on every request */
-  jump?: { year: number; month: number; n: number } | null;
+  /** a day to bring into view and light briefly ("Select a day"): its week, or its month; `n` changes on every request */
+  jump?: { year: number; month: number; day?: string; n: number } | null;
   mode: Mode;
   onMode: (m: Mode) => void;
   onCsv: () => void;
 }
 
 export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump, mode, onMode, onCsv }: Props) {
-  const levels = useMemo(() => makeCountLevels(data.calendar), [data.calendar]);
+  const weekly = !!data.calendar_weekly?.length;
+  const n = weekly ? 53 : 12;
+  const unit = weekly ? 'week' : 'month';
+  const period = data.average_period ? `${data.average_period.from}–${data.average_period.to}` : 'no complete year yet';
+
+  // every brick, keyed "year-col"; a week opens the month that holds its Thursday
+  const { bricks, years, byKey, nowKey } = useMemo(() => {
+    const months = new Map(data.calendar.map((c) => [`${c.year}-${c.month}`, c]));
+    const bricks: Brick[] = weekly
+      ? data.calendar_weekly!.map((w) => {
+          const thu = new Date(utc(w.start).getTime() + 3 * DAY);
+          const s = utc(w.start);
+          const month = months.get(`${thu.getUTCFullYear()}-${thu.getUTCMonth() + 1}`) ?? months.get(`${s.getUTCFullYear()}-${s.getUTCMonth() + 1}`);
+          return { ...w, key: `${w.year}-${w.week - 1}`, col: w.week - 1, title: `Week ${w.week} · ${dayRange(utc(w.start), utc(w.end))}`, month, week: w };
+        })
+      : data.calendar.map((c) => ({ ...c, key: `${c.year}-${c.month - 1}`, col: c.month - 1, title: `${MONTHS[c.month - 1]} ${c.year}`, month: c }));
+    const byKey = new Map(bricks.map((b) => [b.key, b]));
+    const ref = data.query.ref_date;
+    const now = weekly
+      ? bricks.find((b) => b.week!.start <= ref && ref <= b.week!.end)
+      : byKey.get(`${data.cards.ref_year}-${data.cards.ref_month - 1}`);
+    return { bricks, years: [...new Set(bricks.map((b) => b.year))].sort((a, b) => b - a), byKey, nowKey: now?.key ?? null };
+  }, [data, weekly]);
+
+  const levels = useMemo(() => makeCountLevels(bricks), [bricks]);
   // typical bricks: coloured by size in Counts; in vs Average they ARE the average, so they stay neutral
   const typLv = (mean: number | null | undefined) => (mode === 'counts' ? levels.level(mean ?? null) : 0);
+  const avg = useMemo(
+    () => new Map<number, number | null>(weekly ? (data.average_by_week ?? []).map((a) => [a.week - 1, a.mean]) : data.average_by_month.map((a) => [a.month - 1, a.mean])),
+    [data.average_by_week, data.average_by_month, weekly],
+  );
+  // the row the reference day is in, and the last column that has data in it (later columns: what is typical)
+  const nowBrick = nowKey ? byKey.get(nowKey) : undefined;
+  const refYear = nowBrick?.year ?? data.cards.ref_year;
+  const refCol = nowBrick?.col ?? data.cards.ref_month - 1;
+  const colsIn = (y: number) => (weekly ? isoWeeksIn(y) : 12);
+  const typLabel = (y: number, col: number) => (weekly ? weekTitle(y, col + 1) : `${MONTHS[col]} ${y}`);
+
   // one tooltip for hover and keyboard focus, styled like the detailed view's chart tooltip
-  const [tip, setTip] = useState<{ item: CalendarItem | null; typ?: { label: string; mean: number | null }; el: HTMLElement; x: number; y: number } | null>(null);
-  const place = (item: CalendarItem, el: HTMLElement) => {
+  const [tip, setTip] = useState<{ item: Brick | null; typ?: { label: string; mean: number | null }; el: HTMLElement; x: number; y: number } | null>(null);
+  const place = (item: Brick, el: HTMLElement) => {
     const r = el.getBoundingClientRect();
     setTip({ item, el, x: r.left + r.width / 2, y: r.top });
   };
@@ -42,9 +138,9 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
     const r = e.currentTarget.getBoundingClientRect();
     setTip({ item: null, typ: { label, mean: mean ?? null }, el: e.currentTarget, x: r.left + r.width / 2, y: r.top });
   };
-  // mouse hover, or keyboard focus (not a tap: a tap opens the month card instead)
-  const onEnter = (item: CalendarItem) => (e: React.PointerEvent<HTMLElement>) => e.pointerType === 'mouse' && place(item, e.currentTarget);
-  const onFocusTip = (item: CalendarItem) => (e: React.FocusEvent<HTMLElement>) => e.currentTarget.matches(':focus-visible') && place(item, e.currentTarget);
+  // mouse hover, or keyboard focus (not a tap: a tap opens the card instead)
+  const onEnter = (item: Brick) => (e: React.PointerEvent<HTMLElement>) => e.pointerType === 'mouse' && place(item, e.currentTarget);
+  const onFocusTip = (item: Brick) => (e: React.FocusEvent<HTMLElement>) => e.currentTarget.matches(':focus-visible') && place(item, e.currentTarget);
   const hideTip = () => setTip(null);
   useEffect(() => {
     if (!tip) return;
@@ -52,12 +148,13 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
       const r = tip.el.getBoundingClientRect();
       setTip({ ...tip, x: r.left + r.width / 2, y: r.top });
     };
-    window.addEventListener('scroll', follow, { passive: true });
-    return () => window.removeEventListener('scroll', follow);
+    // capture: also the calendar's own sideways scroll on phones
+    window.addEventListener('scroll', follow, { passive: true, capture: true });
+    return () => window.removeEventListener('scroll', follow, { capture: true });
   }, [tip]);
 
-  // click / Enter on a brick: a small card anchored to it, with that month's numbers (all from the API)
-  const [pop, setPop] = useState<{ item: CalendarItem; el: HTMLElement } | null>(null);
+  // click / Enter on a brick: a small card anchored to it, with its numbers (all from the API)
+  const [pop, setPop] = useState<{ item: Brick; el: HTMLElement } | null>(null);
   const popRef = useRef<HTMLDivElement>(null);
   const [popPos, setPopPos] = useState<{ left: number; top: number; below: boolean } | null>(null);
   useEffect(() => {
@@ -78,17 +175,17 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
     };
     window.addEventListener('keydown', onKey);
     window.addEventListener('pointerdown', onDown);
-    window.addEventListener('scroll', placePop, { passive: true });
+    window.addEventListener('scroll', placePop, { passive: true, capture: true });
     window.addEventListener('resize', placePop);
     return () => {
       window.removeEventListener('keydown', onKey);
       window.removeEventListener('pointerdown', onDown);
-      window.removeEventListener('scroll', placePop);
+      window.removeEventListener('scroll', placePop, { capture: true });
       window.removeEventListener('resize', placePop);
     };
   }, [pop]);
 
-  // arrow keys move between bricks (left/right = months, up/down = years), as in a data grid
+  // arrow keys move between bricks (left/right = weeks or months, up/down = years), as in a data grid
   const moveFocus = (e: React.KeyboardEvent<HTMLDivElement>) => {
     const dirs: Record<string, [number, number]> = { ArrowLeft: [0, -1], ArrowRight: [0, 1], ArrowUp: [-1, 0], ArrowDown: [1, 0] };
     const d = dirs[e.key];
@@ -98,11 +195,12 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
     const r = rows.findIndex((row) => row.contains(from));
     const cellsOf = (row: HTMLElement) => [...row.querySelectorAll<HTMLElement>('.yr-months > .cell')];
     const c = cellsOf(rows[r]).findIndex((cell) => cell.contains(from));
-    for (let rr = r + d[0], cc = c + d[1]; rr >= 0 && rr < rows.length && cc >= 0 && cc < 12; rr += d[0], cc += d[1]) {
+    for (let rr = r + d[0], cc = c + d[1]; rr >= 0 && rr < rows.length && cc >= 0 && cc < n; rr += d[0], cc += d[1]) {
       const btn = cellsOf(rows[rr])[cc]?.querySelector<HTMLElement>('button.day');
       if (btn) {
         e.preventDefault();
         btn.focus();
+        btn.scrollIntoView({ block: 'nearest', inline: 'nearest' });
         return;
       }
     }
@@ -113,86 +211,83 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
     if (popShown) popRef.current?.querySelector<HTMLElement>('button')?.focus({ preventScroll: true });
   }, [popShown, pop]);
 
-  const { years, byKey } = useMemo(() => {
-    const byKey = new Map<string, CalendarItem>();
-    const ys = new Set<number>();
-    for (const c of data.calendar) {
-      byKey.set(`${c.year}-${c.month}`, c);
-      ys.add(c.year);
-    }
-    return { years: [...ys].sort((a, b) => b - a), byKey };
-  }, [data.calendar]);
-
   // the newest three years first; more on request (all the rows stay in the API answer and the CSV)
   const [shown, setShown] = useState(FIRST);
   const visibleYears = years.slice(0, shown);
-  // "Select a day": show that year if it is folded away, scroll to the month, light it for a moment
+  // phones scroll the 53 weeks sideways: start at the newest ones, like the reading order of the year
   const gridRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const g = gridRef.current;
+    if (g && weekly) g.scrollLeft = g.scrollWidth;
+  }, [weekly, data]);
+  // "Select a day": show that year if it is folded away, scroll to its week (or month), light it for a moment
   const [flashKey, setFlashKey] = useState<string | null>(null);
   useEffect(() => {
     if (!jump) return;
-    const at = years.indexOf(jump.year);
+    const day = jump.day ?? `${jump.year}-${String(jump.month).padStart(2, '0')}-01`;
+    const b = weekly ? bricks.find((x) => x.week!.start <= day && day <= x.week!.end) : byKey.get(`${jump.year}-${jump.month - 1}`);
+    if (!b) return;
+    const at = years.indexOf(b.year);
     if (at < 0) return;
     if (at >= shown) setShown(at + 1);
-    const key = `${jump.year}-${jump.month}`;
-    setFlashKey(key);
+    setFlashKey(b.key);
     const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const go = requestAnimationFrame(() => requestAnimationFrame(() =>
-      gridRef.current?.querySelector(`[data-key="${key}"]`)?.scrollIntoView({ block: 'center', behavior: still ? 'auto' : 'smooth' })));
+      gridRef.current?.querySelector(`[data-key="${b.key}"]`)?.scrollIntoView({ block: 'center', inline: 'center', behavior: still ? 'auto' : 'smooth' })));
     const off = window.setTimeout(() => setFlashKey(null), 2600);
     return () => { cancelAnimationFrame(go); window.clearTimeout(off); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jump?.n]);
 
-  // One Tab stop for the whole grid (roving tabindex): the brick last focused, else this month, else the newest.
-  // The arrow keys (moveFocus) move between bricks, so Tab goes on to the next control instead of every month.
+  // One Tab stop for the whole grid (roving tabindex): the brick last focused, else this week/month, else the newest.
+  // The arrow keys (moveFocus) move between bricks, so Tab goes on to the next control instead of every brick.
   const [focusKey, setFocusKey] = useState<string | null>(null);
   const stopKey = useMemo(() => {
-    const keys = visibleYears.flatMap((y) => MON.map((_, i) => `${y}-${i + 1}`)).filter((k) => byKey.has(k));
-    const nowKey = `${data.cards.ref_year}-${data.cards.ref_month}`;
-    return focusKey && keys.includes(focusKey) ? focusKey : keys.includes(nowKey) ? nowKey : keys[0];
-  }, [visibleYears, byKey, focusKey, data.cards.ref_year, data.cards.ref_month]);
+    const keys = visibleYears.flatMap((y) => Array.from({ length: n }, (_, i) => `${y}-${i}`)).filter((k) => byKey.has(k));
+    return focusKey && keys.includes(focusKey) ? focusKey : nowKey && keys.includes(nowKey) ? nowKey : keys[0];
+  }, [visibleYears, byKey, focusKey, nowKey, n]);
 
-  const avg = useMemo(() => new Map(data.average_by_month.map((a) => [a.month, a])), [data.average_by_month]);
-  const { ref_year, ref_month } = data.cards;
-  const period = data.average_period ? `${data.average_period.from}–${data.average_period.to}` : 'no complete year yet';
-
-  const cellClass = (item: CalendarItem) => {
+  const isSel = (b: Brick) => !weekly && !!selected && selected.year === b.month?.year && selected.month === b.month?.month;
+  const cellClass = (b: Brick) => {
     const cls = ['day'];
-    if (mode === 'counts') cls.push(`lv${levels.level(item.count)}`);
-    else cls.push(`vs${vsLevel(item.vs_avg_pct) + 2}`);
-    if (flashKey === `${item.year}-${item.month}`) cls.push('is-flash');
-    if (item.year === ref_year && item.month === ref_month) cls.push('is-now');
-    if (selected && selected.year === item.year && selected.month === item.month) cls.push('is-sel');
+    if (mode === 'counts') cls.push(`lv${levels.level(b.count)}`);
+    else cls.push(`vs${vsLevel(b.vs_avg_pct) + 2}`);
+    if (b.provisional) cls.push('is-prov');
+    if (b.uncertain) cls.push('is-unc');
+    if (flashKey === b.key) cls.push('is-flash');
+    if (b.key === nowKey) cls.push('is-now');
+    if (isSel(b)) cls.push('is-sel');
     return cls.join(' ');
   };
 
-  const describe = (i: CalendarItem) =>
-    `${MONTHS[i.month - 1]} ${i.year}: ${i.count ? `fire detected, ${levelWord(levels, i.count).toLowerCase()}, ${pctLong(i.vs_avg_pct)}` : 'no fire detected'}` +
-    (i.partial ? `, first ${i.days_covered} days only` : '') +
-    (i.provisional ? ', provisional' : '') +
-    (i.uncertain ? ', uncertain' : '');
+  const describe = (b: Brick) =>
+    `${b.title.replace(' · ', ', ')}: ${b.count ? `fire detected, ${levelWord(levels, b.count).toLowerCase()}, ${pctLong(b.vs_avg_pct)}` : 'no fire detected'}` +
+    (b.partial ? `, first ${b.days_covered} days only` : '') +
+    (b.provisional ? ', provisional' : '') +
+    (b.uncertain ? ', uncertain' : '');
 
-  const ahead = !data.calendar.some((c) => c.year > ref_year);
-  const next = ref_year + 1;
-  const typicalCell = (label: string, idx: number) => {
-    const a = avg.get(idx + 1);
-    const lv = levels.level(a?.mean);
+  const ahead = !bricks.some((b) => b.year > refYear);
+  const next = refYear + 1;
+  const typicalCell = (y: number, col: number) => {
+    const mean = avg.get(col);
+    const label = typLabel(y, col);
+    const lv = levels.level(mean);
     return (
-      <div className="cell" key={idx}>
-        <span className={`day typical lv${typLv(a?.mean)}`} role="img"
+      <div className="cell" key={col} style={{ '--c': weekly ? col >> 2 : col } as React.CSSProperties}>
+        <span className={`day typical lv${typLv(mean)}`} role="img"
           aria-label={`${label}: usually ${LEVEL_WORDS[lv].toLowerCase()} (typical ${period}, not a forecast)`}
-          onPointerEnter={onEnterTyp(label, a?.mean)} onPointerLeave={hideTip} />
+          onPointerEnter={onEnterTyp(label, mean)} onPointerLeave={hideTip} />
       </div>
     );
   };
+  const emptyCell = (col: number) => <div className="cell" key={col}><span className="day empty" aria-hidden="true" /></div>;
 
   return (
     <section className="cal" aria-labelledby="cal-title">
       <div className="cal-head">
         <div>
           <h2 id="cal-title">Fire calendar</h2>
-          <p className="muted">One square per month. {mode === 'counts' ? 'Darker means more fire.' : 'Orange is above typical, purple below.'}</p>
+          <p className="muted">One square per {unit}. {mode === 'counts' ? 'Darker means more fire.' : 'Orange is above typical, purple below.'}</p>
         </div>
         <div className="tools">
           <div className="seg seg-small" role="radiogroup" aria-label="What the colour shows">
@@ -203,40 +298,43 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
         </div>
       </div>
 
-      {/* Bricks are laid out per period: 12 months now. Weekly bricks need weekly values from the API (we never
-          build weeks from hotspots in the browser): set data-period="week" and --n to 52/53 once they exist. */}
-      <p className="sr-only">In the calendar, the arrow keys move between months and years; Enter opens a month.</p>
-      <div ref={gridRef} className="cal-grid" data-period="month" style={{ '--n': 12 } as React.CSSProperties} onKeyDown={moveFocus}>
+      <p className="sr-only">In the calendar, the arrow keys move between {unit}s and years; Enter opens a {unit}.</p>
+      <div ref={gridRef} className="cal-grid" data-period={unit} style={{ '--n': n } as React.CSSProperties} onKeyDown={moveFocus}>
         <div className="yr yr-colhead" aria-hidden="true">
           <div className="yr-label" />
-          <div className="yr-months">{MON.map((m) => <span key={m} data-i={m[0]}>{m}</span>)}</div>
+          <div className="yr-months">
+            {MON.map((m, i) => (
+              <span key={m} data-i={m[0]}
+                style={weekly ? { gridColumn: `${MONTH_COLS[i] + 1} / ${(MONTH_COLS[i + 1] ?? n) + 1}` } : undefined}>{m}</span>
+            ))}
+          </div>
         </div>
 
-        {/* one year forward: next year's months as they usually are (history, not a forecast) */}
+        {/* one year forward: next year as it usually is (history, not a forecast) */}
         {ahead && data.average_period && (
           <div className="yr yr-ahead">
             <div className="yr-label">{next}<small>typical</small></div>
-            <div className="yr-months">{MON.map((_, idx) => typicalCell(`${MONTHS[idx]} ${next}`, idx))}</div>
+            <div className="yr-months">{Array.from({ length: n }, (_, col) => (col < colsIn(next) ? typicalCell(next, col) : emptyCell(col)))}</div>
           </div>
         )}
         {visibleYears.map((y) => (
           <div className="yr" key={y}>
             <div className="yr-label">{y}</div>
             <div className="yr-months">
-              {MON.map((m, idx) => {
-                const item = byKey.get(`${y}-${idx + 1}`);
-                if (!item) {
-                  // the rest of this year: what is typical, clearly as history
-                  const future = y === ref_year && idx + 1 > ref_month;
-                  return future && data.average_period ? typicalCell(`${MONTHS[idx]} ${y}`, idx) : <div className="cell" key={m}><span className="day empty" aria-hidden="true" /></div>;
+              {Array.from({ length: n }, (_, col) => {
+                const b = byKey.get(`${y}-${col}`);
+                if (!b) {
+                  // the rest of this year: what is typical, clearly as history; week 53 stays empty in 52-week years
+                  const future = y === refYear && col > refCol && col < colsIn(y);
+                  return future && data.average_period ? typicalCell(y, col) : emptyCell(col);
                 }
                 return (
-                  <div className="cell" key={m}>
-                    <button className={cellClass(item)} data-key={`${y}-${idx + 1}`} aria-label={describe(item)} aria-haspopup="dialog" aria-expanded={pop?.item === item}
-                      tabIndex={`${y}-${idx + 1}` === stopKey ? 0 : -1}
-                      onClick={(e) => { hideTip(); setPop(pop?.item === item ? null : { item, el: e.currentTarget }); }}
-                      onPointerEnter={onEnter(item)} onPointerLeave={hideTip}
-                      onFocus={(e) => { setFocusKey(`${y}-${idx + 1}`); onFocusTip(item)(e); }} onBlur={hideTip} />
+                  <div className="cell" key={col} style={{ '--c': weekly ? col >> 2 : col } as React.CSSProperties}>
+                    <button className={cellClass(b)} data-key={b.key} aria-label={describe(b)} aria-haspopup="dialog" aria-expanded={pop?.item.key === b.key}
+                      tabIndex={b.key === stopKey ? 0 : -1}
+                      onClick={(e) => { hideTip(); setPop(pop?.item.key === b.key ? null : { item: b, el: e.currentTarget }); }}
+                      onPointerEnter={onEnter(b)} onPointerLeave={hideTip}
+                      onFocus={(e) => { setFocusKey(b.key); onFocusTip(b)(e); }} onBlur={hideTip} />
                   </div>
                 );
               })}
@@ -248,25 +346,39 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
       <div className="cal-foot">
         <div className="cal-more">
           {shown < years.length && (
-            <button className="btn btn-ghost btn-small" onClick={() => setShown((n) => Math.min(years.length, n + 10))} aria-label={`See more years (${visibleYears.length} of ${years.length} shown)`}>See more</button>
+            <button className="btn btn-ghost btn-small" onClick={() => setShown((k) => Math.min(years.length, k + 10))} aria-label={`See more years (${visibleYears.length} of ${years.length} shown)`}>See more</button>
           )}
           {shown > FIRST && <button className="btn btn-ghost btn-small" onClick={() => setShown(FIRST)}>See less</button>}
         </div>
-        <Legend mode={mode} thresholds={levels.thresholds} />
+        <Legend mode={mode} thresholds={levels.thresholds} unit={unit} />
       </div>
       <ul className="cal-keys">
-        <li><span className={`day mini typical ${mode === 'counts' ? 'lv2' : 'lv0'}`} />Typical for that month, not a forecast</li>
-        <li><span className="day mini lv0 is-now" />This month</li>
+        <li><span className={`day mini typical ${mode === 'counts' ? 'lv2' : 'lv0'}`} />Typical for that {unit}, not a forecast</li>
+        <li><span className="day mini lv0 is-now" />This {unit}</li>
+        <li><span className={`day mini is-prov ${mode === 'counts' ? 'lv2' : 'vs3'}`} />Provisional (recent data)</li>
+        <li><span className={`day mini is-unc ${mode === 'counts' ? 'lv2' : 'vs3'}`} />Uncertain (very few fires)</li>
       </ul>
 
       {tip && (
         <div className="cal-tip" role="presentation" aria-hidden="true"
-          style={{ left: Math.min(Math.max(tip.x, 110), window.innerWidth - 110) /* half the tip + 8px from the screen edge */, top: tip.y }}>
+          style={{ left: Math.min(Math.max(tip.x, 140), window.innerWidth - 140) /* half the tip + 8px from the screen edge */, top: tip.y }}>
           {tip.item ? (
-            <>
-              <b>{MON[tip.item.month - 1]} {tip.item.year} · {levelWord(levels, tip.item.count)}</b>
-              {!!tip.item.count && <span>{vsTypical(tip.item.vs_avg_pct)}</span>}
-            </>
+            tip.item.week ? (
+              // "Week 46 · 9–15 Nov 2026" / "54 fire-days · −93% vs usual (2003–2025)"
+              <>
+                <b>{tip.item.title}</b>
+                <span>
+                  {tip.item.count == null ? 'No data' : `${num(tip.item.count)} fire-day${tip.item.count === 1 ? '' : 's'}`}
+                  {tip.item.vs_avg_pct != null && <> · <wbr />{signedPct(tip.item.vs_avg_pct)} vs usual ({period})</>}
+                </span>
+                {tip.item.partial && <span>Week in progress: {tip.item.days_covered} of 7 days</span>}
+              </>
+            ) : (
+              <>
+                <b>{MON[tip.item.col]} {tip.item.year} · {levelWord(levels, tip.item.count)}</b>
+                {!!tip.item.count && <span>{vsTypical(tip.item.vs_avg_pct)}</span>}
+              </>
+            )
           ) : tip.typ && (
             <>
               <b>{tip.typ.label}</b>
@@ -277,27 +389,33 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
       )}
       {pop && popPos && (() => {
         const i = pop.item;
-        const month = MONTHS[i.month - 1];
+        const what = i.week ? `week ${i.week.week}` : MONTHS[i.col];
+        const monthName = i.month ? MONTHS[i.month.month - 1] : '';
         const flags = [
-          i.partial && `Month in progress: the first ${i.days_covered} days, compared with the same days in other years.`,
+          i.partial && (i.week
+            ? `Week in progress: the first ${i.days_covered} days, compared with a typical week scaled to those days.`
+            : `Month in progress: the first ${i.days_covered} days, compared with the same days in other years.`),
           i.provisional && 'Provisional: recent data that NASA may still revise.',
           i.uncertain && 'Uncertain: very few fires, so the comparison is shaky.',
         ].filter(Boolean) as string[];
         const shut = (focus = true) => { setPop(null); if (focus) pop.el.focus({ preventScroll: true }); };
+        const m = i.month;
         return (
-          <div ref={popRef} className={'cal-pop' + (popPos.below ? ' is-below' : ' is-above')} role="dialog" aria-label={`${month} ${i.year}`}
+          <div ref={popRef} className={'cal-pop' + (popPos.below ? ' is-below' : ' is-above')} role="dialog" aria-label={i.title}
             style={{ left: popPos.left, top: popPos.top }}>
-            <p className="cal-pop-title">{month} {i.year}</p>
+            <p className="cal-pop-title">{i.title}</p>
             <p className="cal-pop-main">
               <span className={`day mini ${mode === 'counts' ? `lv${levels.level(i.count)}` : `vs${vsLevel(i.vs_avg_pct) + 2}`}`} aria-hidden="true" />
               {i.count ? <>Fire detected · <b>{levelWord(levels, i.count)}</b></> : 'No fire detected'}
             </p>
-            {!!i.count && <p>{i.vs_avg_pct == null ? `No typical ${month} to compare with yet.` : <>{vsTypical(i.vs_avg_pct)} for {month}.</>}</p>}
+            {!!i.count && <p>{i.vs_avg_pct == null ? `No typical ${what} to compare with yet.` : <>{vsTypical(i.vs_avg_pct)} for {what}.</>}</p>}
             {flags.length ? flags.map((f) => <p className="cal-pop-flag" key={f}>{f}</p>) : <p className="cal-pop-flag">Final data.</p>}
-            <div className="cal-pop-act">
-              <button className="btn btn-dark btn-small" onClick={() => { shut(); onOpenMap(i); }}>Open on the map</button>
-              <button className="btn btn-ghost btn-small" onClick={() => { shut(); onSelect(i); }}>Details</button>
-            </div>
+            {m && (
+              <div className="cal-pop-act">
+                <button className="btn btn-dark btn-small" onClick={() => { shut(); onOpenMap(m); }}>{i.week ? `${monthName} on the map` : 'Open on the map'}</button>
+                <button className="btn btn-ghost btn-small" onClick={() => { shut(); onSelect(m); }}>{i.week ? `${monthName} details` : 'Details'}</button>
+              </div>
+            )}
           </div>
         );
       })()}
@@ -306,18 +424,18 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
 }
 
 /** GitHub-style: Less ▢▢▢▢▢ More, with the value where each colour starts. */
-function Legend({ mode, thresholds }: { mode: Mode; thresholds: number[] }) {
+function Legend({ mode, thresholds, unit }: { mode: Mode; thresholds: number[]; unit: string }) {
   const t = thresholds.map((x) => (isFinite(x) ? compact(x) : '–'));
   const values = mode === 'counts' ? ['0', ...t] : VS_LABELS;
   return (
     <div className="legend" role="img"
       aria-label={mode === 'counts'
-        ? `Colour scale, less to more fire. The five colours start at ${values.join(', ')} satellite-adjusted fire detections in the month.`
-        : 'Colour scale: purple is below a typical month, grey is typical, orange is above.'}>
+        ? `Colour scale, less to more fire. The five colours start at ${values.join(', ')} satellite-adjusted fire detections in the ${unit}.`
+        : `Colour scale: purple is below a typical ${unit}, grey is typical, orange is above.`}>
       <span className="legend-end">{mode === 'counts' ? 'Less' : 'Below'}</span>
       <ol>
         {values.map((v, i) => (
-          <li key={i} title={mode === 'counts' ? `${LEVEL_WORDS[i]}: from ${v} satellite-adjusted fire detections in the month (${num(isFinite(thresholds[i - 1]) ? thresholds[i - 1] : 0)}+)` : v}>
+          <li key={i} title={mode === 'counts' ? `${LEVEL_WORDS[i]}: from ${v} satellite-adjusted fire detections in the ${unit} (${num(isFinite(thresholds[i - 1]) ? thresholds[i - 1] : 0)}+)` : v}>
             <span className={`day mini ${mode === 'counts' ? 'lv' : 'vs'}${i}`} /><small>{v}</small>
           </li>
         ))}

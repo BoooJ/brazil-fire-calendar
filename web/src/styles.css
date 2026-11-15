@@ -278,6 +278,18 @@ abbr { text-decoration: none; }
 .yr-ahead .yr-label { color: var(--ink-2); }
 .yr-months { display: grid; grid-template-columns: repeat(var(--n, 12), minmax(0, 1fr)); gap: clamp(1px, calc(72px / var(--n, 12)), 6px); max-width: calc(var(--n, 12) * 46px); }
 .cal-grid[data-period='week'] .day { border-radius: 2px; }
+/* weeks: month names sit over the week where the month starts */
+.cal-grid[data-period='week'] .yr-colhead .yr-months span { text-align: left; white-space: nowrap; overflow: hidden; }
+.cal-grid[data-period='week'] .day.is-now, .cal-grid[data-period='week'] .day.is-sel { outline-width: 1.5px; outline-offset: 1px; }
+/* phones: 53 bricks would be 3 px wide, so the weeks scroll sideways (newest first in view) and the years stay pinned */
+@media (max-width: 700px) {
+  .cal-grid[data-period='week'] { overflow-x: auto; overscroll-behavior-x: contain; padding: 4px 0; scrollbar-width: thin; }
+  .cal-grid[data-period='week'] .yr { grid-template-columns: 44px max-content; }
+  .cal-grid[data-period='week'] .yr-months { grid-template-columns: repeat(53, 11px); gap: 3px; max-width: none; }
+  .cal-grid[data-period='week'] .yr-colhead .yr-months span { font-size: var(--t-2xs); }
+  .cal-grid[data-period='week'] .yr-colhead .yr-months span::before { content: none; }
+  .cal-grid[data-period='week'] .yr-label { position: sticky; left: 0; z-index: 3; align-self: stretch; display: flex; flex-direction: column; justify-content: center; background: var(--card); }
+}
 .cell { position: relative; display: grid; place-items: center; }
 .day { position: relative; width: 100%; max-width: 40px; aspect-ratio: 1; border-radius: var(--r-brick); display: block; padding: 0; border: 0; background-color: var(--lv0); font-size: 0; cursor: pointer; transition: background-color 0.3s ease, transform 0.16s var(--ease), box-shadow 0.16s ease, opacity 0.16s ease; }
 span.day { cursor: default; }
@@ -299,6 +311,9 @@ button.day:active { transform: scale(0.96); }
 @keyframes flash { 50% { transform: scale(1.3); box-shadow: 0 0 0 3px var(--card), 0 0 0 6px var(--fire); } }
 .day.is-now { outline: 2px solid var(--ink); outline-offset: 2px; }
 .day.is-sel { outline: 2px solid var(--fire); outline-offset: 2px; }
+/* provisional = hatched (a small SVG stripe pattern), uncertain = faded; both also said in the tooltip and card */
+.day.is-prov { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Cpath d='M-1 1l2-2M0 4l4-4M3 5l2-2' stroke='%23fff' stroke-opacity='.55' stroke-width='1'/%3E%3C/svg%3E"); background-size: 4px 4px; }
+.day.is-unc { opacity: 0.45; }
 button.day:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .day.mini { width: 14px; height: 14px; flex: none; border-radius: 4px; animation: none; }
 .day.mini.is-now { outline-width: 1.5px; outline-offset: 1.5px; margin: 0 2px; }
@@ -312,10 +327,10 @@ button.day:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px;
 .cal-keys { display: flex; flex-wrap: wrap; gap: 6px var(--s-4); margin-top: var(--s-4); padding-top: var(--s-4); border-top: 1px solid var(--line); font-size: var(--t-xs); color: var(--ink-2); }
 .cal-keys li { display: inline-flex; align-items: center; gap: 6px; }
 /* tooltip (hover, keyboard focus) and the month's small card, anchored to its brick */
-.cal-tip { position: fixed; z-index: 30; transform: translate(-50%, calc(-100% - 12px)); max-width: 220px; text-align: center; white-space: nowrap; pointer-events: none; animation: tip-soft 0.45s ease 0.18s both; }
+.cal-tip { position: fixed; z-index: 30; transform: translate(-50%, calc(-100% - 12px)); max-width: 264px; text-align: center; white-space: nowrap; pointer-events: none; animation: tip-soft 0.45s ease 0.18s both; }
 @keyframes tip-soft { from { opacity: 0; transform: translate(-50%, calc(-100% - 8px)); } }
 .cal-tip b { font-weight: 550; }
-.cal-tip span { opacity: 0.75; }
+.cal-tip span { opacity: 0.75; white-space: normal; }
 .cal-pop { position: fixed; z-index: 31; width: 300px; translate: -50% 0; padding: var(--s-5); border-radius: var(--r-lg); background: var(--card); color: var(--ink); border: 1px solid var(--line); box-shadow: var(--shadow-float); font-size: var(--t-base); line-height: 1.4; display: grid; gap: 6px; font-variant-numeric: tabular-nums; transform-origin: 50% 0; animation: pop-in 0.18s var(--ease); }
 .cal-pop.is-above { translate: -50% -100%; transform-origin: 50% 100%; }
 .cal-pop-title { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); }
