@@ -311,7 +311,7 @@ export default function Tool() {
               <DateControls refDate={refDate} setRefDate={changeRefDate} fromYear={fromYear} setFromYear={setFromYear}
                 detailed={detailed} setDetailed={setDetailed} today={today} />
               {load.kind === 'loading' && (
-                <div className="sheet" aria-busy="true" aria-label="Loading fire data"><div className="sk sk-block" /></div>
+                <div className="sheet" aria-busy="true" aria-label="Loading fire data"><SheetSkeleton /></div>
               )}
               {data && (
                 <>
@@ -473,6 +473,19 @@ function LoadingHero() {
       <div className="sk sk-title" />
       <div className="sk sk-title" style={{ width: '70%' }} />
       <div className="sk sk-line" style={{ width: '85%' }} />
+      <div className="sk sk-stats" />
     </section>
+  );
+}
+
+/** The sheet's shape while loading: the coming months, then calendar rows, so nothing jumps when data arrives. */
+function SheetSkeleton() {
+  return (
+    <div className="sk-sheet" aria-hidden="true">
+      <div className="sk sk-line" style={{ width: '60%', height: 24 }} />
+      <div className="sk-row3">{[0, 1, 2].map((i) => <div key={i} className="sk sk-card" />)}</div>
+      <div className="sk sk-line" style={{ width: '40%', height: 24, marginTop: 32 }} />
+      {[0, 1, 2, 3, 4].map((i) => <div key={i} className="sk sk-calrow" />)}
+    </div>
   );
 }

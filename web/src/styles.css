@@ -315,6 +315,11 @@ button.day:hover { transform: scale(1.08); }
 .sk-line { height: 16px; margin: 10px 0; }
 .sk-title { height: 44px; margin: 10px 0; }
 .sk-block { height: 420px; }
+.sk-stats { height: 104px; border-radius: 22px; margin-top: 18px; }
+.sk-sheet { min-height: 620px; }
+.sk-row3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0 8px; }
+.sk-card { height: 112px; border-radius: 18px; }
+.sk-calrow { height: 52px; margin: 10px 0; border-radius: 26px; }
 @keyframes shimmer { to { background-position: -200% 0; } }
 
 /* ---------- phone: every tap target at least 44px ---------- */
