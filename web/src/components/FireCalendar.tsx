@@ -2,7 +2,7 @@
 // two lines, three on phones, so the bricks stay big; week 53 stays empty in years without it). The weeks come from the API ("period": "week", contract v0.4): never built from hotspots
 // here. If an answer has no weeks, the same grid falls back to one brick per month.
 // Colour shows intensity (filled = happened, faded = coming, an estimate from the average, not a forecast; hatched = provisional,
-// faded = uncertain). Hover names the week and its numbers; a click opens a small card anchored to the brick, with
+// faded = uncertain). Pointing at a brick lifts it; a click (or resting the mouse on it for 5 s) opens a small card anchored to the brick, with
 // its month on the map (the map, the cards and the charts stay monthly).
 // The detailed view draws the same months as a dense heatmap with the numbers: see BurningCalendar.tsx.
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -71,13 +71,6 @@ const signedPct = (p: number) => {
   const r = Math.round(p);
   return r === 0 ? '±0%' : `${r < 0 ? '−' : '+'}${Math.abs(r)}%`;
 };
-/** 0-based ISO week column of a day */
-function isoWeekCol(d: Date) {
-  const thu = new Date(d.getTime() + (3 - ((d.getUTCDay() + 6) % 7)) * DAY);
-  return Math.floor((thu.getTime() - Date.UTC(thu.getUTCFullYear(), 0, 1)) / DAY / 7);
-}
-/** the week column each month starts in (2026: 1 Jan is a Thursday, so week 1 starts with January) */
-const MONTH_COLS = MON.map((_, i) => isoWeekCol(new Date(Date.UTC(2026, i, 1))));
 /** A year wraps onto several lines so the bricks stay big: [first, last] column of each line.
  *  Weeks: two halves (Jan–Jun, Jul–Dec), four quarters on phones. Months: one line. */
 const LINES = {
@@ -158,14 +151,22 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
     const r = el.getBoundingClientRect();
     setTip({ item, el, x: r.left + r.width / 2, y: r.top });
   };
-  // typical (dotted) bricks get the same styled tooltip on mouse hover, instead of the browser's title box
-  const onEnterTyp = (label: string, mean: number | null | undefined) => (e: React.PointerEvent<HTMLElement>) => {
-    if (e.pointerType !== 'mouse') return;
-    const r = e.currentTarget.getBoundingClientRect();
-    setTip({ item: null, typ: { label, mean: mean ?? null }, el: e.currentTarget, x: r.left + r.width / 2, y: r.top });
+  const showTyp = (el: HTMLElement, label: string, mean: number | null | undefined) => {
+    const r = el.getBoundingClientRect();
+    setTip({ item: null, typ: { label, mean: mean ?? null }, el, x: r.left + r.width / 2, y: r.top });
   };
-  // mouse hover, or keyboard focus (not a tap: a tap opens the card instead)
-  const onEnter = (item: Brick) => (e: React.PointerEvent<HTMLElement>) => e.pointerType === 'mouse' && place(item, e.currentTarget);
+  // Pointing at a brick only lifts it (CSS). Its info opens on a click, or after resting the mouse on it for 5 s.
+  const DWELL_MS = 5000;
+  const dwell = useRef<number | undefined>(undefined);
+  const stopDwell = () => window.clearTimeout(dwell.current);
+  useEffect(() => stopDwell, []);
+  const onRest = (open: (el: HTMLElement) => void) => (e: React.PointerEvent<HTMLElement>) => {
+    if (e.pointerType !== 'mouse') return;
+    const el = e.currentTarget;
+    stopDwell();
+    dwell.current = window.setTimeout(() => open(el), DWELL_MS);
+  };
+  // keyboard focus shows the short info at once (a keyboard has no hover)
   const onFocusTip = (item: Brick) => (e: React.FocusEvent<HTMLElement>) => e.currentTarget.matches(':focus-visible') && place(item, e.currentTarget);
   const hideTip = () => setTip(null);
   useEffect(() => {
@@ -180,7 +181,7 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
   }, [tip]);
 
   // click / Enter on a brick: a small card anchored to it, with its numbers (all from the API)
-  const [pop, setPop] = useState<{ item: Brick; el: HTMLElement } | null>(null);
+  const [pop, setPop] = useState<{ item: Brick; el: HTMLElement; focus?: boolean } | null>(null);
   const popRef = useRef<HTMLDivElement>(null);
   const [popPos, setPopPos] = useState<{ left: number; top: number; below: boolean } | null>(null);
   useEffect(() => {
@@ -242,7 +243,8 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
 
   const popShown = !!(pop && popPos);
   useEffect(() => {
-    if (popShown) popRef.current?.querySelector<HTMLElement>('button')?.focus({ preventScroll: true });
+    // opened by a click or Enter: focus moves into the card; opened by resting the mouse: focus stays put
+    if (popShown && pop?.focus) popRef.current?.querySelector<HTMLElement>('button')?.focus({ preventScroll: true });
   }, [popShown, pop]);
 
   // the newest three years first; more on request (all the rows stay in the API answer and the CSV)
@@ -303,10 +305,11 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
     const label = typLabel(y, col);
     const lv = levels.level(mean);
     return (
-      <div className="cell" key={col} style={{ '--c': at } as React.CSSProperties}>
+      <div className={'cell is-future' + (y > refYear ? '' : ' is-rest')} key={col} style={{ '--c': at } as React.CSSProperties}>
         <span className={`day est ${mode === 'counts' ? `lv${typLv(mean)}` : 'vs2'}`} role="img"
           aria-label={`${label}: estimate, usually ${LEVEL_WORDS[lv].toLowerCase()} (typical ${period}, not a forecast)`}
-          onPointerEnter={onEnterTyp(label, mean)} onPointerLeave={hideTip} />
+          onClick={(e) => (tip?.el === e.currentTarget ? hideTip() : showTyp(e.currentTarget, label, mean))}
+          onPointerEnter={onRest((el) => showTyp(el, label, mean))} onPointerLeave={() => { stopDwell(); hideTip(); }} />
       </div>
     );
   };
@@ -335,29 +338,13 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
 
       <p className="sr-only">In the calendar, the arrow keys move between {unit}s and years; Enter opens a {unit}.</p>
       <div ref={gridRef} className="cal-grid" data-period={unit} style={{ '--n': n, '--per': per } as React.CSSProperties} onKeyDown={moveFocus}>
-        <div className="yr yr-colhead" aria-hidden="true">
-          <div className="yr-label" />
-          <div className="yr-months">
-            {lines.map(([a, b]) => (
-              <div className="yr-line" key={a}>
-                {MON.map((m, i) => {
-                  const col = weekly ? MONTH_COLS[i] : i;
-                  if (col < a || col > b) return null;
-                  const to = weekly ? Math.min(b + 1, MONTH_COLS[i + 1] ?? n) : col + 1;
-                  return <span key={m} data-i={m[0]} style={{ gridColumn: `${col - a + 1} / ${to - a + 1}` }}>{m}</span>;
-                })}
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* one year forward: next year as it usually is (history, not a forecast) */}
         {ahead && data.average_period && (
-          <div className="yr yr-ahead">
-            <div className="yr-label">{next}</div>
-            <div className="yr-months">
-              {yearLines((col, at) => (col < colsIn(next) ? typicalCell(next, col, at) : emptyCell(col)))}
-              <p className="cal-est" aria-hidden="true"><b>Estimate</b><span>from {period} · not a forecast</span></p>
+          <div className="cal-future">
+            <p className="yr cal-est" aria-hidden="true"><span className="yr-label" /><b>Estimate</b></p>
+            <div className="yr yr-ahead">
+              <div className="yr-label">{next}</div>
+              <div className="yr-months">{yearLines((col, at) => (col < colsIn(next) ? typicalCell(next, col, at) : emptyCell(col)))}</div>
             </div>
           </div>
         )}
@@ -376,8 +363,8 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
                   <div className="cell" key={col} style={{ '--c': at } as React.CSSProperties}>
                     <button className={cellClass(b)} data-key={b.key} aria-label={describe(b)} aria-haspopup="dialog" aria-expanded={pop?.item.key === b.key}
                       tabIndex={b.key === stopKey ? 0 : -1}
-                      onClick={(e) => { hideTip(); setPop(pop?.item.key === b.key ? null : { item: b, el: e.currentTarget }); }}
-                      onPointerEnter={onEnter(b)} onPointerLeave={hideTip}
+                      onClick={(e) => { stopDwell(); hideTip(); setPop(pop?.item.key === b.key ? null : { item: b, el: e.currentTarget, focus: true }); }}
+                      onPointerEnter={onRest((el) => { hideTip(); setPop({ item: b, el }); })} onPointerLeave={stopDwell}
                       onFocus={(e) => { setFocusKey(b.key); onFocusTip(b)(e); }} onBlur={hideTip} />
                   </div>
                 );
@@ -426,7 +413,7 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
           ) : tip.typ && (
             <>
               <b>{tip.typ.label}</b>
-              <span>Estimate: usually {LEVEL_WORDS[levels.level(tip.typ.mean)].toLowerCase()} · not a forecast</span>
+              <span>Estimate: usually {LEVEL_WORDS[levels.level(tip.typ.mean)].toLowerCase()}</span>
             </>
           )}
         </div>
@@ -452,6 +439,9 @@ export default function FireCalendar({ data, selected, onSelect, onOpenMap, jump
               <span className={`day mini ${mode === 'counts' ? `lv${levels.level(i.count)}` : `vs${vsLevel(i.vs_avg_pct) + 2}`}`} aria-hidden="true" />
               {i.count ? <>Fire detected · <b>{levelWord(levels, i.count)}</b></> : 'No fire detected'}
             </p>
+            {i.week && i.count != null && (
+              <p className="cal-pop-num">{num(i.count)} fire-day{i.count === 1 ? '' : 's'}{i.vs_avg_pct != null && <> · {signedPct(i.vs_avg_pct)} vs usual</>}</p>
+            )}
             {!!i.count && <p>{i.vs_avg_pct == null ? `No typical ${what} to compare with yet.` : <>{vsTypical(i.vs_avg_pct)} for {what}.</>}</p>}
             {flags.length ? flags.map((f) => <p className="cal-pop-flag" key={f}>{f}</p>) : <p className="cal-pop-flag">Final data.</p>}
             {m && (
