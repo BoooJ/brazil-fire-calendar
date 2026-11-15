@@ -243,3 +243,5 @@ Global rules for this block:
   - Landing.tsx keeps Tab / Shift+Tab inside the open sheet (kit files untouched); Escape still closes it and returns focus to Menu.
 - [x] Landing CTA promised "your location stays in your browser", but the area drawn around it is sent to the API
   - Now "No account, and your location is never stored." (matches the tool's "only used to draw this area, not stored on a server").
+- [x] Map without imagery (follow-up): drawing a rectangle/polygon on a black map was blind
+  - When the imagery fails, the map adds the globe's Natural Earth outlines (display only, same `loadWorld()` now exported from Globe.tsx) under the area: Brazil dark grey, neighbours dark blue. The note says "Showing plain country outlines instead."

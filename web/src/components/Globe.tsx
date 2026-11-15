@@ -11,7 +11,8 @@ interface World {
 }
 
 let worldPromise: Promise<World> | null = null;
-function loadWorld(): Promise<World> {
+/** Natural Earth outlines (display only). Also the map's fallback ground when its imagery cannot load. */
+export function loadWorld(): Promise<World> {
   worldPromise ??= import('world-atlas/countries-50m.json').then((m) => {
     const topo = m.default as any;
     const all = feature(topo, topo.objects.countries) as unknown as FeatureCollection<Geometry>;

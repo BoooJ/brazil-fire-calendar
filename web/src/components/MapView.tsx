@@ -9,6 +9,7 @@ import { SAT_NAMES } from '../types';
 import { FRP_STOPS } from '../colors';
 import { areaBbox, closeRing, rectPolygon } from '../geo';
 import { timeUtc } from '../format';
+import { loadWorld } from './Globe';
 
 export type DrawMode = 'none' | 'rect' | 'polygon';
 
@@ -246,6 +247,31 @@ export default function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCa
     };
   }, []);
 
+  // ---------- no imagery: the globe's country outlines as a plain ground (display only), so the map is never blind ----------
+  useEffect(() => {
+    const m = map.current;
+    if (!noImagery || !m) return;
+    let alive = true;
+    loadWorld().then((w) => {
+      if (!alive || !map.current || m.getSource('fallback-world')) return;
+      const add = () => {
+        if (m.getSource('fallback-world')) return;
+        m.addSource('fallback-world', { type: 'geojson', data: w.others as FeatureCollection });
+        m.addSource('fallback-brazil', { type: 'geojson', data: w.brazil as FeatureCollection });
+        const before = m.getLayer('area-fill') ? 'area-fill' : undefined;
+        m.addLayer({ id: 'fallback-world', type: 'fill', source: 'fallback-world', paint: { 'fill-color': '#0a0d55' } }, before);
+        m.addLayer({ id: 'fallback-world-line', type: 'line', source: 'fallback-world', paint: { 'line-color': '#01020a', 'line-width': 0.8 } }, before);
+        m.addLayer({ id: 'fallback-brazil', type: 'fill', source: 'fallback-brazil', paint: { 'fill-color': '#3a3f55' } }, before);
+      };
+      // 'ready' (our layers exist) rather than isStyleLoaded(): that one stays false while imagery tiles keep failing
+      if (ready.current) add();
+      else m.once('style.load', add);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [noImagery]);
+
   // ---------- draw mode toggling ----------
   useEffect(() => {
     const m = map.current;
@@ -294,7 +320,7 @@ export default function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCa
     <>
       <div ref={el} className="map" aria-label="Map of fire hotspots for the selected month" role="region" />
       {noImagery && (
-        <p className="map-imagery-note" role="status">Satellite imagery could not load.<span className="map-imagery-more"> The area and its hotspots are still shown.</span></p>
+        <p className="map-imagery-note" role="status">Satellite imagery could not load.<span className="map-imagery-more"> Showing plain country outlines instead.</span></p>
       )}
     </>
   );
