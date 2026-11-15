@@ -1,6 +1,6 @@
 // The ONLY module that knows where data comes from.
 // VITE_API_BASE_URL empty -> fake files in web/mocks/. Otherwise -> the real API (docs/api-contract.md).
-import type { Analysis, AnalysisRequest, AreaGeometry, CalendarItem, Hotspots, Preset, Status, UpdateResult } from './types';
+import type { Analysis, AnalysisRequest, AreaGeometry, CalendarItem, Forecast, ForecastRequest, Hotspots, Preset, Status, UpdateResult } from './types';
 import { areaBbox } from './geo';
 import calendarCsvUrl from '../mocks/calendar.pantanal.csv?url';
 import hotspotsCsvUrl from '../mocks/hotspots.pantanal.2020-09.csv?url';
@@ -116,6 +116,16 @@ export async function getHotspots(req: {
     return mockHotspots();
   }
   return http<Hotspots>('/api/hotspots', req);
+}
+
+/** Next-week fire chance: the science team's model, the only forecast in the app. Mocks: always the Pantanal file. */
+export async function getForecast(req: ForecastRequest): Promise<Forecast> {
+  if (usingMocks) {
+    await pause(600);
+    const m = await import('../mocks/forecast.pantanal.json');
+    return m.default as unknown as Forecast;
+  }
+  return http<Forecast>('/api/forecast', req);
 }
 
 /** The "Update now" button: asks the server to fetch the latest days from FIRMS. */

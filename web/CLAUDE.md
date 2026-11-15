@@ -64,6 +64,7 @@ npm run preview    # serve the build
 | `src/components/FireCalendar.tsx` | Quick view calendar, GitHub style: a row per year, a rounded brick per month (filled = happened, dotted = typical, hatched = provisional), a card anchored to the clicked brick; the average row is labelled as next year's typical row (not a forecast); newest 3 years first; bricks per year set by `--n` (ready for weeks) |
 | `src/components/Detailed.tsx` | Detailed view: `BurningCalendar.tsx` (heatmap), `Charts.tsx` (typical year, year by year), PNG downloads |
 | `src/components/Controls.tsx`, `Panels.tsx`, `MonthDetail.tsx` | Dates and view switch · key numbers, reliability, data sources · one month's details (`useClosing.ts`: their close animation) |
+| `src/components/ForecastPanel.tsx` | Next-week fire chance (`POST /api/forecast`, the only forecast): always with its `label`, hidden while `forecast_available` is false |
 | `src/format.ts` | Number/date formats and the one message's wording (`headlineFor`, `trendOf`, `rankLine`), shared by the tool and the landing page |
 | `src/pages/Landing.tsx`, `src/landing/` | The landing page: markup, the kit loader, its stylesheet, the product UI drawn from the data |
 

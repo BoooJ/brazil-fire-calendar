@@ -259,3 +259,10 @@ Global rules for this block:
   - LocationGate takes `onSources`; under 900px a "Data sources" text link (44px) sits under the privacy line and opens the same dialog. Hidden on desktop, where the top bar has it.
 - [x] Landing satellite timeline: the dashed "Calendar starts, Jan 2003" line sat ~30px left of the 2003 tick (its position ignored the card's side padding)
   - The padding is a `--pad-x` variable used by both the padding and the line's position: line and 2003 tick now match at 1440, 820 and 390.
+
+## Found on the 06:55 run
+
+- [ ] Next-week fire chance panel (README feature 18, root CLAUDE.md status "Website panel: to do"): `POST /api/forecast` on the sheet, always with its `label`, hidden while `forecast_available` is false
+  - [x] Sub-task 1: types + `getForecast()` in api.ts (mock: `forecast.pantanal.json`), a "Next week" section on the sheet: period, expected cells with fire, highest chance, likely intensity, based on N detections, `notes[]`, reliability note; loading / unavailable / error states
+    - components/ForecastPanel.tsx under "coming months": label tag beside the heading, period + cells, three stat boxes (API values, only formatted), notes, based-on + reliability note. Hidden when `forecast_available` is false; skeleton, "model is starting up" (FORECAST_UNAVAILABLE) and error states with Try again; dates before 2018-04-29 explain why there is no estimate. Checked 375 / 1440.
+  - [ ] Sub-task 2: show the forecast cells on the map (sequential colour-blind-safe ramp for `probability`, legend with values, "showing N of M" when truncated)

@@ -9,6 +9,7 @@ import LocationGate, { PinIcon } from '../components/LocationGate';
 import FireCalendar, { type Mode } from '../components/FireCalendar';
 import MonthDetail, { type MapState } from '../components/MonthDetail';
 import ErrorNote from '../components/ErrorNote';
+import ForecastPanel from '../components/ForecastPanel';
 import DateControls, { FIRST_YEAR } from '../components/Controls';
 import { KeyCards, Reliability, SourcesDialog } from '../components/Panels';
 import { Flame } from '../components/Brand';
@@ -351,6 +352,7 @@ export default function Tool() {
                     )}
                     </div>
                     <Upcoming data={data} />
+                    <ForecastPanel area={area.polygon} refDate={refDate} available={status?.forecast_available !== false} />
                     <Briefing data={data} short={!detailed} />
                     {detailed && <Reliability data={data} status={status} />}
                     <footer className="sheet-foot">

@@ -31,6 +31,8 @@ export interface Status {
   calendar_from: string;
   final_until: string | null;
   coverage: Coverage[];
+  /** false while the forecast model loads or if it is missing: hide the forecast panel (contract v0.2) */
+  forecast_available?: boolean;
 }
 
 export interface AnalysisRequest {
@@ -137,4 +139,46 @@ export interface UpdateResult {
   data_updated: string;
   new_hotspots: number;
   message?: string;
+}
+
+// ---------- POST /api/forecast (contract v0.2): the only forecast in the app ----------
+
+export type Intensity = 'low' | 'medium' | 'high';
+
+export interface ForecastRequest {
+  area: AreaGeometry;
+  ref_date?: string;
+  limit?: number;
+}
+
+export interface Forecast {
+  query: { ref_date: string; area_km2: number };
+  data_updated: string;
+  based_on: { satellite: SatelliteKey; from: string; to: string };
+  period: { from: string; to: string };
+  /** always shown next to the numbers */
+  label: string;
+  cell_size_km: number;
+  summary: {
+    cells: number;
+    expected_cells_with_fire: number | null;
+    expected_share_pct: number | null;
+    max_probability: number | null;
+    intensity_if_fire: Intensity | null;
+    recent_detections: number | null;
+  };
+  briefing: string;
+  reliability: { auc: number | null; baseline_auc: number | null; test_years: number[]; note: string };
+  total: number;
+  returned: number;
+  truncated: boolean;
+  cells: {
+    type: 'FeatureCollection';
+    features: {
+      type: 'Feature';
+      geometry: { type: 'Point'; coordinates: [number, number] };
+      properties: { probability: number; intensity_if_fire: Intensity | null };
+    }[];
+  };
+  notes: string[];
 }
