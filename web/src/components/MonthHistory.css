@@ -6,6 +6,13 @@
 .mh-head h2 { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); line-height: 1.4; }
 .mh-hint { font-size: var(--t-xs); color: var(--ink-2); }
 
+/* the month picker: a segmented track like .seg, twelve equal chips */
+.mh-months { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 2px; margin-top: var(--s-3); padding: 3px; border-radius: var(--r-md); background: #e8e8ed; }
+.mh-months button { min-height: 32px; padding: 0; border: 0; border-radius: 8px; background: transparent; font-size: var(--t-sm); font-weight: 550; color: var(--ink-2); transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease; }
+.mh-months button:hover:not(.on) { color: var(--ink); background: rgba(255, 255, 255, 0.5); }
+.mh-months button.on { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
+.mh-months button.is-now { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; text-decoration-color: var(--fire); }
+
 .mh-lead { margin-top: var(--s-4); font-size: var(--t-base); line-height: 1.45; color: var(--ink-2); text-wrap: pretty; }
 .mh-lead b { color: var(--ink); font-weight: 600; }
 
@@ -55,6 +62,8 @@
   .mh-bars button { inset: -18px -1px 0; }
   .mh-bars i { left: 1px; right: 1px; border-radius: 3px 3px 1px 1px; }
   .mh-years li.minor span { display: none; }
+  .mh-months { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .mh-months button { min-height: 36px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
