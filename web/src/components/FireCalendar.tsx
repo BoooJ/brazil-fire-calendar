@@ -132,6 +132,15 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
   const [shown, setShown] = useState(3);
   const visibleYears = years.slice(0, shown);
 
+  // One Tab stop for the whole grid (roving tabindex): the brick last focused, else this month, else the newest.
+  // The arrow keys (moveFocus) move between bricks, so Tab goes on to the next control instead of every month.
+  const [focusKey, setFocusKey] = useState<string | null>(null);
+  const stopKey = useMemo(() => {
+    const keys = visibleYears.flatMap((y) => MON.map((_, i) => `${y}-${i + 1}`)).filter((k) => byKey.has(k));
+    const nowKey = `${data.cards.ref_year}-${data.cards.ref_month}`;
+    return focusKey && keys.includes(focusKey) ? focusKey : keys.includes(nowKey) ? nowKey : keys[0];
+  }, [visibleYears, byKey, focusKey, data.cards.ref_year, data.cards.ref_month]);
+
   const yearTotals = useMemo(() => new Map(data.yearly.map((y) => [y.year, y])), [data.yearly]);
   const avg = useMemo(() => new Map(data.average_by_month.map((a) => [a.month, a])), [data.average_by_month]);
   const { ref_year, ref_month } = data.cards;
@@ -175,6 +184,7 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
 
       {/* Bricks are laid out per period: 12 months now. Weekly bricks need weekly values from the API (we never
           build weeks from hotspots in the browser): set data-period="week" and --n to 52/53 once they exist. */}
+      <p className="sr-only">In the calendar, the arrow keys move between months and years; Enter opens a month.</p>
       <div className="cal-grid" data-period="month" style={{ '--n': 12 } as React.CSSProperties} onKeyDown={moveFocus}>
         <div className="yr yr-colhead" aria-hidden="true">
           <div className="yr-label" />
@@ -242,8 +252,10 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
                     <div className="cell" key={m}>
                       {isNow && <span className="now-tag">{item.partial ? 'SO FAR' : 'NOW'}</span>}
                       <button className={cellClass(item)} aria-label={describe(item)} aria-haspopup="dialog" aria-expanded={pop?.item === item}
+                        tabIndex={`${y}-${idx + 1}` === stopKey ? 0 : -1}
                         onClick={(e) => { hideTip(); setPop(pop?.item === item ? null : { item, el: e.currentTarget }); }}
-                        onPointerEnter={onEnter(item)} onPointerLeave={hideTip} onFocus={onFocusTip(item)} onBlur={hideTip} />
+                        onPointerEnter={onEnter(item)} onPointerLeave={hideTip}
+                        onFocus={(e) => { setFocusKey(`${y}-${idx + 1}`); onFocusTip(item)(e); }} onBlur={hideTip} />
                       <span className="cell-mon" aria-hidden="true">{m}</span>
                     </div>
                   );

@@ -320,7 +320,7 @@ Global rules for this block:
   - Under 361px (landing.css only, kit untouched): the start label and the 2012/2018 ticks hide (the dashed line still meets the 2003 tick; the figure's aria-label says it), the card is a little taller (`--ratio: 100%`) so 2003 and 2026 show. 390+ unchanged.
 - [x] Landing call to action on 320px phones: the card's content (heading, "Open the fire calendar" button) was wider than the card and cut off on the right
   - landing.css: the card's inner grid can shrink (`min-width: 0`), and under 361px the card's side padding and the button are a little smaller. 390 / 1440 unchanged; no text past the edge anywhere on the landing at 320.
-- [x] Detailed view Key numbers at 600px+: "Peak month" spanned the whole last row and left an empty slot beside "Estimated fires"
+- [x] Detailed view Key numbers at 900px+: "Peak month" spanned the whole last row and left an empty slot beside "Estimated fires"
   - The 2-column rule (`.kc:not(.kc-2) > div:last-child`) out-ranked the wide-screen reset; the reset now uses the same selector, so the five cards fill the 3-column grid (big card + 2×2). Phones unchanged. Checked 820 / 1440.
 - [x] Detailed view chart headings: the PNG button sat beside "Typical year" at some widths and dropped under the subtitle at others (always under "Year by year")
   - A `.cal-head` that ends with one button no longer wraps: the text block shrinks and the PNG button stays at the right, bottom-aligned, at every width. The heatmap's tool row (Counts / vs Average / Table / PNG / CSV) still wraps as before. Checked 320 / 375 / 1440, no page overflow.
@@ -330,3 +330,5 @@ Global rules for this block:
   - landing.css (kit untouched): at 1024+ the step texts take 3 lines' height, so the three panels line up. Sections still one screen at 1440×900 and 1366×768; 820 unchanged.
 - [x] "Other day" opened the date field on the calendar's today (15 Nov) while the page above said "As of 14 Nov 2026" (the latest data day)
   - DateControls gets `shown` (the API's `query.ref_date`); "Other day" starts there (today if nothing is shown, or from the 2020 replay). Checked 375.
+- [x] Quick view calendar keyboard: every brick was its own Tab stop (36 with 3 years, up to 288 with all years) before reaching the controls after the calendar
+  - Roving tabindex: one Tab stop for the grid (the brick last focused, else this month, else the newest); the existing arrow keys move between months/years; a screen-reader-only line says so. axe clean at 375; checked Tab / Shift+Tab / arrows at 1440.
