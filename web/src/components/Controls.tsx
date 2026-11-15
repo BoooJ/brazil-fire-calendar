@@ -1,40 +1,33 @@
-// Dates and view: the reference date (today, the 2020 replay or any past day), the first year shown,
-// and the Quick / Detailed switch. The area is chosen in LocationGate.
-import { MON } from '../format';
+// Dates and view: jump to a day in the calendar ("Now" or "Select a day"), the first year shown (detailed view),
+// and the Quick / Detailed switch. Picking a day never hides later data: the calendar scrolls to it and lights it.
+import { useState } from 'react';
 
 export const FIRST_YEAR = 2003;
-export const REPLAY_DATE = '2020-09-14';
 
 interface Props {
-  /** null = today */
-  refDate: string | null;
-  setRefDate: (d: string | null) => void;
+  /** the day picked, null = now */
+  day: string | null;
+  /** null = back to this month */
+  onDay: (d: string | null) => void;
   fromYear: number;
   setFromYear: (y: number) => void;
   detailed: boolean;
   setDetailed: (d: boolean) => void;
   today: string;
-  /** the reference date of the page on screen (the API's `query.ref_date`): where "Other day" starts */
-  shown?: string;
 }
 
-export default function DateControls({ refDate, setRefDate, fromYear, setFromYear, detailed, setDetailed, today, shown }: Props) {
-  const custom = refDate !== null && refDate !== REPLAY_DATE;
-  const lastYear = Number((refDate ?? today).slice(0, 4));
+export default function DateControls({ day, onDay, fromYear, setFromYear, detailed, setDetailed, today }: Props) {
+  const [picking, setPicking] = useState(false);
+  const lastYear = Number(today.slice(0, 4));
   const years = Array.from({ length: lastYear - FIRST_YEAR + 1 }, (_, i) => FIRST_YEAR + i);
-  const [ry, rm, rd] = REPLAY_DATE.split('-').map(Number);
-  // "Other day" opens on the day the page shows now (the latest data day, not the calendar's today)
-  const start = shown && shown !== REPLAY_DATE && shown <= today ? shown : today;
+  const open = picking || day != null;
 
   return (
     <div className="controls" aria-label="Dates and view">
       <div className="controls-row">
-        <div className="seg" role="radiogroup" aria-label="Reference date">
-          <button role="radio" aria-checked={refDate === null} className={refDate === null ? 'on' : ''} onClick={() => setRefDate(null)}>Today</button>
-          <button role="radio" aria-checked={refDate === REPLAY_DATE} className={refDate === REPLAY_DATE ? 'on' : ''} onClick={() => setRefDate(REPLAY_DATE)}>
-            Replay {rd} {MON[rm - 1]} {ry}
-          </button>
-          <button role="radio" aria-checked={custom} className={custom ? 'on' : ''} onClick={() => !custom && setRefDate(start)}>Other day</button>
+        <div className="seg" role="radiogroup" aria-label="Where to look in the calendar">
+          <button role="radio" aria-checked={!open} className={!open ? 'on' : ''} onClick={() => { setPicking(false); onDay(null); }}>Now</button>
+          <button role="radio" aria-checked={open} className={open ? 'on' : ''} onClick={() => setPicking(true)}>Select a day</button>
         </div>
         <div className="seg" role="radiogroup" aria-label="View">
           <button role="radio" aria-checked={!detailed} className={!detailed ? 'on' : ''} onClick={() => setDetailed(false)}>Quick view</button>
@@ -42,13 +35,13 @@ export default function DateControls({ refDate, setRefDate, fromYear, setFromYea
         </div>
       </div>
 
-      {(custom || detailed) && (
+      {(open || detailed) && (
         <div className="controls-row controls-fields">
-          {custom && (
+          {open && (
             <label>
-              See the page as it was on
-              <input type="date" value={refDate ?? today} min={`${FIRST_YEAR}-01-01`} max={today}
-                onChange={(e) => e.target.value && setRefDate(e.target.value)} />
+              Find this day in the calendar
+              <input type="date" autoFocus={picking && day == null} value={day ?? ''} min={`${FIRST_YEAR}-01-01`} max={today}
+                onChange={(e) => e.target.value && onDay(e.target.value)} />
             </label>
           )}
           {detailed && (

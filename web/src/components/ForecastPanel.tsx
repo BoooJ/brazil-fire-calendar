@@ -65,11 +65,10 @@ export default function ForecastPanel({ area, refDate, available, refresh = 0, o
     <section className="fc" aria-labelledby="fc-title" aria-busy={load.kind === 'loading' || undefined}>
       <div className="upcoming-head">
         <h2 id="fc-title" tabIndex={-1}>Chance of fire next week</h2>
-        <span className="tag tag-model">{label}</span>
       </div>
 
       {tooEarly ? (
-        <p className="muted">The next-week model needs VIIRS NOAA-20 data, which starts in 2018. Pick a reference date from {dateShort(FIRST_FORECAST_DAY)} on to replay it.</p>
+        <p className="muted">The next-week model needs VIIRS NOAA-20 data, which starts in 2018. </p>
       ) : load.kind === 'loading' ? (
         <div className="fc-stats" aria-label="Loading the model estimate">
           <div className="sk fc-sk" /><div className="sk fc-sk" /><div className="sk fc-sk" />
@@ -89,6 +88,8 @@ export default function ForecastPanel({ area, refDate, available, refresh = 0, o
       ) : (
         <ForecastBody f={load.data} onToggle={() => (onShown ? onHideMap() : onShowMap(load.data))} shown={onShown} />
       )}
+      {/* the API's own label, always with the numbers: small and quiet, under them */}
+      <p className="quiet-note fc-label">{label}</p>
     </section>
   );
 }
@@ -131,25 +132,36 @@ function ForecastBody({ f, onToggle, shown }: { f: Forecast; onToggle: () => voi
       <div className="fc-map-row">
         {f.returned > 0 && (
           /* stays enabled (a disabled button would drop keyboard focus): it hides them again */
-          <button className="btn btn-ghost" onClick={onToggle}>
-            {shown ? 'Hide the cells from the map' : 'Show the cells on the map'}
+          <button className="btn btn-dark fc-map-btn" onClick={onToggle}>
+            <MapIcon /> {shown ? 'Hide the cells from the map' : 'Show the cells on the map'}
           </button>
         )}
-        {f.briefing && <button className="btn btn-ghost" onClick={copy}>{copied === 'ok' ? '✓ Copied' : 'Copy as text'}</button>}
-        <span className={'copy-note' + (copied === 'ok' ? ' sr-only' : '')} role="status">
+        {f.briefing && <button className="textlink fc-copy" onClick={copy}>{copied === 'ok' ? '✓ Copied' : 'Copy as text'}</button>}
+        <span className="sr-only" role="status">
           {copied === 'ok' ? 'Estimate copied to the clipboard.' : copied === 'fail' ? 'Could not copy here.' : ''}
         </span>
-        {f.returned > 0 && f.truncated && <span className="muted fc-map-note">The map shows the {num(f.returned)} cells with the highest chance, of {num(f.total)}.</span>}
       </div>
-      {f.notes.length > 0 && (
-        <ul className="fc-notes">
-          {f.notes.map((n) => <li key={n}>{n}</li>)}
-        </ul>
-      )}
-      <p className="muted fc-fine">
-        Based on {s.recent_detections == null ? 'the' : num(s.recent_detections)} NASA FIRMS VIIRS NOAA-20 detections here from {dateShort(f.based_on.from)} to {dateShort(f.based_on.to)}, and the usual pattern for this week of the year.
-        {f.reliability.note && <> {f.reliability.note}</>}
-      </p>
+      <details className="more">
+        <summary>Read more</summary>
+        {f.returned > 0 && f.truncated && <p>The map shows the {num(f.returned)} cells with the highest chance, of {num(f.total)}.</p>}
+        {f.notes.length > 0 && (
+          <ul className="fc-notes">
+            {f.notes.map((n) => <li key={n}>{n}</li>)}
+          </ul>
+        )}
+        <p>
+          Based on {s.recent_detections == null ? 'the' : num(s.recent_detections)} NASA FIRMS VIIRS NOAA-20 detections here from {dateShort(f.based_on.from)} to {dateShort(f.based_on.to)}, and the usual pattern for this week of the year.
+          {f.reliability.note && <> {f.reliability.note}</>}
+        </p>
+      </details>
     </>
+  );
+}
+
+function MapIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z" /><path d="M9 4v13.5M15 6.5V20" />
+    </svg>
   );
 }

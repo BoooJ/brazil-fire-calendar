@@ -10,7 +10,7 @@ Scope: everything the user sees. `../docs/api-contract.md` is the source of trut
 | Mock | For |
 |---|---|
 | `mocks/analysis.pantanal.json` | The main page (reference date 2026-11-14: partial and provisional months) |
-| `mocks/analysis.pantanal.ref-2020-09-14.json` | The 2020 crisis replay (huge anomaly). Used for every reference date up to 2020 |
+| `mocks/analysis.pantanal.ref-2020-09-14.json` | The 2020 crisis as a past reference date. Not used by the page since "Select a day" replaced the replay (it only scrolls the calendar) |
 | `mocks/hotspots.pantanal.2020-09.geojson` | Map points after a calendar click (`truncated: true`). The only month with points |
 | `mocks/presets.json`, `mocks/status.json` | Preset buttons, "data updated", the data sources dialog |
 | `mocks/calendar.pantanal.csv`, `mocks/hotspots.pantanal.2020-09.csv` | What the CSV buttons return |
@@ -60,15 +60,15 @@ npm run preview    # serve the build
 | `src/geo.ts` | Circle, rectangle, drawn polygon → GeoJSON; preset areas |
 | `src/states.ts`, `src/data/brazil-states.json` | Brazil's 27 states (Natural Earth admin-1, 1:50m, simplified with mapshaper, 38 KB): search, the state under a point, a state as the page's area (its real border goes to the API) |
 | `src/levels.ts` | Intensity levels (colour + word) shared by the calendar, the first screen and the coming months |
-| `src/components/Status.tsx` | The first screen: the status line, three answers (fire now, against typical, is this the season), a typical year as bars |
+| `src/components/Status.tsx` | The first screen: a short headline ("Fire activity ▼ 52%") with its sentence under it, three answers (fire now, against typical, is this the season), a typical year as bars with this month in the middle and the coming months hollow (an estimate) |
 | `src/pages/Tool.tsx` | The tool: location step, the one message, dates, the sheet, the globe/map stage |
 | `src/components/LocationGate.tsx` | "Where should we look?": three tabs. State (searchable list of 27, or click the globe), Point (location or coordinates + radius), Draw |
 | `src/components/Globe.tsx` | Globe, flat and light: Brazil with state borders, the state under the pointer lifts and a click selects it (`onState`), area outline, hotspot points, the picked point's marker (`pick`) |
 | `src/components/MapView.tsx` | The map: hotspots by fire strength, or next week's forecast cells by chance (`cells`, viridis `CHANCE_STOPS`), popups, drawing a rectangle or polygon (no draw plugin); zooms to the forecast cells when shown and fits a month's hotspots beside the desktop month card; if the GIBS imagery fails it says so and shows the globe's country outlines instead (`loadWorld()` from Globe.tsx) |
-| `src/components/FireCalendar.tsx` | Quick view calendar, GitHub style: a row per year, a rounded brick per month, colour only (filled = happened, dashed outline = typical, dot = provisional, ring = this month); hover lifts the brick, a click opens a card anchored to it with "Open on the map"; next year as a typical row (not a forecast); newest 3 years, See more / See less; bricks per year set by `--n` (ready for weeks) |
+| `src/components/FireCalendar.tsx` | Quick view calendar, GitHub style: a row per year, a rounded brick per month, colour only (filled = happened, dashed outline = typical, ring = this month; provisional and uncertain are said in the month's card); hover lifts the brick, a click opens a card anchored to it with "Open on the map"; next year as a typical row (not a forecast); newest 3 years, See more / See less; `jump` scrolls to a month and lights it ("Select a day"); bricks per year set by `--n` (ready for weeks) |
 | `src/components/Detailed.tsx` | Detailed view: `BurningCalendar.tsx` (heatmap), `Charts.tsx` (typical year, year by year), PNG downloads |
-| `src/components/Controls.tsx`, `Panels.tsx`, `MonthDetail.tsx` | Dates and view switch · key numbers, reliability, data sources · one month's details (`useClosing.ts`: their close animation) |
-| `src/components/ForecastPanel.tsx` | Next-week fire chance (`POST /api/forecast`, the only forecast): always with its `label`, hidden while `forecast_available` is false |
+| `src/components/Controls.tsx`, `Panels.tsx`, `MonthDetail.tsx` | Now / Select a day (finds a day in the calendar, never reloads or hides data) and the view switch · key numbers, reliability, data sources · one month's details (`useClosing.ts`: their close animation) |
+| `src/components/ForecastPanel.tsx` | Next-week fire chance (`POST /api/forecast`, the only forecast): always with its `label` (a small line under the numbers), details behind "Read more", hidden while `forecast_available` is false |
 | `src/format.ts` | Number/date formats and the status line's wording (`headlineParts`, `headlineFor`, `trendOf`, `rankLine`, `vsTypical`) |
 | `src/pages/Landing.tsx`, `src/landing/` | The landing page: markup, its stylesheet, the screenshots of the tool (`pictures/`), the data pictures drawn from the API (`visuals.tsx`) |
 

@@ -13,7 +13,7 @@ import { LEVEL_WORDS, makeCountLevels } from '../levels';
 import FireCalendar, { type Mode } from '../components/FireCalendar';
 import MonthDetail, { satNote, type MapState } from '../components/MonthDetail';
 import ErrorNote from '../components/ErrorNote';
-import ForecastPanel, { FIRST_FORECAST_DAY } from '../components/ForecastPanel';
+import ForecastPanel from '../components/ForecastPanel';
 import DateControls, { FIRST_YEAR } from '../components/Controls';
 import { KeyCards, Reliability, SourcesDialog } from '../components/Panels';
 import { Flame } from '../components/Brand';
@@ -55,7 +55,9 @@ export default function Tool() {
   const [picked, setPicked] = useState<{ lon: number; lat: number } | null>(null);
   const [way, setWay] = useState<Way>('state');
   const [hoverState, setHoverState] = useState<string | null>(null);
-  const [refDate, setRefDate] = useState<string | null>(null); // null = today
+  // a day picked with "Select a day": the calendar scrolls to its month and lights it (nothing is hidden or reloaded)
+  const [day, setDay] = useState<string | null>(null);
+  const [jump, setJump] = useState<{ year: number; month: number; n: number } | null>(null);
   const [fromYear, setFromYear] = useState(FIRST_YEAR);
   const [detailed, setDetailed] = useState(false);
   const [mode, setMode] = useState<Mode>('counts');
@@ -92,9 +94,8 @@ export default function Tool() {
     return {
       area: area.polygon,
       ...(fromYear > FIRST_YEAR ? { start: `${fromYear}-01-01` } : {}),
-      ...(refDate ? { end: refDate, ref_date: refDate } : {}),
     };
-  }, [area, refDate, fromYear]);
+  }, [area, fromYear]);
 
   const clearMap = useCallback(() => {
     setMap({ kind: 'idle' });
@@ -135,10 +136,18 @@ export default function Tool() {
   const chooseAreaRef = useRef(chooseArea);
   chooseAreaRef.current = chooseArea;
 
-  const changeRefDate = (d: string | null) => {
-    setRefDate(d);
-    // the calendar cannot start after the reference year
-    if (d && Number(d.slice(0, 4)) < fromYear) setFromYear(FIRST_YEAR);
+  const pickDay = (d: string | null) => {
+    setDay(d);
+    const items = load.kind === 'ok' ? load.data.calendar : [];
+    const cards = load.kind === 'ok' ? load.data.cards : null;
+    const [y, m] = d ? d.split('-').map(Number) : [cards?.ref_year ?? 0, cards?.ref_month ?? 0];
+    const item = items.find((i) => i.year === y && i.month === m);
+    if (!item) {
+      if (d) flash('We have no data for that day.');
+      return;
+    }
+    if (detailed) setSelected(item);
+    else setJump((j) => ({ year: y, month: m, n: (j?.n ?? 0) + 1 }));
   };
 
   const selectedRef = useRef(selected);
@@ -408,9 +417,8 @@ export default function Tool() {
                   <ErrorNote size="page" title="We could not load the fire data" message={load.message} onRetry={() => setAttempt((n) => n + 1)} />
                 </section>
               )}
-              {data && <StatusHero data={data} area={area} status={status} asOf={refDate} updating={updating} onUpdate={updateNow} onForecast={status?.forecast_available === false || (refDate != null && refDate < FIRST_FORECAST_DAY) ? undefined : toForecast} />}
-              <DateControls refDate={refDate} setRefDate={changeRefDate} fromYear={fromYear} setFromYear={setFromYear}
-                detailed={detailed} setDetailed={setDetailed} today={today} shown={data?.query.ref_date} />
+              {data && <StatusHero data={data} area={area} status={status} updating={updating} onUpdate={updateNow} onForecast={status?.forecast_available === false ? undefined : toForecast} />}
+              <DateControls day={day} onDay={pickDay} fromYear={fromYear} setFromYear={setFromYear} detailed={detailed} setDetailed={setDetailed} today={today} />
               {load.kind === 'loading' && (
                 <div className="sheet" aria-busy="true" aria-label="Loading fire data"><SheetSkeleton /></div>
               )}
@@ -431,11 +439,11 @@ export default function Tool() {
                         <Detailed data={data} mode={mode} onMode={setMode} selected={selected} onSelect={select} slug={slug} onCsv={calendarCsv} />
                       </Suspense>
                     ) : (
-                      <FireCalendar data={data} selected={selected} onSelect={select} onOpenMap={showOnMap} mode={mode} onMode={setMode} onCsv={calendarCsv} />
+                      <FireCalendar data={data} selected={selected} onSelect={select} onOpenMap={showOnMap} jump={jump} mode={mode} onMode={setMode} onCsv={calendarCsv} />
                     )}
                     </div>
                     <Upcoming data={data} />
-                    <ForecastPanel area={area.polygon} refDate={refDate} available={status?.forecast_available !== false} refresh={attempt} onShowMap={showForecastMap} onHideMap={clearMap} onShown={!!fcMap && stage === 'map'} />
+                    <ForecastPanel area={area.polygon} refDate={null} available={status?.forecast_available !== false} refresh={attempt} onShowMap={showForecastMap} onHideMap={clearMap} onShown={!!fcMap && stage === 'map'} />
                     <Briefing data={data} detailed={detailed} coverage={status?.coverage} />
                     {detailed && <Reliability data={data} status={status} />}
                     <footer className="sheet-foot">
@@ -464,8 +472,7 @@ function Upcoming({ data }: { data: Analysis }) {
   return (
     <section className="upcoming" aria-labelledby="up-title">
       <div className="upcoming-head">
-        <h2 id="up-title">What the coming months are usually like</h2>
-        <span className="tag tag-outline">{data.next_months_label}</span>
+        <h2 id="up-title">What the coming months are like</h2>
       </div>
       <ul className="next">
         {data.next_months.map((m) => {
@@ -474,32 +481,22 @@ function Upcoming({ data }: { data: Analysis }) {
             <li key={`${m.year}-${m.month}`}>
               <span className={`day mini typical lv${lv}`} aria-hidden="true" />
               <span className="next-mon">{MONTHS[m.month - 1]} {m.year}</span>
-              <span className="next-val">{m.mean == null ? 'No history yet' : `Usually ${LEVEL_WORDS[lv].toLowerCase()}`}</span>
+              <span className="next-val">{m.mean == null ? 'No history yet' : LEVEL_WORDS[lv]}</span>
             </li>
           );
         })}
       </ul>
+      <p className="quiet-note">{data.next_months_label}.</p>
     </section>
   );
 }
 
 function Briefing({ data, detailed, coverage }: { data: Analysis; detailed: boolean; coverage?: Coverage[] }) {
-  const [copied, setCopied] = useState<null | 'ok' | 'fail'>(null);
   const c = data.cards;
-  const copy = () => {
-    const done = (r: 'ok' | 'fail') => { setCopied(r); setTimeout(() => setCopied(null), 2500); };
-    if (!navigator.clipboard) return done('fail');
-    navigator.clipboard.writeText(data.briefing).then(() => done('ok'), () => done('fail'));
-  };
   return (
     <section className="briefing">
-      <h2>Summary to share</h2>
+      <h2>In short</h2>
       <p>{data.briefing}</p>
-      <div className="copy-row">
-        <button className="btn btn-ghost" onClick={copy}>{copied === 'ok' ? '✓ Copied' : 'Copy text'}</button>
-        {/* announced to screen readers; on failure the text is still selectable above */}
-        <span className={'copy-note' + (copied === 'ok' ? ' sr-only' : '')} role="status">{copied === 'ok' ? 'Summary copied to the clipboard.' : copied === 'fail' ? 'Could not copy here: select the text above instead.' : ''}</span>
-      </div>
 
       {detailed ? (
         <>
