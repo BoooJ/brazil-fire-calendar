@@ -253,3 +253,5 @@ Global rules for this block:
   - Table buttons have no aria-label now: the visible value is the name core, with month/year and full numbers as screen-reader text (the "*" is a CSS mark; "provisional" is in the text). The scroll box is `position: relative` so that hidden text cannot widen the page at 375. "typ." uses #5d6070. axe: no violations on landing (390, 1440) and the table view.
 - [x] Phone hero: "Update now" wrapped alone onto its own 44px line under the update time
   - The time and "Update now" are one no-wrap group (it moves under the tags as a whole); phones say "Updated …" instead of "Data updated …" so the pair fits 375.
+- [x] "▲ 1% above average" in the brick card / month card while the legends call ±20% "near average" (and the Key numbers card used ±15% for its colour)
+  - format.ts: `pctLong` shows ● inside ±20% ("● 1% above average"), ▲/▼ outside; `pctShort` uses +/− inside the band; the Key numbers colour uses the same ±20% as `trendOf`. Wording only, values are the API's.

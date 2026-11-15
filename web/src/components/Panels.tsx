@@ -12,7 +12,7 @@ export function KeyCards({ data }: { data: Analysis }) {
   const month = MONTHS[c.ref_month - 1];
   const period = `${month} ${c.ref_year}${c.partial ? `, first ${c.days_covered} days` : ''}`;
   const p = c.vs_avg_pct;
-  const tone = p == null ? '' : p > 15 ? ' is-up' : p < -15 ? ' is-down' : '';
+  const tone = p == null ? '' : p >= 20 ? ' is-up' : p <= -20 ? ' is-down' : '';
   const avg = data.average_period ? `${data.average_period.from}–${data.average_period.to}` : null;
   return (
     <section className="keycards" aria-labelledby="key-title">

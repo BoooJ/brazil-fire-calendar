@@ -18,7 +18,8 @@ export function compact(n: number | null | undefined): string {
 /** +31.4 -> "▲ 31%", -12.5 -> "▼ 13%", 855 -> "▲ 9.6×" */
 export function pctShort(p: number | null | undefined): string {
   if (p == null) return '–';
-  const arrow = p > 0 ? '▲' : p < 0 ? '▼' : '';
+  // arrows only outside the ±20% "near average" band (as the legends); inside it a plain sign
+  const arrow = p >= 20 ? '▲' : p <= -20 ? '▼' : Math.round(p) > 0 ? '+' : Math.round(p) < 0 ? '−' : '';
   if (p >= 200) return `${arrow}${(p / 100 + 1).toFixed(p >= 900 ? 0 : 1)}×`;
   return `${arrow}${Math.abs(Math.round(p))}%`;
 }
@@ -28,7 +29,9 @@ export function pctLong(p: number | null | undefined): string {
   const r = Math.round(p);
   if (r === 0) return 'equal to the average';
   if (p >= 200) return `▲ ${(p / 100 + 1).toFixed(1)}× the average`;
-  return r > 0 ? `▲ ${r}% above average` : `▼ ${Math.abs(r)}% below average`;
+  // within ±20% the legends call it "near average": a neutral ● instead of an arrow (same band as trendOf)
+  const mark = p >= 20 ? '▲' : p <= -20 ? '▼' : '●';
+  return r > 0 ? `${mark} ${r}% above average` : `${mark} ${Math.abs(r)}% below average`;
 }
 
 /** 1 -> "1st", 22 -> "22nd" */
