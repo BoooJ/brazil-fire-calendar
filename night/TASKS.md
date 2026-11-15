@@ -1,0 +1,22 @@
+# Night tasks (UI/UX, web/)
+
+- [ ] Tool (#/app) at 375px width: no horizontal scroll anywhere; controls, sheet and globe stack cleanly; tap targets ≥ 44px
+- [ ] Tool at 820px and 1366px: check spacing, alignment and that nothing overlaps the globe/map stage
+- [ ] Landing page at 1440×900, 1366×768, 820×1180, 390×844: every section fits one screen, no clipped text
+- [ ] Loading state: consistent skeletons/spinners for the sheet, the calendar and the detailed view (no layout jump when data arrives)
+- [ ] Zero-fires state: a clear, friendly empty state in the calendar and map instead of an empty grid
+- [ ] API error state: one consistent error message component with a retry button
+- [ ] Truncated hotspots: visible "showing 300 of N" badge on the map, readable on mobile
+- [ ] Provisional / uncertain / partial cells: make the hatching/fading consistent between FireCalendar and BurningCalendar and explain it in the legend
+- [ ] Legends: show values for every colour step; vs Average legend with ▲/▼ and a neutral middle
+- [ ] Keyboard: every interactive element reachable with Tab, visible :focus-visible ring using a design token, Escape closes dialogs/popups
+- [ ] ARIA: labels for icon-only buttons, the calendar grid cells announce month, year and count
+- [ ] Contrast: check all text and UI against WCAG AA on both the white sheet and the dark panels; fix tokens, not single colours
+- [ ] Hover details on calendar cells: consistent tooltip style, works with keyboard focus too
+- [ ] Design tokens: replace hard-coded colours, radii, shadows and spacing in src/styles.css and components with the tokens at the top
+- [ ] Buttons: one consistent set of variants (primary, secondary, ghost) with hover, active, disabled and focus states
+- [ ] LocationGate ("Where should we look?"): clearer step layout, helpful hints, mobile-friendly inputs
+- [ ] Micro-interactions: smooth transitions for view switch (quick ↔ detailed), calendar hover and panel open/close; respect prefers-reduced-motion
+- [ ] MonthDetail and Panels: tidy typography hierarchy (sizes, weights, line-height), numbers in tabular figures
+- [ ] Map popups: consistent styling with the rest of the tool, readable on mobile
+- [ ] Find and merge duplicated UI components or duplicated CSS rules
