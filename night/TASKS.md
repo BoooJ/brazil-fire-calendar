@@ -292,3 +292,5 @@ Global rules for this block:
 
 - [x] "Hotspots seen by each satellite this month" showed VIIRS S-NPP like an active satellite, though it ended on 2 Nov 2026 (and "no data" before a launch was unexplained)
   - `coverageNote()` (format.ts) reads `/api/status` coverage: under the satellite's name, "ended 2 Nov 2026" or "from 20 Jan 2012" when it stopped/started in or before that month. Same in the month card (MonthDetail `coverage`). Display only. Checked 375 / 1440.
+- [x] "Show the cells on the map" kept the whole-area view, so the cells were a tiny cluster on desktop and hidden under the tall legend on phones
+  - MapView zooms to the cells' extent when they are shown (max zoom 8, top padding below the legend, at least 120px of map left; instant with reduced motion); hiding them goes back to the area. Checked 375 / 1440.

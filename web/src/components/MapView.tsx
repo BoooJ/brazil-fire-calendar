@@ -335,6 +335,7 @@ export default function MapView({ area, hotspots, cells = null, cellsLabel = '',
 
   // ---------- data ----------
   const lastAreaKey = useRef('');
+  const lastCells = useRef<Forecast['cells'] | null>(null);
   function apply(a: AreaGeometry | null, h: Hotspots | null, c: Forecast['cells'] | null, first = false) {
     const m = map.current;
     if (!m || !ready.current) return;
@@ -343,14 +344,35 @@ export default function MapView({ area, hotspots, cells = null, cellsLabel = '',
     );
     (m.getSource('hotspots') as maplibregl.GeoJSONSource).setData((h as unknown as FeatureCollection) ?? EMPTY);
     (m.getSource('fc') as maplibregl.GeoJSONSource).setData((c as unknown as FeatureCollection) ?? EMPTY);
+    // room for the top bar, the caption and the legend above the area
+    const phone = m.getContainer().clientHeight < 520;
+    const padding = phone ? { top: 150, bottom: 28, left: 28, right: 28 } : { top: 200, bottom: 72, left: 72, right: 72 };
+    const duration = first || window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 900;
+    // forecast cells just shown: zoom to them (they can be a small cluster in a big area); hiding them goes back to the area
+    if (c !== lastCells.current) {
+      const had = lastCells.current != null;
+      lastCells.current = c;
+      if (c && c.features.length) {
+        let w = 180, s = 90, e = -180, n = -90;
+        for (const f of c.features) {
+          const [x, y] = f.geometry.coordinates;
+          w = Math.min(w, x); e = Math.max(e, x); s = Math.min(s, y); n = Math.max(n, y);
+        }
+        const d = 0.05; // half a 5 km cell, so a single cell still has a box
+        // keep the cells clear of the legend (tall on phones), but leave them at least 120px of map
+        const box = m.getContainer().getBoundingClientRect();
+        const leg = document.querySelector('.map-legend')?.getBoundingClientRect();
+        const top = leg ? Math.max(padding.top, Math.min(leg.bottom - box.top + 16, box.height - padding.bottom - 120)) : padding.top;
+        m.fitBounds([[w - d, s - d], [e + d, n + d]], { padding: { ...padding, top, left: Math.max(padding.left, 56) }, duration, maxZoom: 8 });
+        return;
+      }
+      if (had) lastAreaKey.current = '';
+    }
     const key = a ? JSON.stringify(a.coordinates).slice(0, 200) : '';
     if (a && key !== lastAreaKey.current) {
       lastAreaKey.current = key;
       const [w, s, e, n] = areaBbox(a);
-      // room for the top bar, the caption and the legend above the area
-      const phone = m.getContainer().clientHeight < 520;
-      const padding = phone ? { top: 150, bottom: 28, left: 28, right: 28 } : { top: 200, bottom: 72, left: 72, right: 72 };
-      m.fitBounds([[w, s], [e, n]], { padding, duration: first ? 0 : 900, maxZoom: 8 });
+      m.fitBounds([[w, s], [e, n]], { padding, duration, maxZoom: 8 });
     }
   }
 
