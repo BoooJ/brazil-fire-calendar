@@ -122,7 +122,8 @@ Global rules for this block:
 - [x] Month card and data sources dialog: add a close animation (needs a short delayed unmount)
   - New components/useClosing.ts: 160 ms sink/fade-out before unmount (instant with reduced motion). Month card focus now returns to its calendar brick even when opened from the brick card.
 - [ ] Detailed view heatmap is a canvas: cells are not reachable by keyboard (see night/QUESTIONS.md)
-- [ ] Gate on phones: the long single column could show the four ways as numbered steps (1 location · 2 region · 3 point · 4 draw)
+- [x] Gate on phones: the long single column could show the four ways as numbered steps (1 location · 2 region · 3 point · 4 draw)
+  - Under 600px the four dividers carry numbered badges (CSS counter) and a "1 your location" divider appears above the location button; desktop unchanged.
 - [x] Landing "How it works" cards follow tonight's tool changes
   - Step 2 now draws the new hero (▲ headline, rank pill when top 3, context bullets); step 3 draws rounded bricks.
 - [x] Quick view: last "fire-days" wording outside the Detailed view

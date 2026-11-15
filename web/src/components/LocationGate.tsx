@@ -63,6 +63,7 @@ export default function LocationGate({ presets, picked, onPickedChange, onDone, 
         own. We cover Brazil only.
       </p>
 
+      <div className="gate-or gate-or--first" aria-hidden="true"><span>your location</span></div>
       <button className="btn btn-light btn-wide" onClick={locate} disabled={busy}>
         <PinIcon /> {busy ? 'Finding you…' : 'Use my location'}
       </button>

@@ -330,6 +330,16 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
 .gate-lead { color: var(--ink-2); margin-bottom: 20px; }
 .gate-or { display: flex; align-items: center; gap: 12px; margin: 22px 0 12px; font-size: var(--t-sm); color: var(--ink-2); }
 .gate-or::before, .gate-or::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.gate-or--first { display: none; }
+/* phones: the four ways read as numbered options (1 location · 2 region · 3 point · 4 draw) */
+@media (max-width: 599px) {
+  .gate { counter-reset: way; }
+  .gate-or--first { display: flex; margin-top: 4px; }
+  .gate-or::before { flex: 0 0 0; }
+  .gate-or { justify-content: flex-start; font-weight: 600; color: var(--ink); }
+  .gate-or > span { display: inline-flex; align-items: center; gap: 8px; }
+  .gate-or > span::before { counter-increment: way; content: counter(way); display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--line-strong); font-size: var(--t-xs); font-weight: 700; }
+}
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: var(--r-pill); border: 1px solid var(--line); background: var(--surface); font-weight: 600; font-size: var(--t-base); transition: border-color 0.15s ease, background 0.15s ease; }
 .chip:hover { border-color: var(--fire); }
