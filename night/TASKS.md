@@ -324,3 +324,5 @@ Global rules for this block:
   - The 2-column rule (`.kc:not(.kc-2) > div:last-child`) out-ranked the wide-screen reset; the reset now uses the same selector, so the five cards fill the 3-column grid (big card + 2×2). Phones unchanged. Checked 820 / 1440.
 - [x] Detailed view chart headings: the PNG button sat beside "Typical year" at some widths and dropped under the subtitle at others (always under "Year by year")
   - A `.cal-head` that ends with one button no longer wraps: the text block shrinks and the PNG button stays at the right, bottom-aligned, at every width. The heatmap's tool row (Counts / vs Average / Table / PNG / CSV) still wraps as before. Checked 320 / 375 / 1440, no page overflow.
+- [x] Month card on phones: "▼ 25% below average · rank 13 of 17" left the word "years" alone on the next line
+  - "rank N of M years" is one unbreakable piece (`.detail-line .nobr`), so it moves to the next line whole. Checked 320 / 375.

@@ -411,6 +411,7 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
 .detail-big { font-size: var(--t-4xl); font-weight: 750; letter-spacing: -0.03em; line-height: 1.1; margin-top: 4px; font-variant-numeric: tabular-nums; }
 .detail-big span { font-size: var(--t-md); font-weight: 600; color: var(--ink-2); letter-spacing: 0; }
 .detail-line { font-weight: 600; margin: 4px 0 12px; }
+.detail-line .nobr { white-space: nowrap; } /* "rank 13 of 17 years" moves to the next line as one piece */
 .detail .flags { font-size: var(--t-sm); color: var(--ink-2); display: grid; gap: 4px; margin-bottom: 12px; }
 .detail .flags li { position: relative; padding-left: 14px; }
 .detail .flags li::before { content: ''; position: absolute; left: 0; top: 0.5em; width: 6px; height: 6px; border-radius: 50%; background: var(--warn); }

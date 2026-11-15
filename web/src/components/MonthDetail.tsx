@@ -57,7 +57,7 @@ export default function MonthDetail({ item, map, onShowMap, onCsv, onClose, cove
       </p>
       <p className="detail-line">
         {pctLong(item.vs_avg_pct)}
-        {item.rank != null && <> · rank {item.rank} of {item.of_years} years</>}
+        {item.rank != null && <> · <span className="nobr">rank {item.rank} of {item.of_years} years</span></>}
       </p>
       {(item.provisional || item.uncertain || item.partial) && (
         <ul className="flags">
