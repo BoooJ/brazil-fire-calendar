@@ -67,6 +67,6 @@ npm run preview    # serve the build
 | `src/format.ts` | Number/date formats and the one message's wording (`headlineFor`, `trendOf`, `rankLine`), shared by the tool and the landing page |
 | `src/pages/Landing.tsx`, `src/landing/` | The landing page: markup, the kit loader, its stylesheet, the product UI drawn from the data |
 
-**Display only, never for numbers:** country outlines on the globe (Natural Earth, `world-atlas` npm package) and the map's imagery (NASA GIBS). Never use them to select, clip or count data. Both are credited on the landing page and in the data sources dialog.
+**Display only, never for numbers:** country outlines on the globe and on the map when its imagery fails (Natural Earth, `world-atlas` npm package) and the map's imagery (NASA GIBS). Never use them to select, clip or count data. Both are credited on the landing page and in the data sources dialog.
 
 Waiting for the API: "Update now" shows the API's own answer (`/api/update` is still a stub).
