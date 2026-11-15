@@ -76,7 +76,7 @@ strong { font-weight: 650; }
 .bfc-up { color: var(--fc-up); }
 .bfc-down { color: var(--fc-down); }
 .bfc-chip { font-size: 11px; padding: 3px 8px; border-radius: 99px; border: 1px solid var(--fc-line, #262d3e); color: var(--fc-muted, #9aa1b0); white-space: nowrap; }
-.bfc-chip--prov { border-style: dashed; color: var(--fc-fire, #f9cb35); border-color: rgba(249, 203, 53, 0.5); }
+.bfc-chip--prov { border-color: transparent; background: #fde7c4; color: #5a3600; font-weight: 600; }
 
 /* the window on the painted ground (the kit's hero window, here under the three steps) */
 .bfc-window {
@@ -104,7 +104,7 @@ strong { font-weight: 650; }
 .bfc-kpi strong { font-size: 24px; font-weight: 500; letter-spacing: -0.02em; line-height: 1.15; }
 .bfc-kpi strong em, .bfc-stats strong em { font-style: normal; font-size: 13px; color: var(--fc-muted); }
 .bfc-kpi span { font-size: 12px; color: var(--fc-muted); }
-.bfc-kpi--hot { background: linear-gradient(135deg, rgba(249, 142, 9, 0.16), rgba(87, 16, 110, 0.2)), var(--fc-panel); border-color: rgba(249, 142, 9, 0.4); }
+.bfc-kpi--hot { background: #2a1d14; border-color: rgba(249, 142, 9, 0.4); }
 .bfc-kpi--hot strong { color: var(--fc-fire); font-size: 30px; }
 @media (max-width: 1279px) { .bfc-kpis { display: none; } .bfc-win__body { grid-template-columns: minmax(0, 1fr); } }
 
@@ -147,34 +147,42 @@ strong { font-weight: 650; }
 .bfc-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--fc-line); }
 .bfc-stats > div { display: grid; gap: 4px; }
 .bfc-stats strong { font-size: 22px; font-weight: 500; letter-spacing: -0.02em; }
-.bfc-map { display: block; width: 100%; height: auto; background: radial-gradient(120% 90% at 50% 40%, #151b28, #0d1017); }
+.bfc-map { display: block; width: 100%; height: auto; background: #121722; }
 .bfc-map__box { fill: rgba(249, 142, 9, 0.05); stroke: #ff6a1f; stroke-width: 1.5; }
 .bfc-map circle[data-c] { opacity: 0.5; }
 @media (max-width: 639px) { .bfc-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
-/* satellites timeline */
-.bfc-tl { --lane-name: 150px; position: absolute; inset: 0; padding: 48px 40px 40px; display: grid; align-content: center; gap: 22px; color: var(--ink); }
+/* satellites timeline: a flat, light card (no painted ground), pastel bars, plain labels */
+#idea .frame--lit { background: #eef0f6; --ink: #0b0d14; --muted: #4f5462; box-shadow: none; }
+#idea .frame--lit > .stage > :not(.bfc-tl) { display: none; } /* the kit's painted layers, if any */
+.bfc-tl { --lane-name: 168px; position: absolute; inset: 0; padding: 56px 40px 36px; display: grid; align-content: center; gap: 20px; color: var(--ink); }
 .bfc-lane { display: grid; grid-template-columns: var(--lane-name) 1fr; align-items: center; }
-.bfc-lane__name { display: grid; gap: 2px; }
-.bfc-lane__name b { font-weight: 500; font-size: 16px; }
-.bfc-lane__name span { font-size: 13px; color: var(--muted); }
-.bfc-lane__track { position: relative; height: 44px; border-radius: 6px; background: color-mix(in oklab, var(--ink) 6%, transparent); }
-.bfc-lane__bar { position: absolute; top: 0; height: 22px; border-radius: 6px; }
-.bfc-lane__bar.is-ended { border-right: 3px solid var(--ink); }
-.bfc-lane__track em { position: absolute; top: 26px; font: 400 13px/1.2 var(--font-text); font-style: normal; color: var(--muted); white-space: nowrap; }
-.bfc-tl__start { position: absolute; top: 24px; bottom: 56px; border-left: 1.5px dashed color-mix(in oklab, var(--ink) 55%, transparent); }
-.bfc-tl__start span { position: absolute; top: -4px; left: 8px; font-size: 13px; color: var(--ink); white-space: nowrap; }
+.bfc-lane__name { display: grid; gap: 4px; }
+.bfc-lane__name b { font-weight: 600; font-size: 16px; letter-spacing: -0.01em; }
+.bfc-lane__name span { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13px; color: var(--muted); }
+.bfc-badge { font: 600 11px/1 var(--font-text); font-style: normal; padding: 4px 7px; border-radius: 99px; background: #dfe2ec; color: #2c303b; white-space: nowrap; }
+.bfc-badge--ref { background: #fde7c4; color: #5a3600; }
+.bfc-lane__track { position: relative; height: 44px; border-radius: 8px; }
+.bfc-lane__track::before { content: ''; position: absolute; left: 0; right: 0; top: 6px; height: 12px; border-radius: 99px; background: #dfe2ec; }
+.bfc-lane__bar { position: absolute; top: 6px; height: 12px; border-radius: 99px; }
+.bfc-lane__bar.is-ended::after { content: ''; position: absolute; right: -1px; top: -4px; width: 3px; height: 20px; border-radius: 2px; background: var(--ink); }
+.bfc-lane__track em { position: absolute; top: 24px; font: 500 13px/1.2 var(--font-text); font-style: normal; color: var(--muted); white-space: nowrap; }
+.bfc-tl__start { position: absolute; top: 28px; bottom: 52px; border-left: 1.5px dashed #9ea3b0; }
+.bfc-tl__start span { position: absolute; top: -6px; left: 8px; font-size: 13px; font-weight: 600; color: var(--ink); white-space: nowrap; }
 .bfc-tl__axis { display: grid; grid-template-columns: var(--lane-name) 1fr; }
 .bfc-tl__ticks { position: relative; height: 18px; font: 400 13px/1 var(--font-mono); color: var(--muted); }
 .bfc-tl__ticks span { position: absolute; transform: translateX(-50%); }
 .bfc-tl__ticks span:last-child { transform: translateX(-100%); }
+@media (max-width: 1279px) { .bfc-tl { --lane-name: 140px; padding: 48px 24px 28px; } }
 @media (max-width: 639px) {
-  .bfc-tl { --lane-name: 96px; padding: 32px 16px 24px; gap: 12px; }
+  .bfc-tl { --lane-name: 104px; padding: 36px 16px 20px; gap: 12px; }
   .bfc-lane__name b { font-size: 13px; }
+  .bfc-lane__name span { font-size: 11px; gap: 4px; }
+  .bfc-badge { font-size: 10px; padding: 3px 5px; }
   .bfc-lane__track { height: 24px; }
   .bfc-lane__track em { display: none; }
   .bfc-tl__start span { font-size: 11px; }
-  #idea .frame--split { --ratio: 80%; }
+  #idea .frame--split { --ratio: 90%; }
 }
 
 /* the statement, and raw against corrected */
@@ -205,7 +213,7 @@ strong { font-weight: 650; }
 .bfc-how > li { display: grid; gap: var(--s-2); align-content: start; }
 .bfc-how h3 { font: 600 var(--t-card) / 1.3 var(--font-text); letter-spacing: -0.01em; margin-top: var(--s-2); }
 .bfc-how p { color: var(--muted); max-width: 40ch; }
-.step-num { border-style: dotted; border-color: var(--accent); color: var(--accent); }
+.step-num { border: 0; background: #ffe1cc; color: #6b2a00; font-weight: 650; }
 @media (max-width: 1023px) { .bfc-how > li { grid-template-columns: 32px 1fr; column-gap: var(--s-4); } .bfc-how h3 { margin-top: 4px; } .bfc-how p { grid-column: 2; } }
 
 /* ---------- the call to action: our fire gradient, under the kit's grain ---------- */
@@ -229,7 +237,7 @@ strong { font-weight: 650; }
 .bfc-grid span.is-on { background: #e45a31; }
 .bfc-grid i { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: #fcffa4; box-shadow: 0 0 0 1px rgba(13, 16, 23, 0.6); }
 .bfc-step__note { justify-self: center; font-size: 13px; background: rgba(13, 16, 23, 0.82); border: 1px solid var(--fc-line); border-radius: 99px; padding: 6px 12px; }
-.bfc-step__note b { font-weight: 500; color: var(--fc-fire); }
+.bfc-step__note b { font-weight: 600; color: var(--fc-fire); }
 .bfc-conv { display: grid; gap: 8px; }
 .bfc-conv span { display: flex; align-items: center; gap: 10px; min-width: 220px; font-size: 13px; padding: 9px 12px; background: rgba(13, 16, 23, 0.86); border: 1px solid var(--fc-line); border-radius: 10px; }
 .bfc-conv span::before { content: ''; width: 10px; height: 10px; border-radius: 3px; background: var(--c); }

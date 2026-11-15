@@ -193,11 +193,11 @@ export function AppFrame({ show }: { show: Show }) {
 }
 
 // ---------- satellites timeline (facts from the README: NASA FIRMS coverage) ----------
-const LANES: { key: SatelliteKey; from: number; to: number | null; label: string }[] = [
+const LANES: { key: SatelliteKey; from: number; to: number | null; label: string; badge?: string }[] = [
   { key: 'modis_terra', from: 2000 + 10 / 12, to: null, label: 'Nov 2000 to today' },
   { key: 'modis_aqua', from: 2002 + 6 / 12, to: null, label: 'Jul 2002 to today' },
-  { key: 'viirs_snpp', from: 2012 + 0.6 / 12, to: 2026 + 10 / 12, label: 'Jan 2012 to 2 Nov 2026' },
-  { key: 'viirs_noaa20', from: 2018 + 3 / 12, to: null, label: 'Apr 2018 to today' },
+  { key: 'viirs_snpp', from: 2012 + 0.6 / 12, to: 2026 + 10 / 12, label: 'Jan 2012 to 2 Nov 2026', badge: 'Ended' },
+  { key: 'viirs_noaa20', from: 2018 + 3 / 12, to: null, label: 'Apr 2018 to today', badge: 'Reference scale' },
 ];
 
 export function Timeline() {
@@ -207,13 +207,16 @@ export function Timeline() {
   const pos = (year: number) => ((year - Y0) / (Y1 - Y0)) * 100;
   return (
     <div className="bfc-tl" role="img"
-      aria-label="Satellite coverage: MODIS Terra from November 2000, MODIS Aqua from July 2002, VIIRS S-NPP from January 2012 to 2 November 2026, VIIRS NOAA-20 from April 2018. The calendar starts in January 2003.">
+      aria-label="Satellite coverage: MODIS Terra from November 2000, MODIS Aqua from July 2002, VIIRS S-NPP from January 2012 until it ended on 2 November 2026, VIIRS NOAA-20 from April 2018, the reference scale for every count. The calendar starts in January 2003.">
       <div className="bfc-tl__start" style={{ left: `calc(var(--lane-name) + (100% - var(--lane-name)) * ${(pos(2003) / 100).toFixed(4)})` }}>
         <span>Calendar starts, Jan 2003</span>
       </div>
       {LANES.map((l) => (
         <div className="bfc-lane" key={l.key}>
-          <div className="bfc-lane__name"><b>{SAT[l.key].name}</b><span>{SAT[l.key].px}</span></div>
+          <div className="bfc-lane__name">
+            <b>{SAT[l.key].name}</b>
+            <span>{SAT[l.key].px}{l.badge && <i className={'bfc-badge' + (l.to ? '' : ' bfc-badge--ref')}>{l.badge}</i>}</span>
+          </div>
           <div className="bfc-lane__track">
             <i className={'bfc-lane__bar' + (l.to ? ' is-ended' : '')}
               style={{ left: `${pos(l.from).toFixed(2)}%`, width: `${(pos(l.to ?? today) - pos(l.from)).toFixed(2)}%`, background: SAT[l.key].colour }} />
