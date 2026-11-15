@@ -54,15 +54,28 @@ export function dateShort(iso: string): string {
 
 export const todayIso = () => new Date().toISOString().slice(0, 10);
 
-/** The tool's one message for a month (wording only: every number is the API's). Shared with the landing page. */
+/** Up, down or near a typical month: drives the ▲/▼/● mark and its calm colour (display only). */
+export const trendOf = (c: Cards): 'up' | 'down' | 'flat' | null =>
+  !c.count || c.vs_avg_pct == null ? null : c.vs_avg_pct >= 20 ? 'up' : c.vs_avg_pct <= -20 ? 'down' : 'flat';
+
+/** The tool's one message for a month: is this unusual here? Wording only: every number is the API's.
+ *  Shared with the landing page. */
 export function headlineFor(c: Cards): string {
   const month = MONTHS[c.ref_month - 1];
   const p = c.vs_avg_pct;
-  const scope = c.partial ? `the first ${c.days_covered} days of ${month}` : month;
-  if (!c.count) return `No fires detected around you in ${scope}`;
-  if (p == null) return `${num(c.count)} fire-days around you in ${scope}`;
-  if (p >= 200) return `Fire activity around you is ${(p / 100 + 1).toFixed(1)}× the normal level`;
-  if (p >= 20) return `Fire activity around you is ${Math.round(p)}% above normal`;
-  if (p <= -20) return `Fire activity around you is ${Math.abs(Math.round(p))}% below normal`;
-  return 'Fire activity around you is close to normal';
+  if (!c.count) return c.partial ? `No fires detected here so far this ${month}` : `No fires detected here in ${month} ${c.ref_year}`;
+  if (p == null) return `Fire was detected here in ${month}, with no earlier year to compare`;
+  if (p >= 200) return `Fire activity here is ${(p / 100 + 1).toFixed(1)}× a typical ${month}`;
+  if (p >= 20) return `Fire activity here is ${Math.round(p)}% above a typical ${month}`;
+  if (p <= -20) return `Fire activity here is ${Math.abs(Math.round(p))}% below a typical ${month}`;
+  return `Fire activity here is close to a typical ${month}`;
+}
+
+/** "One of the most active Novembers in 24 years", only for the top three (the API's rank, as is). */
+export function rankLine(c: Cards): string | null {
+  if (c.rank == null || c.of_years == null || c.of_years < 5 || c.rank > 3 || !c.count) return null;
+  const month = MONTHS[c.ref_month - 1];
+  return c.rank === 1
+    ? `The most active ${month} in ${c.of_years} years${c.partial ? ' so far' : ''}`
+    : `One of the ${c.rank === 2 ? 'two' : 'three'} most active ${month}s in ${c.of_years} years${c.partial ? ' so far' : ''}`;
 }

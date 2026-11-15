@@ -22,6 +22,7 @@
   /* surfaces */
   --surface: #14151c; /* inputs, chips, stats on the dark page */
   --surface-2: #16171f; /* month card, dialogs */
+  --up: #f7a14a; --down: #b4a4d8; /* the headline's ▲/▼, calm (no alarm red) */
   --overlay: rgba(12, 13, 20, 0.85); /* things floating on the globe/map */
   --overlay-strong: rgba(12, 13, 20, 0.9);
   --sheet-soft: #f6f6f9; /* soft boxes on the white sheet */
@@ -198,6 +199,15 @@ strong { font-weight: 650; }
 .stats dd small { font-size: 14px; font-weight: 600; color: var(--ink-2); }
 .stats dt { font-size: 13px; color: var(--ink-2); }
 .stats > div { display: flex; flex-direction: column; }
+.hero h1 .hero-mark { display: inline-block; font-size: 0.5em; vertical-align: 0.32em; margin-right: 0.35em; }
+.hero h1.is-up .hero-mark { color: var(--up, #f7a14a); }
+.hero h1.is-down .hero-mark { color: var(--down, #b4a4d8); }
+.hero h1.is-flat .hero-mark { color: var(--ink-2); }
+.hero-rank { display: inline-block; margin: -2px 0 14px; padding: 5px 12px; border-radius: 99px; background: var(--surface-2); color: var(--ink); font-size: 14px; font-weight: 600; }
+.hero-context { list-style: none; margin: 0 0 4px; padding: 0; display: grid; gap: 8px; max-width: 52ch; color: var(--ink-2); }
+.hero-context li { position: relative; padding-left: 18px; }
+.hero-context li::before { content: ''; position: absolute; left: 2px; top: 0.6em; width: 6px; height: 6px; border-radius: 50%; background: var(--ink-2); opacity: 0.6; }
+.hero-context b { color: var(--ink); font-weight: 600; }
 .hero-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 13px; color: var(--ink-2); margin-top: 14px; }
 .hero-meta .tag { margin: 0; }
 

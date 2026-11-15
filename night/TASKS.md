@@ -29,7 +29,8 @@ Global rules for this block:
 
 ### The tool (#/app) — first screen
 
-- [ ] **Rework what the first screen says.** Users don't understand "separate fires", "fire-days so far", "1 of 24 rank among Novembers". New hierarchy:
+- [x] **Rework what the first screen says.** Users don't understand "separate fires", "fire-days so far", "1 of 24 rank among Novembers". New hierarchy:
+  - Hero: ▲/▼/● + "Fire activity here is 31% above a typical November" (`headlineFor`/`trendOf`/`rankLine` in format.ts, calm --up/--down tokens), a rank pill only for the top 3 ("One of the three most active Novembers in 24 years"), then 3 context bullets (usual peak month from `cards.peak_month`, what it is compared with + "not a forecast", smoke note). The stats box (fire-days / separate fires / rank) is gone from the first screen; those stay in Detailed → Key numbers, where "Fire-days" now has a one-line explanation. Calendar now comes before "coming months". Missing API values → QUESTIONS.md (For Paul).
   1. **One big status line: is this unusual for my area right now?** Built from API values only (`briefing`, `vs_avg_pct`, `rank`, `of_years`), e.g. "Fire activity here is 25% above a typical November" or "One of the most active Novembers in 24 years". Calm colour + ▲/▼, no alarmism, and it is history, not a forecast (if showing the `/api/forecast` chance, it carries its label).
   2. **Short practical context** under it: is this the usual fire season here, when does the season usually peak/end (from the API's monthly averages shown as-is), how intense this month is compared with the typical one. One friendly general note is allowed, e.g. "Smoke from fires can lower air quality nearby", but **no air-quality numbers** (we don't have that data).
   3. Then the calendar.

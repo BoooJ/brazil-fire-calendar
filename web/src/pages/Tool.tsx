@@ -14,7 +14,7 @@ import { KeyCards, Reliability, SourcesDialog } from '../components/Panels';
 import { Flame } from '../components/Brand';
 import type { DrawMode } from '../components/MapView';
 import { FRP_STOPS } from '../colors';
-import { MON, MONTHS, dateShort, dateTime, headlineFor, num, todayIso } from '../format';
+import { MON, MONTHS, dateShort, dateTime, headlineFor, num, rankLine, todayIso, trendOf } from '../format';
 
 // The two heavy parts load only when they are used: the map (MapLibre) and the detailed charts (ECharts).
 const MapView = lazy(() => import('../components/MapView'));
@@ -329,7 +329,6 @@ export default function Tool() {
                 <>
                   <div className="sheet">
                     {detailed && <KeyCards data={data} />}
-                    <Upcoming data={data} />
                     <div className="view-swap" key={detailed ? 'detailed' : 'quick'}>
                     {data.calendar.every((c) => !c.count) ? (
                       <section className="empty-state">
@@ -346,6 +345,7 @@ export default function Tool() {
                       <FireCalendar data={data} selected={selected} onSelect={select} mode={mode} onMode={setMode} onCsv={calendarCsv} />
                     )}
                     </div>
+                    <Upcoming data={data} />
                     <Briefing data={data} short={!detailed} />
                     {detailed && <Reliability data={data} status={status} />}
                     <footer className="sheet-foot">
@@ -381,27 +381,33 @@ function Hero({ data, area, status, asOf, updating, onUpdate }: {
   const month = MONTHS[c.ref_month - 1];
   const scope = c.partial ? `the first ${c.days_covered} days of ${month}` : month;
 
-  const headline = headlineFor(c);
-
+  const trend = trendOf(c);
+  const rankText = rankLine(c);
   const provisional = data.calendar.find((i) => i.year === c.ref_year && i.month === c.ref_month)?.provisional;
+  const peak = c.peak_month;
 
   return (
     <section className="hero">
       <p className="eyebrow">
         {month} {c.ref_year}{c.partial && ` · first ${c.days_covered} days`} · {area.label}
       </p>
-      <h1>{headline}</h1>
-      <p className="hero-sub">
-        {data.average_period
-          ? <>Compared with {scope} in an average year ({data.average_period.from}–{data.average_period.to}). </>
-          : <>There is no complete earlier year to compare with. </>}
-        An estimate from satellite detections, not a forecast.
-      </p>
-      <dl className="stats">
-        <div><dd>{num(c.count)}</dd><dt>fire-days{c.partial ? ' so far' : ''}</dt></div>
-        <div><dd>{c.estimated_fires == null ? '–' : `≈ ${num(c.estimated_fires)}`}</dd><dt>separate fires</dt></div>
-        <div><dd>{c.rank == null ? '–' : <>{c.rank}<small> of {c.of_years}</small></>}</dd><dt>rank among {MONTHS[c.ref_month - 1]}s</dt></div>
-      </dl>
+      <h1 className={trend ? `is-${trend}` : undefined}>
+        {trend && <span className="hero-mark" aria-hidden="true">{trend === 'up' ? '▲' : trend === 'down' ? '▼' : '●'}</span>}
+        {headlineFor(c)}
+      </h1>
+      {rankText && <p className="hero-rank">{rankText}</p>}
+      <ul className="hero-context">
+        {peak != null && (
+          <li>{peak === c.ref_month ? <>{month} is usually the busiest month for fire here.</> : <>Fires here usually peak in <b>{MONTHS[peak - 1]}</b>; the calendar below shows the whole season.</>}</li>
+        )}
+        <li>
+          {data.average_period
+            ? <>Compared with {scope} in the {data.average_period.from}–{data.average_period.to} years.</>
+            : <>There is no complete earlier year to compare with.</>}
+          {' '}History from satellite detections, not a forecast{provisional ? '; recent days may still change' : ''}.
+        </li>
+        <li>Smoke from fires can lower air quality nearby.</li>
+      </ul>
       <p className="hero-meta">
         {provisional && <span className="tag">Provisional</span>}
         {asOf && <span className="tag">As of {dateShort(data.query.ref_date)}</span>}
@@ -482,19 +488,20 @@ function LoadingHero() {
       <div className="sk sk-title" />
       <div className="sk sk-title" style={{ width: '70%' }} />
       <div className="sk sk-line" style={{ width: '85%' }} />
-      <div className="sk sk-stats" />
+      <div className="sk sk-line" style={{ width: '75%' }} />
+      <div className="sk sk-line" style={{ width: '60%' }} />
     </section>
   );
 }
 
-/** The sheet's shape while loading: the coming months, then calendar rows, so nothing jumps when data arrives. */
+/** The sheet's shape while loading: calendar rows, then the coming months, so nothing jumps when data arrives. */
 function SheetSkeleton() {
   return (
     <div className="sk-sheet" aria-hidden="true">
-      <div className="sk sk-line" style={{ width: '60%', height: 24 }} />
-      <div className="sk-row3">{[0, 1, 2].map((i) => <div key={i} className="sk sk-card" />)}</div>
-      <div className="sk sk-line" style={{ width: '40%', height: 24, marginTop: 32 }} />
+      <div className="sk sk-line" style={{ width: '40%', height: 24 }} />
       {[0, 1, 2, 3, 4].map((i) => <div key={i} className="sk sk-calrow" />)}
+      <div className="sk sk-line" style={{ width: '60%', height: 24, marginTop: 32 }} />
+      <div className="sk-row3">{[0, 1, 2].map((i) => <div key={i} className="sk sk-card" />)}</div>
     </div>
   );
 }

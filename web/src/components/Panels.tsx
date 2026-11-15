@@ -21,7 +21,7 @@ export function KeyCards({ data }: { data: Analysis }) {
         <div className="kc-hot">
           <dt>Fire-days</dt>
           <dd>{num(c.count)}</dd>
-          <span>{data.unit.main}</span>
+          <span>1 km squares with fire on a day, on the NOAA-20 scale</span>
         </div>
         <div className={'kc-vs' + tone}>
           <dt>{avg ? `Against the ${avg} average` : 'Against the average'}</dt>
