@@ -113,7 +113,7 @@ export default function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCa
       m.addLayer({ id: 'draft-line', type: 'line', source: 'draft', paint: { 'line-color': '#ffffff', 'line-width': 1.5 } });
       m.addLayer({ id: 'draft-pts', type: 'circle', source: 'draft', filter: ['==', '$type', 'Point'], paint: { 'circle-radius': 4, 'circle-color': '#fff' } });
 
-      const popup = new maplibregl.Popup({ closeButton: false, className: 'hs-popup', offset: 8 });
+      const popup = new maplibregl.Popup({ closeButton: false, className: 'hs-popup', offset: 10, maxWidth: '260px' });
       const show = (e: maplibregl.MapLayerMouseEvent) => {
         if (draw.current.mode !== 'none') return;
         const f = e.features?.[0];
@@ -122,10 +122,11 @@ export default function MapView({ area, hotspots, drawMode, onDrawDone, onDrawCa
         popup
           .setLngLat((f.geometry as Point).coordinates as [number, number])
           .setHTML(
-            `<b>${esc(p.date)}</b> · ${esc(timeUtc(String(p.time_utc ?? '')))} · ${p.daynight === 'D' ? 'day' : 'night'}<br/>` +
-              `${esc(SAT_NAMES[p.satellite as SatelliteKey] ?? p.satellite)}<br/>` +
-              `Fire strength <b>${p.frp == null ? 'not measured' : `${esc(p.frp)} MW`}</b> · confidence ${esc(p.confidence)}` +
-              (p.provisional ? '<br/><i>Provisional</i>' : ''),
+            `<b class="pt-title">${esc(p.date)} · ${esc(timeUtc(String(p.time_utc ?? '')))}</b>` +
+              `<span class="pt-big">${p.frp == null ? 'strength not measured' : `${esc(p.frp)} <small>MW fire strength</small>`}</span>` +
+              `<span>${esc(SAT_NAMES[p.satellite as SatelliteKey] ?? p.satellite)} · ${p.daynight === 'D' ? 'day' : 'night'} pass</span>` +
+              `<span>Confidence ${esc(p.confidence)}</span>` +
+              (p.provisional ? '<span class="pt-flag">Provisional (near-real-time data)</span>' : ''),
           )
           .addTo(m);
       };

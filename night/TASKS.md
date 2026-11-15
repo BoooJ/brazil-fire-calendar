@@ -38,5 +38,6 @@
   - Calendar area fades/lifts in on quick ↔ detailed, cells lift with a soft shadow on hover, dialog backdrop fades in, chips ease. All switched off by the existing prefers-reduced-motion rule. (Close animations not added: would need delayed unmount.)
 - [x] MonthDetail and Panels: tidy typography hierarchy (sizes, weights, line-height), numbers in tabular figures
   - Tabular figures on every number block (month card, key cards, stats, satellites, coming months, sources, tooltip); tightened label/note line-heights and heading spacing; month card eyebrow no longer runs under the close button.
-- [ ] Map popups: consistent styling with the rest of the tool, readable on mobile
+- [x] Map popups: consistent styling with the rest of the tool, readable on mobile
+  - Hotspot popup restyled like the calendar tooltip: date/time title, fire strength as the big number, satellite and pass, confidence, amber provisional flag; max 260px wide for phones.
 - [ ] Find and merge duplicated UI components or duplicated CSS rules
