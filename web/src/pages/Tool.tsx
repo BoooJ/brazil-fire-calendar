@@ -334,7 +334,7 @@ export default function Tool() {
                       <section className="empty-state">
                         <span className="empty-art" aria-hidden="true"><i /><i /><i /><i /><i /><i /></span>
                         <h2>No fires detected here</h2>
-                        <p className="muted">The satellites recorded no fire-days in this area since {data.query.start.slice(0, 4)}. That is good news, or the area may be too small to catch any.</p>
+                        <p className="muted">The satellites saw no fire in this area since {data.query.start.slice(0, 4)}. That is good news, or the area may be too small to catch any.</p>
                         <button className="btn btn-ghost" onClick={() => chooseArea(null)}>Try a larger radius or another region</button>
                       </section>
                     ) : detailed ? (
@@ -431,7 +431,7 @@ function Upcoming({ data }: { data: Analysis }) {
           <li key={`${m.year}-${m.month}`}>
             <span className="next-mon">{MONTHS[m.month - 1]} {m.year}</span>
             <span className="next-val">{num(m.mean)}</span>
-            <span className="muted">fire-days on average<br />usually {num(m.p10)}–{num(m.p90)}</span>
+            <span className="muted">on average (corrected count)<br />usually {num(m.p10)}–{num(m.p90)}</span>
           </li>
         ))}
       </ul>

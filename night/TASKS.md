@@ -122,5 +122,7 @@ Global rules for this block:
 - [ ] Month card and data sources dialog: add a close animation (needs a short delayed unmount)
 - [ ] Detailed view heatmap is a canvas: cells are not reachable by keyboard (see night/QUESTIONS.md)
 - [ ] Gate on phones: the long single column could show the four ways as numbered steps (1 location · 2 region · 3 point · 4 draw)
+- [x] Quick view: last "fire-days" wording outside the Detailed view
+  - Coming-months cards say "on average (corrected count)", month card "corrected count", empty state "saw no fire". Detailed view keeps the term with its explanation.
 - [x] Landing method panels: drop the kit's grain-gradient ground (no gradients rule)
   - Panels are flat #eef0f6 like the satellite timeline; the kit's radial shade removed; conversion arrow darkened.

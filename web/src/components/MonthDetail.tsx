@@ -44,7 +44,7 @@ export default function MonthDetail({ item, map, onShowMap, onCsv, onClose }: Pr
         {item.partial && ` · first ${item.days_covered} days`}
       </p>
       <p className="detail-big">
-        {num(item.count)} <span>fire-days</span>
+        {num(item.count)} <span>corrected count</span>
       </p>
       <p className="detail-line">
         {pctLong(item.vs_avg_pct)}
