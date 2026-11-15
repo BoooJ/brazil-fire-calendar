@@ -15,7 +15,7 @@ import json
 import math
 import random
 import statistics
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -26,7 +26,7 @@ FAKE_NOTE = (
     "FAKE DATA - for website development only. "
     "Shapes follow docs/api-contract.md; every number is invented."
 )
-CONTRACT_VERSION = "0.3"
+CONTRACT_VERSION = "0.4"
 DATA_UPDATED = "2026-11-14T15:20:00Z"
 TODAY = date(2026, 11, 14)
 FINAL_UNTIL = date(2026, 5, 31)  # after this: NASA near-real-time data -> "provisional"
@@ -354,6 +354,49 @@ def make_forecast(rng: random.Random, n: int = 300, total: int = 7774) -> dict:
 
 # ---------------------------------------------------------------- writers
 
+def make_weekly(rng: random.Random, fire_days: dict, end: date, ref: date) -> dict:
+    """Fake calendar_weekly + average_by_week (contract v0.4): each fake month spread over its days, cut into
+    ISO weeks (Monday-Sunday). Same rules as the API: vs average of that week number, partial last week."""
+    daily: dict[date, float] = {}
+    for (year, month), n in fire_days.items():
+        dim = days_in_month(year, month)
+        for d in range(1, dim + 1):
+            day = date(year, month, d)
+            if day <= end:
+                daily[day] = n / dim * rng.uniform(0.5, 1.5)
+    weeks: dict[tuple[int, int], list[date]] = {}
+    for day in sorted(daily):
+        iso = day.isocalendar()
+        if iso.year >= FIRST_YEAR:
+            weeks.setdefault((iso.year, iso.week), []).append(day)
+    counts = {k: sum(daily[d] for d in days) for k, days in weeks.items()}
+    base = range(FIRST_YEAR, ref.year)
+    averages, mean_of = [], {}
+    for w in range(1, 54):
+        values = sorted(counts[(y, w)] for y in base if (y, w) in counts)
+        if values:
+            q = statistics.quantiles(values, n=10, method="inclusive") if len(values) > 1 else [values[0]] * 9
+            mean_of[w] = statistics.fmean(values)
+            averages.append({"week": w, "mean": round(mean_of[w], 1), "median": round(statistics.median(values), 1),
+                             "p10": round(q[0], 1), "p90": round(q[-1], 1), "years": len(values)})
+    calendar = []
+    for (y, w), count in sorted(counts.items()):
+        first = date.fromisocalendar(y, w, 1)
+        covered = len(weeks[(y, w)]) if (first + timedelta(days=6)) > end else 7
+        mean = mean_of.get(w)
+        expected = mean * covered / 7 if mean else None
+        calendar.append({
+            "year": y, "week": w, "start": first.isoformat(), "end": (first + timedelta(days=6)).isoformat(),
+            "count": round(count),
+            "vs_avg_pct": round((count / expected - 1) * 100, 1) if expected else None,
+            "provisional": first + timedelta(days=6) > FINAL_UNTIL,
+            "uncertain": count < 10,
+            "partial": covered < 7,
+            "days_covered": covered,
+        })
+    return {"calendar_weekly": calendar, "average_by_week": averages}
+
+
 def write_json(name: str, data: dict) -> None:
     with open(OUT / name, "w", encoding="utf-8", newline="\n") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
@@ -407,6 +450,8 @@ def main() -> None:
     now = build_analysis(fire_days, ratios, date(FIRST_YEAR, 1, 1), TODAY, TODAY, area)
     write_json("analysis.pantanal.json", now)
     write_calendar_csv("calendar.pantanal.csv", now)
+    # same answer asked with "period": "week" (v0.4); its own random stream, so the other files do not change
+    write_json("analysis.pantanal.week.json", {**now, **make_weekly(random.Random(SEED + 2), fire_days, TODAY, TODAY)})
 
     replay_day = date(2020, 9, 14)
     replay = build_analysis(fire_days, ratios, date(FIRST_YEAR, 1, 1), replay_day, replay_day, area)

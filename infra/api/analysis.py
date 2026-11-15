@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import calendar as cal
 import statistics
-from datetime import date
+from datetime import date, timedelta
 
 FIRST_YEAR = 2003
 # Two satellites only, one per instrument, so no fire is seen twice (team decision, 15 Nov 2026).
@@ -226,3 +226,58 @@ def _briefing(cards: dict, mean_of: dict, complete_years: dict, next_months: lis
                      f"active (average {nxt['mean']:.0f} fire-days). This is what is normal, not a forecast.")
     parts.append("Source: NASA FIRMS (MODIS + VIIRS), harmonized.")
     return " ".join(parts)
+
+
+def iso_weeks_in(year: int) -> int:
+    """52 or 53: 28 December is always in the last ISO week of its year."""
+    return date(year, 12, 28).isocalendar().week
+
+
+def build_weekly(*, weekly: dict, harm: Harmonizer, start: date, end: date, ref: date) -> dict:
+    """calendar_weekly + average_by_week (contract v0.4), from Store.weekly.
+    Weeks are ISO weeks (Monday-Sunday, UTC days). Every piece of a week (cut by calendar month) uses its
+    own month's rule, so the weeks of a month add up to the month's count (before rounding)."""
+    last = end.isocalendar()
+    counts: dict[tuple[int, int], float] = {}
+    provisional: dict[tuple[int, int], bool] = {}
+    for y in range(FIRST_YEAR, last.year + 1):
+        for w in range(1, iso_weeks_in(y) + 1):
+            if (y, w) > (last.year, last.week):
+                break
+            total, prov = 0.0, False
+            for (py, pm), sats in weekly.get((y, w), {}).items():
+                total += harm.corrected(py, pm, {s: v[0] for s, v in sats.items()})
+                prov = prov or sats.get(harm.source(py, pm), (0, False))[1]
+            counts[(y, w)], provisional[(y, w)] = total, prov
+
+    def days_covered(y: int, w: int) -> int:
+        first = date.fromisocalendar(y, w, 1)
+        return min(7, (end - first).days + 1)
+
+    base_years = range(FIRST_YEAR, ref.year)  # same years as the monthly average: complete years before ref
+    averages, mean_of = [], {}
+    for w in range(1, 54):
+        values = [counts[(y, w)] for y in base_years if (y, w) in counts]
+        if values:
+            s = _stats(values)
+            mean_of[w] = s["mean"]
+            averages.append({"week": w, **s, "years": len(values)})
+
+    calendar = []
+    for (y, w), count in sorted(counts.items()):
+        first = date.fromisocalendar(y, w, 1)
+        last_day = first + timedelta(days=6)
+        if last_day < start:
+            continue
+        covered = days_covered(y, w)
+        mean = mean_of.get(w)
+        calendar.append({
+            "year": y, "week": w, "start": first.isoformat(), "end": last_day.isoformat(),
+            "count": round(count),
+            "vs_avg_pct": _pct(count, mean * covered / 7 if mean is not None else None),
+            "provisional": provisional[(y, w)],
+            "uncertain": count < 10,
+            "partial": covered < 7,
+            "days_covered": covered,
+        })
+    return {"calendar_weekly": calendar, "average_by_week": averages}

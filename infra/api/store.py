@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 import shapely
 
-from analysis import SATELLITES, Harmonizer
+from analysis import FIRST_YEAR, SATELLITES, Harmonizer
 
 CELL_DEG = 0.01
 SATELLITES_SQL = "(" + ", ".join(f"'{s}'" for s in SATELLITES) + ")"  # only these are loaded and served
@@ -110,6 +110,25 @@ class Store:
         out: dict = {}
         for year, month, sat, fire_days, hotspots, provisional in rows:
             out.setdefault((year, month), {})[sat] = (fire_days, int(hotspots), bool(provisional))
+        return out
+
+    @staticmethod
+    def weekly(cur, end: date, box) -> dict:
+        """weekly[(iso_year, iso_week)][(year, month)][sat] = (fire_days, provisional), for dates <= end.
+        Each ISO week (Monday-Sunday, UTC days) is cut by calendar month, so every piece can use its own
+        month's harmonization rule (a week can straddle two months, or the 2018-04 satellite switch)."""
+        if box is None:
+            return {}
+        rows = cur.execute(f"""
+            SELECT isoyear(f.acq_date), week(f.acq_date), f.year, f.month, f.satellite,
+                   count(*), bool_or(f.provisional)
+            FROM fire_days f JOIN sel USING (cy, cx)
+            WHERE {Store.BOX} AND f.acq_date BETWEEN ? AND ?
+            GROUP BY ALL
+        """, [*box, date(FIRST_YEAR - 1, 12, 29), end]).fetchall()
+        out: dict = {}
+        for iso_year, week, year, month, sat, fire_days, provisional in rows:
+            out.setdefault((iso_year, week), {}).setdefault((year, month), {})[sat] = (fire_days, bool(provisional))
         return out
 
     @staticmethod
