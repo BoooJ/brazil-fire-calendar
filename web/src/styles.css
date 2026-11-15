@@ -83,6 +83,8 @@ strong { font-weight: 650; }
 }
 .btn:active:not(:disabled) { transform: scale(0.98); }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+/* a disabled main button on the dark panel: a calm flat surface with readable text, not a dimmed orange */
+.btn-fire:disabled { opacity: 1; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); color: var(--ink-2); font-weight: 550; }
 .btn-light { background: #fff; color: #0b0c12; }
 .btn-light:hover:not(:disabled) { background: #e6e7ee; }
 .btn-light:active:not(:disabled) { background: #d6d8e2; }

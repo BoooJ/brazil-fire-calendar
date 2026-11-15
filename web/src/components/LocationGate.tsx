@@ -114,7 +114,7 @@ export default function LocationGate({ presets, picked, onPickedChange, onDone, 
 
       <button className="btn btn-fire btn-wide" disabled={!valid || outside}
         onClick={() => onDone(circleArea(picked!.lon, picked!.lat, radius))}>
-        Show my fire calendar
+        {valid ? 'Show my fire calendar' : 'Tap the globe or type a point first'}
       </button>
 
       <div className="gate-or"><span>or draw the area on the map</span></div>
