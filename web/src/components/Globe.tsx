@@ -6,6 +6,7 @@ import { feature } from 'topojson-client';
 import type { FeatureCollection, Geometry } from 'geojson';
 import type { AreaGeometry } from '../types';
 import { STATE_BORDERS, stateAt, stateById, type StateFeature } from '../states';
+import { flameElement } from './Flames';
 
 interface World {
   brazil: FeatureCollection<Geometry>;
@@ -57,9 +58,11 @@ interface Props {
   label: string;
   /** vertical position of the globe centre, as a fraction of the box height */
   originY?: number;
+  /** decorative animated flames at these places (never data) */
+  flames?: [number, number][];
 }
 
-export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, selected, points, pick, onPick, onState, hover, onHover, label, originY = 0.5 }: Props) {
+export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, selected, points, pick, onPick, onState, hover, onHover, label, originY = 0.5, flames }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const world = useRef<World | null>(null);
   const view = useRef({ center, zoom });
@@ -67,6 +70,8 @@ export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, select
   const extras = useRef({ area, selected, points, pick, originY });
   extras.current = { area, selected, points, pick, originY };
   const raf = useRef(0);
+  const flameLayer = useRef<HTMLDivElement>(null);
+  const flameEls = useRef<{ el: HTMLElement; at: [number, number] }[]>([]);
   // the lifted state: `t` runs 0 → 1 while it rises
   const lift = useRef<{ id: string | null; t: number; raf: number }>({ id: null, t: 0, raf: 0 });
   const [tip, setTip] = useState<{ name: string; x: number; y: number } | null>(null);
@@ -170,6 +175,18 @@ export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, select
         ctx.fill();
       }
     }
+    // the decorative flames: HTML over the canvas, moved with the globe, hidden on its far side
+    for (const f of flameEls.current) {
+      const xy = geoDistance(f.at, c) <= Math.PI / 2 - 0.02 ? projection(f.at) : null;
+      if (!xy) {
+        f.el.style.display = 'none';
+        continue;
+      }
+      f.el.style.display = '';
+      f.el.style.left = `${xy[0]}px`;
+      f.el.style.top = `${xy[1]}px`;
+    }
+
     const pk = extras.current.pick;
     if (pk && geoDistance(pk, c) <= Math.PI / 2) {
       const xy = projection(pk);
@@ -246,6 +263,20 @@ export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, select
 
   useEffect(draw, [area, selected, points, pick, originY]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // (re)build the flames when their places change
+  useEffect(() => {
+    const layer = flameLayer.current;
+    if (!layer) return;
+    layer.replaceChildren();
+    flameEls.current = (flames ?? []).map((at, i) => {
+      const el = flameElement(i);
+      layer.appendChild(el);
+      return { el, at };
+    });
+    draw();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flames]);
+
   // ---------- states: highlight, lift, select ----------
   const raise = (id: string | null) => {
     const l = lift.current;
@@ -319,6 +350,7 @@ export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, select
         onPointerMove={move}
         onPointerLeave={leave}
       />
+      <div ref={flameLayer} className="flames-layer" aria-hidden="true" />
       {tip && <span className="globe-tip" style={{ left: tip.x, top: tip.y }} aria-hidden="true">{tip.name}</span>}
     </>
   );

@@ -48,11 +48,11 @@ export const ANOMALY_TICKS: { pos: number; label: string }[] = [
   { pos: 2, label: '▲ 4×+' },
 ];
 
-// Next-week fire chance (the forecast map): viridis without its darkest stops, so it reads on the imagery
-// and never looks like the hotspots' inferno colours. Colour-blind safe; the legend gives every step's value.
+// Next-week fire chance (the "Fire cells" view): the calendar's own yellow → orange → red (--lv1…--lv4 in styles.css),
+// darker = more likely. Colour-blind safe like the bricks; the legend gives every step's value.
 export const CHANCE_STOPS: [number, string][] = [
-  [0, '#3b528b'],
-  [0.1, '#21918c'],
-  [0.25, '#5ec962'],
-  [0.5, '#fde725'],
+  [0, '#ffe08a'],
+  [0.1, '#ffb347'],
+  [0.25, '#f2682a'],
+  [0.5, '#b5121b'],
 ];

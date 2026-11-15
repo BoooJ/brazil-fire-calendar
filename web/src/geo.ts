@@ -103,3 +103,44 @@ export function insideBox(lon: number, lat: number, box: Polygon): boolean {
 function fmtCoord(v: number, neg: string, pos: string) {
   return `${Math.abs(v).toFixed(2)}°${v < 0 ? neg : pos}`;
 }
+
+/** Planar point-in-polygon (even-odd over every ring, so holes and winding order don't matter). */
+export function insideArea(lon: number, lat: number, area: AreaGeometry): boolean {
+  const polys = area.type === 'Polygon' ? [area.coordinates] : area.coordinates;
+  let inside = false;
+  for (const poly of polys)
+    for (const ring of poly)
+      for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+        const [xi, yi] = ring[i];
+        const [xj, yj] = ring[j];
+        if (yi > lat !== yj > lat && lon < ((xj - xi) * (lat - yi)) / (yj - yi) + xi) inside = !inside;
+      }
+  return inside;
+}
+
+/**
+ * Up to `n` scattered points inside an area, for the decorative flames on the globe and the map (never data).
+ * Seeded from the area, so the same place always gets the same flames.
+ */
+export function scatterIn(area: AreaGeometry, n: number, seedText: string): [number, number][] {
+  let seed = 2166136261;
+  for (let i = 0; i < seedText.length; i++) seed = Math.imul(seed ^ seedText.charCodeAt(i), 16777619) >>> 0;
+  const rand = () => {
+    seed = (seed + 0x6d2b79f5) >>> 0;
+    let t = seed;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const [w, s, e, nn] = areaBbox(area);
+  const out: [number, number][] = [];
+  // keep flames apart: a minimum gap of a fraction of the area's size
+  const gap = Math.max(e - w, nn - s) / (Math.sqrt(n) * 2.2);
+  for (let tries = 0; out.length < n && tries < n * 200; tries++) {
+    const p: [number, number] = [w + rand() * (e - w), s + rand() * (nn - s)];
+    if (!insideArea(p[0], p[1], area)) continue;
+    if (out.some(([x, y]) => Math.hypot(x - p[0], y - p[1]) < gap)) continue;
+    out.push(p);
+  }
+  return out;
+}
