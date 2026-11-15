@@ -34,8 +34,9 @@
 
 /* the typical (average) line, dashed across the bars, its value in the gutter */
 .mh-avg { position: absolute; left: 0; right: calc(-1 * var(--gutter)); height: 0; border-top: 1.5px dashed var(--ink-2); z-index: 1; pointer-events: none; transition: bottom 0.55s var(--ease); }
-.mh-avg span { position: absolute; right: 0; bottom: 3px; width: calc(var(--gutter) - 6px); font-family: var(--mono); font-size: 10px; line-height: 1.15; text-align: right; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.04em; }
-.mh-avg b { display: block; font-weight: 500; color: var(--ink); text-transform: none; letter-spacing: 0; }
+.mh-avg span { position: absolute; right: 0; bottom: 3px; width: calc(var(--gutter) - 6px); font-family: var(--mono); font-size: 10px; font-weight: 500; line-height: 1.15; text-align: right; color: var(--ink); }
+/* "AVERAGE" sits on the line itself, a little right of centre, cutting the dashes */
+.mh-avg em { position: absolute; left: 62%; top: 0; transform: translate(-50%, -50%); padding: 1px 6px; border-radius: var(--r-pill, 999px); background: var(--card); font-family: var(--mono); font-size: 10px; font-style: normal; line-height: 1.3; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); white-space: nowrap; }
 
 .mh-years { display: grid; gap: 3px; margin-right: var(--gutter); height: 22px; font-family: var(--mono); font-size: 10px; color: var(--ink-2); }
 .mh-years li { position: relative; min-width: 0; }
@@ -53,8 +54,6 @@
   .mh-bars button { inset: -18px -1px 0; }
   .mh-bars i { left: 1px; right: 1px; border-radius: 3px 3px 1px 1px; }
   .mh-years li.minor span { display: none; }
-  /* bars are too thin for two values side by side: the latest one is in the line under the chart */
-  .mh-val.is-latest { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

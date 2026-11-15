@@ -63,10 +63,6 @@ export default function MonthHistory({ data }: { data: Analysis }) {
   const shown = items.find((i) => i.year === active) ?? latest;
   const first = items[0]?.year;
   const last = items[items.length - 1]?.year;
-  const iRecord = record ? items.indexOf(record) : -1;
-  const iLatest = latest ? items.indexOf(latest) : -1;
-  // a value over the latest bar too, unless it would bump into the record's
-  const labelLatest = latest != null && latest !== record && Math.abs(iLatest - iRecord) > 2;
   const isNow = (i: CalendarItem) => i.year === c.ref_year && i.month === c.ref_month;
 
   const barKey = (e: KeyboardEvent, at: number) => {
@@ -98,13 +94,14 @@ export default function MonthHistory({ data }: { data: Analysis }) {
             <div className={'mh-plot' + (active != null ? ' is-hot' : '')} onPointerLeave={() => setActive(null)}>
               {avg != null && (
                 <div className="mh-avg" style={{ bottom: `${(avg / top) * 100}%` }} aria-hidden="true">
-                  <span>typical<b>{num(avg)}</b></span>
+                  <em>average</em><span>{num(avg)}</span>
                 </div>
               )}
               <ol className="mh-bars" style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}>
                 {items.map((i, at) => {
                   const h = i.count == null ? 0 : grown ? Math.max(i.count ? 3 : 1.5, (i.count / top) * 100) : 0;
-                  const label = i === record || (labelLatest && i === latest);
+                  // the record's value always; any other year's only while it is pointed at or focused
+                  const label = i === record || i.year === active;
                   const vs = i.vs_avg_pct == null ? null : `${pctShort(i.vs_avg_pct)} vs typical`;
                   return (
                     <li key={i.year} className={(i.year === shown?.year ? 'is-lit' : '') + (i.provisional || i.partial ? ' is-prov' : '') + (i.count == null ? ' is-none' : '')}>
@@ -113,7 +110,7 @@ export default function MonthHistory({ data }: { data: Analysis }) {
                         onPointerEnter={() => setActive(i.year)} onFocus={() => setActive(i.year)} onBlur={() => setActive(null)}
                         onKeyDown={(e) => barKey(e, at)}>
                         <i className={`lv${level(i.count)}`} style={{ height: `${h}%`, transitionDelay: `${at * 12}ms` }}>
-                          {label && <span className={'mh-val' + (i === record ? '' : ' is-latest') + (at < 2 ? ' at-start' : at > items.length - 3 ? ' at-end' : '')}>{num(i.count)}{i.partial && ' so far'}</span>}
+                          {label && <span className={'mh-val' + (i === record ? '' : ' is-hover') + (at < 2 ? ' at-start' : at > items.length - 3 ? ' at-end' : '')}>{num(i.count)}{i.partial && ' so far'}</span>}
                         </i>
                       </button>
                     </li>
