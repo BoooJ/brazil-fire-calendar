@@ -165,6 +165,10 @@ body { margin: 0; background: var(--canvas); color: var(--ink); }
 .l-tl__ticks span { position: absolute; transform: translateX(-50%); }
 .l-tl__ticks span:last-child { transform: translateX(-100%); }
 
+/* ---------- the idea's card: the timeline on top, the yearly chart under it, a hairline between ---------- */
+.l-duo { display: grid; gap: 28px; }
+.l-duo > .l-rc { padding-top: 28px; border-top: 1px solid var(--line-soft); }
+
 /* ---------- raw against the one record ---------- */
 .l-rc { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 16px; height: 100%; min-height: 340px; }
 .l-rc__head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
