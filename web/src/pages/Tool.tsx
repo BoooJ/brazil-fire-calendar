@@ -509,7 +509,7 @@ function Upcoming({ data }: { data: Analysis }) {
   return (
     <section className="upcoming" aria-labelledby="up-title">
       <div className="upcoming-head">
-        <h2 id="up-title">What the coming months are like</h2>
+        <h2 id="up-title">Risk of fire in the coming months</h2>
       </div>
       <ul className="next">
         {data.next_months.map((m) => {
