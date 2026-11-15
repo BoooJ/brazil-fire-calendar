@@ -294,3 +294,5 @@ Global rules for this block:
   - `coverageNote()` (format.ts) reads `/api/status` coverage: under the satellite's name, "ended 2 Nov 2026" or "from 20 Jan 2012" when it stopped/started in or before that month. Same in the month card (MonthDetail `coverage`). Display only. Checked 375 / 1440.
 - [x] "Show the cells on the map" kept the whole-area view, so the cells were a tiny cluster on desktop and hidden under the tall legend on phones
   - MapView zooms to the cells' extent when they are shown (max zoom 8, top padding below the legend, at least 120px of map left; instant with reduced motion); hiding them goes back to the area. Checked 375 / 1440.
+- [x] Detailed heatmap on phones: the "Y" (year total) column was a row of blank grey boxes
+  - Phones show the API's `yearly` totals in the short form ("2.3k", "13k", * when the year is not complete) at 9px. Desktop unchanged. Checked 375.

@@ -7,7 +7,7 @@ import type { Mode } from './FireCalendar';
 import type { CalendarItem, MonthAverage, YearItem } from '../types';
 import { SATELLITES, SAT_NAMES } from '../types';
 import { ANOMALY_SCALE, ANOMALY_TICKS, COUNTS_SCALE, NEUTRAL_CELL, NO_FIRE, anomalyPosition } from '../colors';
-import { MON, MONTHS, num, ordinal, pctShort } from '../format';
+import { MON, MONTHS, compact as short, num, ordinal, pctShort } from '../format';
 
 interface Props {
   calendar: CalendarItem[];
@@ -67,7 +67,8 @@ export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningC
       .map((r) => ({
         value: [12, rowOf(r.year), r.count ?? '-'],
         itemStyle: { borderColor: CHART_BG, borderWidth: compact ? 1 : 2, opacity: r.complete ? 1 : 0.6 },
-        label: { formatter: () => (compact ? '' : num(r.count) + (r.complete ? '' : '*')), color: '#cfd3dc', fontWeight: 600 as const },
+        // phones: the short form ("2.3k") so the Year column is not a row of blank boxes
+        label: { formatter: () => (compact ? short(r.count) : num(r.count)) + (r.complete ? '' : '*'), color: '#cfd3dc', fontWeight: 600 as const, ...(compact ? { fontSize: 9 } : {}) },
         _row: r,
       }));
 
