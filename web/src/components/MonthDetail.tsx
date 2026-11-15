@@ -39,7 +39,7 @@ export default function MonthDetail({ item, map, onShowMap, onCsv, onClose }: Pr
   }, [close]);
 
   return (
-    <aside className={'detail' + (closing ? ' is-closing' : '')} role="dialog" aria-label={`${MONTHS[item.month - 1]} ${item.year}`}>
+    <div className={'detail' + (closing ? ' is-closing' : '')} role="dialog" aria-label={`${MONTHS[item.month - 1]} ${item.year}`}>
       <button ref={closeRef} className="detail-close" onClick={close} aria-label="Close details">×</button>
       <p className="eyebrow dark">
         {MONTHS[item.month - 1]} {item.year}
@@ -84,6 +84,6 @@ export default function MonthDetail({ item, map, onShowMap, onCsv, onClose }: Pr
       )}
       {map.kind === 'error' && <ErrorNote title="The map could not load" message={map.message} onRetry={onShowMap} />}
       <button className="btn btn-quiet btn-wide" onClick={onCsv}>Download this month's hotspots (CSV)</button>
-    </aside>
+    </div>
   );
 }

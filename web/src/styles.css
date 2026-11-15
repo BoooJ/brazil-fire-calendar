@@ -397,18 +397,18 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
 .kc dt { font-size: var(--t-xs); font-weight: 600; color: var(--sheet-ink-2); }
 .kc dd { font-size: var(--t-xl); font-weight: 750; letter-spacing: -0.02em; line-height: 1.2; font-variant-numeric: tabular-nums; }
 .kc dd small { font-size: var(--t-sm); font-weight: 600; color: var(--sheet-ink-2); }
-.kc span { font-size: var(--t-xs); color: var(--sheet-ink-2); }
+.kc dd.kc-note { font-size: var(--t-xs); font-weight: 400; letter-spacing: 0; color: var(--sheet-ink-2); }
 .kc .kc-hot { grid-column: 1 / -1; background: #ffe9d2; }
-.kc .kc-hot dd { font-size: var(--t-3xl); }
+.kc .kc-hot dd:not(.kc-note) { font-size: var(--t-3xl); }
 .kc .kc-vs { grid-column: 1 / -1; }
-.kc > div:last-child { grid-column: 1 / -1; } /* peak month: no half-empty last row in two columns */
-.kc .kc-vs dd { font-size: var(--t-lg); }
-.kc .kc-vs.is-up dd { color: #b34700; }
-.kc .kc-vs.is-down dd { color: var(--vs0); }
+.kc:not(.kc-2) > div:last-child { grid-column: 1 / -1; } /* peak month: no half-empty last row in two columns */
+.kc .kc-vs dd:not(.kc-note) { font-size: var(--t-lg); }
+.kc .kc-vs.is-up dd:not(.kc-note) { color: #b34700; }
+.kc .kc-vs.is-down dd:not(.kc-note) { color: var(--vs0); }
 .kc-2 { margin-bottom: 14px; }
 /* type hierarchy of the panels: label 12/600 · value 18–40/700+ · note 12/1.35; numbers always tabular */
 .detail, .kc, .sats, .next, .sources, .cal-tip { font-variant-numeric: tabular-nums; }
-.kc span { line-height: 1.35; margin-top: 2px; }
+.kc dd.kc-note { line-height: 1.35; margin-top: 2px; }
 .kc dt, .sats dt { letter-spacing: 0.01em; line-height: 1.3; }
 .sheet h2 + .muted { margin-top: 4px; }
 .reliability h2 { margin-bottom: 12px; }

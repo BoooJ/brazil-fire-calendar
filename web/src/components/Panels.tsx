@@ -22,27 +22,27 @@ export function KeyCards({ data }: { data: Analysis }) {
         <div className="kc-hot">
           <dt>Fire-days</dt>
           <dd>{num(c.count)}</dd>
-          <span>1 km squares with fire on a day, on the NOAA-20 scale</span>
+          <dd className="kc-note">1 km squares with fire on a day, on the NOAA-20 scale</dd>
         </div>
         <div className={'kc-vs' + tone}>
           <dt>{avg ? `Against the ${avg} average` : 'Against the average'}</dt>
           <dd>{pctLong(p)}</dd>
-          <span>{c.partial ? 'the same days in other years' : 'for this month'}</span>
+          <dd className="kc-note">{c.partial ? 'the same days in other years' : 'for this month'}</dd>
         </div>
         <div>
           <dt>Rank</dt>
           <dd>{c.rank == null ? '–' : <>{ordinal(c.rank)}<small> of {c.of_years}</small></>}</dd>
-          <span>1st = the most fire-days</span>
+          <dd className="kc-note">1st = the most fire-days</dd>
         </div>
         <div>
           <dt>Estimated fires</dt>
           <dd>{c.estimated_fires == null ? '–' : `≈ ${num(c.estimated_fires)}`}</dd>
-          <span>burning cells that touch count as one</span>
+          <dd className="kc-note">burning cells that touch count as one</dd>
         </div>
         <div>
           <dt>Peak month</dt>
           <dd>{c.peak_month == null ? '–' : MONTHS[c.peak_month - 1]}</dd>
-          <span>{c.worst_year == null ? 'in a typical year' : <>most active year: <b>{c.worst_year}</b></>}</span>
+          <dd className="kc-note">{c.worst_year == null ? 'in a typical year' : <>most active year: <b>{c.worst_year}</b></>}</dd>
         </div>
       </dl>
     </section>
@@ -58,12 +58,12 @@ export function Reliability({ data, status }: { data: Analysis; status: Status |
         <div>
           <dt>Typical conversion error</dt>
           <dd>{r.median_error_pct == null ? '–' : `±${r.median_error_pct}%`}</dd>
-          <span>median, on years held out of the method</span>
+          <dd className="kc-note">median, on years held out of the method</dd>
         </div>
         <div>
           <dt>Years checked</dt>
           <dd>{r.validated_years.join(', ') || '–'}</dd>
-          <span>against months seen by two satellites at once</span>
+          <dd className="kc-note">against months seen by two satellites at once</dd>
         </div>
       </dl>
       <p className="muted">{r.note}</p>

@@ -176,3 +176,5 @@ Global rules for this block:
   - Short laptop screens (≥1280 wide, <860 high): section padding 104/48, app frame 49svh, tighter FAQ rows → every section is exactly 768. Tablet folder images 222px → #how is 1180. 1440×900 unchanged.
 - [x] axe-core pass (landing, gate, result): globe/map stage outside any landmark; hidden 0px numbers in the landing one-year strip flagged for contrast
   - Globe stage is a labelled region ("Globe and map"); the strip's bricks carry no text (colour only, the strip is aria-hidden). axe now reports no violations on the three screens.
+- [x] axe-core pass (month card, Detailed view, table, data sources): key-number notes were `<span>` inside `<dl>`; month card was an `<aside role="dialog">`
+  - Notes are `<dd class="kc-note">` (same look); the month card is a `<div role="dialog">`. No axe violations left on the six screens checked at 375px. Also: the "last card spans the row" rule no longer touches the two reliability cards.
