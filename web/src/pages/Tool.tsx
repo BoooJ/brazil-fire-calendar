@@ -4,7 +4,7 @@ import { ApiError, downloadCsv, getAnalysis, getHotspots, getPresets, getStatus,
 import type { Polygon } from 'geojson';
 import type { Analysis, AnalysisRequest, CalendarItem, Coverage, Forecast, Hotspots, Preset, Status } from '../types';
 import { SATELLITES, SAT_NAMES } from '../types';
-import { drawnArea, pointCount, scatterIn, type Area } from '../geo';
+import { drawnArea, fireSpots, pointCount, type Area, type FlameSpot } from '../geo';
 import Globe, { BRAZIL_CENTER, loadWorld, zoomForRadius } from '../components/Globe';
 import { splashUntil } from '../splash';
 import LocationGate, { PinIcon, type Way } from '../components/LocationGate';
@@ -280,9 +280,37 @@ export default function Tool() {
     [area, picked],
   );
 
-  // little animated flames scattered over the chosen area on Standard and Satellite (decoration, random places);
-  // off while real hotspots or the fire cells are on show, so they are never mistaken for data
-  const flames = useMemo(() => (area ? scatterIn(area.polygon, 12, area.label) : []), [area]);
+  // little animated flames on Standard and Satellite where the satellites saw fire this month: the reference
+  // month's detections (a thinned sample, which the API spreads over the whole month) grouped into their densest
+  // clusters, bigger where denser. How many follows this month's level on the calendar's colour scale (Minimal 2 …
+  // Extreme 12, none without fire); a month still in progress is taken at its pace (a typical month here × the
+  // API's % against the same days), not its few days so far. Off while the month's real hotspots or the fire
+  // cells are on show.
+  const [fireSeen, setFireSeen] = useState<[number, number][]>([]);
+  const refCards = load.kind === 'ok' ? load.data.cards : null;
+  const areaNow = useRef(area);
+  areaNow.current = area;
+  useEffect(() => {
+    // keyed on the loaded analysis only: it always belongs to the current area (a new area reloads it first)
+    setFireSeen([]);
+    const a = areaNow.current;
+    if (!a || !refCards?.count) return;
+    let alive = true;
+    getHotspots({ area: a.polygon, year: refCards.ref_year, month: refCards.ref_month, limit: 1500 })
+      .then((h) => alive && setFireSeen(h.features.map((f) => f.geometry.coordinates)))
+      .catch(() => {}); // no points, no flames
+    return () => {
+      alive = false;
+    };
+  }, [refCards]);
+  const flames = useMemo<FlameSpot[]>(() => {
+    if (!area || load.kind !== 'ok' || !load.data.cards.count) return [];
+    const c = load.data.cards;
+    const typical = load.data.average_by_month.find((a) => a.month === c.ref_month)?.mean ?? null;
+    const pace = c.partial && typical != null && c.vs_avg_pct != null ? typical * (1 + c.vs_avg_pct / 100) : c.count;
+    const level = makeCountLevels(load.data.calendar).level(pace);
+    return fireSpots(fireSeen, area.polygon, [2, 4, 6, 9, 12][level]);
+  }, [area, load, fireSeen]);
   const globeFlames = area && stage === 'globe' && !points.length ? flames : undefined;
   const mapFlames = area && view === 'satellite' && !hotspots && drawMode === 'none' ? flames : undefined;
 

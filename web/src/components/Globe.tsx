@@ -7,6 +7,7 @@ import type { FeatureCollection, Geometry } from 'geojson';
 import type { AreaGeometry } from '../types';
 import { STATE_BORDERS, stateAt, stateById, type StateFeature } from '../states';
 import { flameElement } from './Flames';
+import type { FlameSpot } from '../geo';
 
 interface World {
   brazil: FeatureCollection<Geometry>;
@@ -58,8 +59,8 @@ interface Props {
   label: string;
   /** vertical position of the globe centre, as a fraction of the box height */
   originY?: number;
-  /** decorative animated flames at these places (never data) */
-  flames?: [number, number][];
+  /** animated flames where the satellites saw fire this month (geo.ts fireSpots): places and sizes come from the data */
+  flames?: FlameSpot[];
 }
 
 export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, selected, points, pick, onPick, onState, hover, onHover, label, originY = 0.5, flames }: Props) {
@@ -175,7 +176,7 @@ export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, select
         ctx.fill();
       }
     }
-    // the decorative flames: HTML over the canvas, moved with the globe, hidden on its far side
+    // the flames (where fire was seen): HTML over the canvas, moved with the globe, hidden on its far side
     for (const f of flameEls.current) {
       const xy = geoDistance(f.at, c) <= Math.PI / 2 - 0.02 ? projection(f.at) : null;
       if (!xy) {
@@ -268,8 +269,8 @@ export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, select
     const layer = flameLayer.current;
     if (!layer) return;
     layer.replaceChildren();
-    flameEls.current = (flames ?? []).map((at, i) => {
-      const el = flameElement(i);
+    flameEls.current = (flames ?? []).map(({ at, w }, i) => {
+      const el = flameElement(i, w);
       layer.appendChild(el);
       return { el, at };
     });

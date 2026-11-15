@@ -7,7 +7,7 @@ import type { FeatureCollection, Point, Polygon } from 'geojson';
 import type { AreaGeometry, Forecast, Hotspots, SatelliteKey } from '../types';
 import { SAT_NAMES } from '../types';
 import { CHANCE_STOPS, FRP_STOPS } from '../colors';
-import { areaBbox, closeRing, rectPolygon } from '../geo';
+import { areaBbox, closeRing, rectPolygon, type FlameSpot } from '../geo';
 import { timeUtc } from '../format';
 import { loadWorld, OCEAN } from './Globe';
 import { STATES, stateById, type StateFeature } from '../states';
@@ -29,8 +29,8 @@ interface Props {
   onUnavailable?: () => void;
   /** with this, the state under the pointer highlights and lifts, and a click (or tap) selects it */
   onState?: (s: StateFeature) => void;
-  /** decorative animated flames at these places (never data) */
-  flames?: [number, number][];
+  /** animated flames where the satellites saw fire this month (geo.ts fireSpots): places and sizes come from the data */
+  flames?: FlameSpot[];
 }
 
 // Basemap: NASA GIBS (Blue Marble shaded relief) — imagery only, never used for the numbers.
@@ -351,11 +351,11 @@ export default function MapView({ area, hotspots, cells = null, cellsLabel = '',
     };
   }, [noImagery]);
 
-  // ---------- decorative flames (markers: HTML over the map, never data) ----------
+  // ---------- flames where fire was seen (markers: HTML over the map; the ball's centre on the fire) ----------
   useEffect(() => {
     const m = map.current;
     if (!m || !flames?.length) return;
-    const markers = flames.map((at, i) => new maplibregl.Marker({ element: flameElement(i), anchor: 'bottom' }).setLngLat(at).addTo(m));
+    const markers = flames.map(({ at, w }, i) => new maplibregl.Marker({ element: flameElement(i, w), anchor: 'center' }).setLngLat(at).addTo(m));
     return () => markers.forEach((mk) => mk.remove());
   }, [flames]);
 

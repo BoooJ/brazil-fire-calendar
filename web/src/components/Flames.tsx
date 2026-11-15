@@ -1,5 +1,5 @@
-// Little animated flames scattered over the chosen area on the Standard and Satellite views.
-// Decoration only: their places are random (geo.ts scatterIn), never data. Hidden from screen readers.
+// Little animated flames over the chosen area on the Standard and Satellite views, where the satellites saw fire
+// this month: the densest clusters of detections (geo.ts fireSpots), bigger where denser. Hidden from screen readers.
 //
 // The look: a small ball of fire with a white-hot core, wavy red tongues and a soft red bloom, plus a few glints.
 // Flat colours only, softened by SVG blur, and a noise filter that bends the edges so they burn.
@@ -54,12 +54,13 @@ function svg(i: number): string {
   );
 }
 
-/** A flame as a DOM element, for MapLibre markers and the globe's overlay. `i` varies its size and rhythm. */
-export function flameElement(i: number): HTMLElement {
+/** A flame as a DOM element, for MapLibre markers and the globe's overlay. `i` varies its rhythm,
+ *  `w` (0–1, how dense the fire is there) its size. */
+export function flameElement(i: number, w = 0.5): HTMLElement {
   const el = document.createElement('span');
   el.className = 'flame';
   el.setAttribute('aria-hidden', 'true');
-  const size = 24 + ((i * 7) % 4) * 3; // 24–33 px box; the ball is about half of it, the rest is glow
+  const size = Math.round(20 + Math.min(1, Math.max(0, w)) * 14); // 20–34 px box; the ball is about half of it, the rest is glow
   el.style.setProperty('--fs', `${size}px`);
   el.style.setProperty('--fd', `${(i * 0.37) % 1.3}s`); // delay, so they don't move in step
   el.style.setProperty('--fr', `${1.1 + ((i * 3) % 5) * 0.15}s`); // speed
