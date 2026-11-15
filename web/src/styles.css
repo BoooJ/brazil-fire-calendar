@@ -300,6 +300,9 @@ button.day:hover { transform: scale(1.08); }
 .coords { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .coords label, .radius legend { display: grid; gap: 6px; font-size: 13px; font-weight: 600; color: var(--ink-2); }
 .coords input { width: 100%; min-height: 48px; padding: 0 14px; border-radius: var(--r-md); border: 1px solid var(--line-strong); background: var(--surface); font-size: 16px; color: var(--ink); }
+.gate-hint { font-size: 13px; color: var(--ink-2); margin-top: 8px; }
+.coords input[aria-invalid='true'] { border-color: var(--warn); }
+.coords input::placeholder { color: #6d7180; }
 .radius { margin: 14px 0 18px; }
 .radius legend { margin-bottom: 6px; }
 .gate .seg { display: flex; }

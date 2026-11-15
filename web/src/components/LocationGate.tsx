@@ -80,15 +80,18 @@ export default function LocationGate({ presets, picked, onPickedChange, onDone, 
       <div className="coords">
         <label>
           Latitude
-          <input inputMode="decimal" type="number" step="any" min={-90} max={90} placeholder="-16.83" value={lat}
+          <input type="number" step="any" autoComplete="off" enterKeyHint="done" aria-describedby="coords-hint" aria-invalid={outside || undefined} min={-90} max={90} placeholder="-16.83" value={lat}
             onChange={(e) => setCoord('lat', e.target.value)} />
         </label>
         <label>
           Longitude
-          <input inputMode="decimal" type="number" step="any" min={-180} max={180} placeholder="-56.91" value={lon}
+          <input type="number" step="any" autoComplete="off" enterKeyHint="done" aria-describedby="coords-hint" aria-invalid={outside || undefined} min={-180} max={180} placeholder="-56.91" value={lon}
             onChange={(e) => setCoord('lon', e.target.value)} />
         </label>
       </div>
+      <p className="gate-hint" id="coords-hint">
+        Tap the globe to fill these in, or type decimal degrees. South and west are negative (Cuiabá is −15.6, −56.1).
+      </p>
       <fieldset className="radius">
         <legend>Radius around the point</legend>
         <div className="seg" role="radiogroup">
