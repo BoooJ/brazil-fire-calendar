@@ -13,11 +13,11 @@ A web app that turns NASA FIRMS active-fire hotspots over **Brazil** (2003 → t
 ## Hard rules
 
 1. **NASA FIRMS data only.** No other datasets (no IBGE borders, INPE, ERA5, weather…). Preset areas are plain boxes we define.
-2. **Never commit data** (CSV, zip, Parquet, DuckDB). The only exception is `web/mocks/`. Data lives in `DATA_DIR` (from `.env`), outside OneDrive.
+2. **Never commit data** (CSV, zip, Parquet, DuckDB). Exceptions: `web/mocks/` and the forecast model files in `science/forecast/artefatos/` (~21 MB). Data lives in `DATA_DIR` (from `.env`), outside OneDrive.
 3. **Never write secrets in tracked files.** Keys live only in `.env` (gitignored). Never print, log or echo `.env` values. The FIRMS API puts the MAP_KEY **in the URL path**, so never log request URLs.
 4. **Stay in your task's folder:** `infra/`, `web/` or `science/`. Don't edit another folder unless the task explicitly says so.
-5. **`docs/api-contract.md` is frozen (v0.1).** If it must change: update the contract, regenerate the mocks (`python infra/tools/make_mocks.py`), bump the version, and say so in the PR description.
-6. **No forecasts.** Recent months are *provisional*. "Coming months" is history, and must be labelled "not a forecast".
+5. **`docs/api-contract.md` is frozen (v0.2).** If it must change: update the contract, regenerate the mocks (`python infra/tools/make_mocks.py`), bump the version, and say so in the PR description.
+6. **One forecast only, always labelled.** The calendar, averages and "coming months" are history ("not a forecast"); recent months are *provisional*. The only forecast is `POST /api/forecast` (the science team's next-week model), always shown with its `label` "Model estimate (experimental), not an official fire warning."
 7. **Git:** work on a branch (`infra/…`, `web/…`, `science/…`) and open small PRs to `main`. `main` must always run. Never force-push `main`.
 
 ## Layout
@@ -33,6 +33,7 @@ infra/                   Python: data pipeline + FastAPI/DuckDB API   → infra/
 web/                     the website                                   → web/CLAUDE.md
   mocks/                 fake API responses (all numbers invented)
 science/                 harmonization method + validation             → science/CLAUDE.md
+  forecast/              next-week fire model (previsao_fogo.py + artefatos/), served by infra/api/forecast.py
 data/                    local only, gitignored
 ```
 
@@ -89,7 +90,8 @@ python infra/pipeline/03_clean.py           # one flagged table -> DATA_DIR/clea
 python infra/pipeline/04_fire_days.py       # fire-days on a 0.01 deg grid -> DATA_DIR/derived/fire_days
 python infra/pipeline/05_harmonize.py       # v0 conversion factors -> DATA_DIR/derived/harmonization_v0.json
 
-# API (loads in ~1 s; interactive docs at http://localhost:8000/docs)
+# API (data loads in a few s, the forecast model ~20 s more; docs at http://localhost:8000/docs)
+pip install scikit-learn==1.7.2 joblib   # needed by /api/forecast (exact version: the model was saved with it)
 python -m uvicorn main:app --app-dir infra/api --port 8000
 
 # website (React + Vite + MapLibre + ECharts): landing page at #/, the tool at #/app
@@ -116,6 +118,7 @@ cd web && npm run build                # type-check + production build
 - [x] API serving real data: every contract endpoint works (`/api/update` is still a stub)
 - [x] Website on mocks → on real API (set `VITE_API_BASE_URL=https://fire-api.37-187-37-74.sslip.io`)
 - [ ] Daily update from the FIRMS API
+- [x] Next-week fire chance: science model in `science/forecast/`, served by `POST /api/forecast` (contract v0.2, mock `web/mocks/forecast.pantanal.json`). Website panel: to do (web/)
 - [x] API deployed online: https://fire-api.37-187-37-74.sslip.io (OVH VPS, Docker + Caddy; see `infra/deploy/README.md`)
 - [x] Website deployed online: https://fire.37-187-37-74.sslip.io (static build served by the VPS's Caddy; redeploy steps in `infra/deploy/README.md`)
 

@@ -1,6 +1,8 @@
-# API contract — v0.1
+# API contract — v0.2
 
 This file is the agreement between **`infra/`** (the API) and **`web/`** (the website).
+
+**v0.2 (14 Nov):** adds `POST /api/forecast` (next-week fire chance, endpoint 8), `forecast_available` in `/api/status`, and the error `FORECAST_UNAVAILABLE`. Nothing else changed.
 
 - Until the real API is ready, the website is built against the fake files in [`web/mocks/`](../web/mocks/). Switching to the real API = changing `VITE_API_BASE_URL`.
 - **Frozen after kickoff.** To change anything: (1) say it in the team chat, (2) update this file **and** the mocks in the same pull request (`python infra/tools/make_mocks.py`), (3) bump the version above.
@@ -60,15 +62,17 @@ When the data was last updated, and what each satellite covers.
 ```json
 {
   "data_updated": "2026-11-14T15:20:00Z",
-  "contract_version": "0.1",
+  "contract_version": "0.2",
   "calendar_from": "2003-01",
   "final_until": "2026-05-31",
-  "coverage": [ { "satellite": "viirs_snpp", "from": "2012-01-20", "to": "2026-11-02" } ]
+  "coverage": [ { "satellite": "viirs_snpp", "from": "2012-01-20", "to": "2026-11-02" } ],
+  "forecast_available": true
 }
 ```
 
 - `final_until`: data after this date is NASA's fast (near-real-time) version → shown as **provisional**.
 - `to: null` = still active.
+- `forecast_available`: `false` while the forecast model loads (about 20 s after a restart) or if it is missing. Hide the forecast panel when `false`.
 
 Mock: [`status.json`](../web/mocks/status.json)
 
@@ -185,6 +189,56 @@ No body. Asks the FIRMS API for the last days and adds them. Limited to once eve
 
 `status`: `updated`, `too_soon` (HTTP 429) or `failed`.
 
+### 8. `POST /api/forecast` — chance of fire next week (model estimate, experimental)
+
+The **only forecast** in the app. Everything else (calendar, averages, "coming months") is history. Model by the science team (`science/forecast/`): gradient boosting on **5 km cells**, fed with the last 28 days of VIIRS NOAA-20 detections (read by the API from our data) and the usual pattern for that week of the year.
+
+Body: `area` + optional `ref_date` (last day of data used; default = yesterday's data, the last complete day; later dates are clipped; must be `2018-04-29` or later) + optional `limit` (cells returned, default 2,000, max 20,000).
+
+```json
+{
+  "query": { "ref_date": "2026-11-13", "area_km2": 266959.7 },
+  "data_updated": "2026-11-14T15:20:00Z",
+  "based_on": { "satellite": "viirs_noaa20", "from": "2026-10-17", "to": "2026-11-13" },
+  "period": { "from": "2026-11-14", "to": "2026-11-20" },
+  "label": "Model estimate (experimental), not an official fire warning.",
+  "cell_size_km": 5,
+  "summary": {
+    "cells": 7774,
+    "expected_cells_with_fire": 80.5,
+    "expected_share_pct": 1.04,
+    "max_probability": 0.628,
+    "intensity_if_fire": "high",
+    "recent_detections": 519
+  },
+  "briefing": "For 14 Nov - 20 Nov 2026, the model expects fire in about 80 of the 7,774 cells (5 km) ...",
+  "reliability": { "auc": 0.87, "baseline_auc": 0.76, "test_years": [2023, 2024, 2025], "note": "..." },
+  "total": 7774, "returned": 2000, "truncated": true,
+  "cells": { "type": "FeatureCollection", "features": [ {
+    "type": "Feature",
+    "geometry": { "type": "Point", "coordinates": [-55.925, -16.375] },
+    "properties": { "probability": 0.628, "intensity_if_fire": "high" }
+  } ] },
+  "notes": []
+}
+```
+
+| Field | Meaning |
+|---|---|
+| `period` | The 7 days predicted: the days after `ref_date` |
+| `summary.cells` | 5 km cells of the area that have burned before (the model only covers those) |
+| `summary.expected_cells_with_fire` | Sum of the cell probabilities = how many cells are expected to have at least one fire that week |
+| `summary.expected_share_pct` | Same, as a % of `cells`. `null` if `cells` is 0 |
+| `summary.max_probability` | Highest chance (0–1) of any cell |
+| `summary.intensity_if_fire` | `low` / `medium` / `high`: likely strength if it burns (weighted by probability). Classes only: the model's power number is in MODIS-equivalent units, so it is not shown |
+| `summary.recent_detections` | Valid NOAA-20 detections inside the area during `based_on` |
+| `cells` | Point = cell centre. Sorted by `probability`, highest first; capped at `limit` (`truncated`, like `/api/hotspots`) |
+| `notes[]` | Plain-English remarks to show: outside Brazil, no fire in the last 28 days (estimate from the usual pattern only), a past date replayed (looks better than a real forecast), model needs re-export |
+
+**Display rules:** always show `label` next to the numbers; use a sequential (colour-blind-safe) ramp for `probability`; never call it an official warning. Past dates can be replayed (e.g. `ref_date: "2020-09-01"` for the Pantanal), and then `notes` says so.
+
+Mock: [`forecast.pantanal.json`](../web/mocks/forecast.pantanal.json)
+
 ---
 
 ## Errors
@@ -201,6 +255,7 @@ HTTP 4xx/5xx with:
 | `AREA_TOO_COMPLEX` | 400 | More than 1,000 points |
 | `INVALID_DATES` | 400 | Bad format, or `start` after `end` |
 | `UPDATE_TOO_SOON` | 429 | `/api/update` called within 15 minutes |
+| `FORECAST_UNAVAILABLE` | 503 | `/api/forecast` while the model is loading, or if it is missing on the server |
 | `SERVER_ERROR` | 500 | Anything else |
 
 **An area with no fires is not an error**: HTTP 200 with zeros. An area outside the covered region also returns 200, plus `"warning": "This area is outside the region we cover (Brazil)."`

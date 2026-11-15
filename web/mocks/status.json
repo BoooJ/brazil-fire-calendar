@@ -1,7 +1,7 @@
 {
   "_mock": "FAKE DATA - for website development only. Shapes follow docs/api-contract.md; every number is invented.",
   "data_updated": "2026-11-14T15:20:00Z",
-  "contract_version": "0.1",
+  "contract_version": "0.2",
   "calendar_from": "2003-01",
   "final_until": "2026-05-31",
   "coverage": [
@@ -25,5 +25,6 @@
       "from": "2018-04-01",
       "to": null
     }
-  ]
+  ],
+  "forecast_available": true
 }

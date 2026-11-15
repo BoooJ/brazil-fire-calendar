@@ -175,3 +175,15 @@ class Store:
         if len(df):
             df = df[shapely.contains_xy(geom, df["longitude"].to_numpy(), df["latitude"].to_numpy())]
         return df.reset_index(drop=True), total
+
+    @staticmethod
+    def noaa20_detections(cur, bbox: tuple[float, float, float, float], first: date, last: date) -> pd.DataFrame:
+        """Valid VIIRS NOAA-20 hotspots in a box, in the format the forecast model expects.
+        No `type` column on purpose: near-real-time rows have none, and the model would drop them."""
+        w, s, e, n = bbox
+        return cur.execute("""
+            SELECT latitude, longitude, acq_date, acq_time, frp, confidence_raw AS confidence
+            FROM hotspots
+            WHERE satellite = 'viirs_noaa20' AND year BETWEEN ? AND ? AND acq_date BETWEEN ? AND ?
+              AND latitude BETWEEN ? AND ? AND longitude BETWEEN ? AND ?
+        """, [first.year, last.year, first, last, s, n, w, e]).df()
