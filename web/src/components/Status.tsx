@@ -152,7 +152,7 @@ function Season({ data, levels, place, period }: { data: Analysis; levels: Retur
   return (
     <div className="season">
       <div className="season-head">
-        <h2>Typical year in {place}</h2>
+        <h2>Hotspots in {place} on average</h2>
       </div>
       <ol className={'season-bars' + (on != null ? ' is-hot' : '')} onPointerLeave={() => setOn(null)}>
         {order.map((m, i) => {
