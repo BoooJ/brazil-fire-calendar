@@ -54,6 +54,10 @@ Global rules for this block:
 ### Polish
 
 - [ ] **Light theme in the spirit of the poolside + Apple references**: generous spacing, a strict type scale, hand-picked flat colours, consistent radii. Go through every part of the UI (controls, panels, popovers, legends, empty/error states), not only the hero. Update tokens in `src/styles.css` rather than one-off values.
+  - [x] Sub-task 1: flat surfaces in the tool: error note, Key numbers hot card and skeletons (pulse instead of a shimmer gradient) are flat; dead `.stats` rules removed. Kept on purpose: the globe edge fade (blends the canvas into the page), hatching (a state encoding) and the heatmap legend bar (a data scale).
+  - [ ] Sub-task 2: a strict type scale as tokens (--t-xs 11 · --t-sm 13 · --t-base 15 · --t-md 17 · --t-lg 22 · --t-xl 28) and replace the one-off font sizes in styles.css
+  - [ ] Sub-task 3: spacing pass on the sheet (use --s-* between sections: calendar, coming months, briefing, satellites, reliability), consistent radii on cards/popovers/legend
+  - [ ] Sub-task 4: empty/error/legend/popover states checked at 375 and 1440 after the above
 - [ ] **Interactive data feel** (scrolltide helio reference): subtle, fast transitions when switching area/date/view and when numbers change; respect `prefers-reduced-motion`.
 
 ## Blocked — needs a team decision (do NOT do these at night)
