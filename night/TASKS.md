@@ -318,3 +318,5 @@ Global rules for this block:
   - The heatmap's minimum width is 256px (was 300), so it fits a 320px phone (cells ~17px) with no inner scroll. axe clean at 320 and 820 (sheet, month card, detailed view).
 - [x] Landing satellite timeline on 320px phones: "Calendar starts, Jan 2003" ran off the card over the Terra bar, the 2012/2018 ticks ran into each other ("20122018") and the year axis was cut by the card's bottom edge
   - Under 361px (landing.css only, kit untouched): the start label and the 2012/2018 ticks hide (the dashed line still meets the 2003 tick; the figure's aria-label says it), the card is a little taller (`--ratio: 100%`) so 2003 and 2026 show. 390+ unchanged.
+- [x] Landing call to action on 320px phones: the card's content (heading, "Open the fire calendar" button) was wider than the card and cut off on the right
+  - landing.css: the card's inner grid can shrink (`min-width: 0`), and under 361px the card's side padding and the button are a little smaller. 390 / 1440 unchanged; no text past the edge anywhere on the landing at 320.
