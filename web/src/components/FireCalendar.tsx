@@ -1,8 +1,9 @@
-// The burning calendar: years × months, drawn as marked days (filled = happened, dotted = typical).
+// The burning calendar, GitHub-contributions style: one row per year, a rounded brick per month.
+// Colour shows intensity (filled = happened, dotted = typical); the numbers are in the tooltip and the month card.
 // The detailed view draws the same months as a dense heatmap: see BurningCalendar.tsx.
 import { useEffect, useMemo, useState } from 'react';
 import type { Analysis, CalendarItem } from '../types';
-import { MON, MONTHS, compact, num, pctLong, pctShort } from '../format';
+import { MON, MONTHS, compact, num, pctLong } from '../format';
 
 export type Mode = 'counts' | 'vs';
 
@@ -76,7 +77,7 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
   };
 
   const describe = (i: CalendarItem) =>
-    `${MONTHS[i.month - 1]} ${i.year}: ${num(i.count)} fire-days, ${pctLong(i.vs_avg_pct)}` +
+    `${MONTHS[i.month - 1]} ${i.year}: ${num(i.count)} (corrected count), ${pctLong(i.vs_avg_pct)}` +
     (i.rank != null ? `, rank ${i.rank} of ${i.of_years}` : '') +
     (i.partial ? `, first ${i.days_covered} days only` : '') +
     (i.provisional ? ', provisional' : '') +
@@ -103,7 +104,7 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
       <div className="cal-grid">
         <div className="yr yr-colhead" aria-hidden="true">
           <div className="yr-label" />
-          <div className="yr-months">{MON.map((m) => <span key={m}>{m}</span>)}</div>
+          <div className="yr-months">{MON.map((m) => <span key={m} data-i={m[0]}>{m}</span>)}</div>
           <div className="yr-total">Year</div>
         </div>
 
@@ -116,10 +117,8 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
               return (
                 <div className="cell" key={m}>
                   <span className={`day typical lv${levels.level(a?.mean ?? null)}`} role="img"
-                    aria-label={`${MONTHS[idx]}, average ${period}: ${num(a?.mean)} fire-days (history, not a forecast)`}
-                    title={`${MONTHS[idx]}, average ${period}: ${num(a?.mean)} fire-days (history, not a forecast)`}>
-                    {compact(a?.mean)}
-                  </span>
+                    aria-label={`${MONTHS[idx]}, typical ${period}: ${num(a?.mean)} (history, not a forecast)`}
+                    title={`${MONTHS[idx]}, typical ${period}: ${num(a?.mean)} (history, not a forecast)`} />
                   <span className="cell-mon" aria-hidden="true">{m}</span>
                 </div>
               );
@@ -144,10 +143,8 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
                       <div className="cell" key={m}>
                         {future && y === ref_year ? (
                           <span className={`day typical lv${levels.level(a?.mean ?? null)}`} role="img"
-                            aria-label={`${MONTHS[idx]} ${y} is usually around ${num(a?.mean)} fire-days (average ${period}, not a forecast)`}
-                            title={`${MONTHS[idx]} is usually around ${num(a?.mean)} fire-days (average ${period}, not a forecast)`}>
-                            {compact(a?.mean)}
-                          </span>
+                            aria-label={`${MONTHS[idx]} ${y} is usually around ${num(a?.mean)} (typical ${period}, not a forecast)`}
+                            title={`${MONTHS[idx]} is usually around ${num(a?.mean)} (typical ${period}, not a forecast)`} />
                         ) : (
                           <span className="day empty" aria-hidden="true" />
                         )}
@@ -160,16 +157,14 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
                     <div className="cell" key={m}>
                       {isNow && <span className="now-tag">{item.partial ? 'SO FAR' : 'NOW'}</span>}
                       <button className={cellClass(item)} onClick={() => onSelect(item)} aria-label={describe(item)}
-                        onPointerEnter={onEnter(item)} onPointerLeave={hideTip} onFocus={onFocusTip(item)} onBlur={hideTip}>
-                        {mode === 'counts' ? compact(item.count) : pctShort(item.vs_avg_pct)}
-                      </button>
+                        onPointerEnter={onEnter(item)} onPointerLeave={hideTip} onFocus={onFocusTip(item)} onBlur={hideTip} />
                       <span className="cell-mon" aria-hidden="true">{m}</span>
                     </div>
                   );
                 })}
               </div>
               <div className="yr-total" title={total?.complete === false ? 'Year not complete' : undefined}
-                role="img" aria-label={`${y} total: ${num(total?.count)} fire-days${total?.complete === false ? ', year not complete' : ''}`}>
+                role="img" aria-label={`${y} total: ${num(total?.count)}${total?.complete === false ? ', year not complete' : ''}`}>
                 {compact(total?.count)}
                 {total && !total.complete && <span aria-hidden="true">*</span>}
               </div>
@@ -181,8 +176,8 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
         <div className="cal-tip" role="presentation" aria-hidden="true"
           style={{ left: Math.min(Math.max(tip.x, 120), window.innerWidth - 120), top: tip.y }}>
           <b>{MONTHS[tip.item.month - 1]} {tip.item.year}</b>
-          <span className="cal-tip-big">{num(tip.item.count)} <small>fire-days</small></span>
-          <span>{pctLong(tip.item.vs_avg_pct)}{tip.item.rank != null && ` · rank ${tip.item.rank} of ${tip.item.of_years}`}</span>
+          <span className="cal-tip-big">{pctLong(tip.item.vs_avg_pct)}</span>
+          <span>Corrected count {num(tip.item.count)}</span>
           {(tip.item.partial || tip.item.provisional || tip.item.uncertain) && (
             <span className="cal-tip-flags">
               {[tip.item.partial && `first ${tip.item.days_covered} days only`, tip.item.provisional && 'provisional', tip.item.uncertain && 'uncertain']
@@ -193,7 +188,7 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
         </div>
       )}
       <p className="fineprint">
-        Numbers are {data.unit.main}. * year not complete. Months are compared with the {period} average.
+        Colour shows how much burned: the corrected count of 1 km squares with fire each day (NOAA-20 scale; see Detailed view). Year totals on the right, * year not complete. Typical = the {period} average.
       </p>
     </section>
   );
@@ -205,7 +200,7 @@ function Legend({ mode, thresholds, period }: { mode: Mode; thresholds: number[]
   return (
     <div className="legend" aria-label="Legend">
       <div className="legend-row">
-        <span className="legend-title">{mode === 'counts' ? 'Fire-days in the month' : `Compared with the ${period} average`}</span>
+        <span className="legend-title">{mode === 'counts' ? 'How much burned in the month' : `Compared with the ${period} average`}</span>
         <ul>
           {(mode === 'counts' ? countLabels : VS_LABELS).map((l, i) => (
             <li key={l}><span className={`day mini ${mode === 'counts' ? 'lv' : 'vs'}${i}`} />{mode === 'vs' && (i < 2 ? '▼ ' : i > 2 ? '▲ ' : '')}{l}</li>
@@ -214,10 +209,10 @@ function Legend({ mode, thresholds, period }: { mode: Mode; thresholds: number[]
       </div>
       <div className="legend-row">
         <ul>
-          <li><span className="day mini typical lv2" />Typical for that month (history, not a forecast)</li>
-          <li><span className="day mini lv2 is-prov" />Provisional (hatched): near-real-time data, may still change</li>
-          <li><span className="day mini lv2 is-unc" />Uncertain (faded): few fires or a large conversion error</li>
-          <li><span className="day mini is-now" />Partial: month in progress, compared day for day</li>
+          <li><span className="day mini typical lv2" />Typical (history, not a forecast)</li>
+          <li><span className="day mini lv2 is-prov" />Provisional: may still change</li>
+          <li><span className="day mini lv2 is-unc" />Uncertain: few fires</li>
+          <li><span className="day mini is-now" />Month in progress</li>
         </ul>
       </div>
     </div>

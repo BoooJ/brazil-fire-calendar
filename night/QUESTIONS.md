@@ -11,3 +11,4 @@
 - **Fire season per area** (for the first screen: "is this the usual fire season, when does it usually end?"): please add to `/api/analysis` something like `season: { start_month: int, peak_month: int, end_month: int, rule: "months whose mean is ≥ X% of the yearly total" } | null`. Today the UI only shows `cards.peak_month`.
 - **How many of the earlier years were above average for this month** (e.g. "7 of the last 20 Novembers were above average"): `cards.years_above_avg: int | null` and `cards.years_compared: int | null`. Not computed in the browser.
 - **Typical fire duration** (asked by Mike): not available; would need a per-fire tracking product. Probably out of scope, flagging only.
+- 2026-11-15: The new brick calendar on a 375px phone has ~20px bricks (12 per row, GitHub style), under the 44px tap-target rule. Taps still work and open the month card; OK for the look Mike asked for, or should phones get bigger bricks with horizontal scroll?

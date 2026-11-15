@@ -40,7 +40,8 @@ Global rules for this block:
 
 ### The calendar — redesign (GitHub-contributions style)
 
-- [ ] **New calendar look.** Goal: appealing, intuitive, readable (think Flo / the GitHub contribution graph). Years as rows labelled on the left (2026, 2025, …); each period is a small **rounded square brick**, not a circle. Colour alone shows intensity (keep the colour-blind-safe scale + a compact legend with values). Remove the word "fire-days" from the calendar UI.
+- [x] **New calendar look.** Goal: appealing, intuitive, readable (think Flo / the GitHub contribution graph). Years as rows labelled on the left (2026, 2025, …); each period is a small **rounded square brick**, not a circle. Colour alone shows intensity (keep the colour-blind-safe scale + a compact legend with values). Remove the word "fire-days" from the calendar UI.
+  - FireCalendar: one row per year at every width (label · 12 rounded bricks · total), month initials on phones, no numbers inside bricks (colour + tooltip), lively hover/focus ring, compact legend ("How much burned in the month" + values), "fire-days" removed from calendar text/tooltip/aria (tooltip leads with ▲/▼ % vs average). Tokens --r-brick, --brick-0. Detailed view heatmap unchanged.
 - [ ] **Interaction:** hover = lively, responsive highlight + small tooltip; click = a small popover card anchored to the brick with the real data for that period (did fire happen, how it compares with typical, provisional/partial status, link to open it on the map). Keyboard accessible.
 - [ ] **Show only the last 2–3 years by default** with "Show more years" / "Show less" toggles.
 - [ ] **Add one year forward** (rest of 2026 + 2027) as "typical" bricks (dotted/outlined) using the API's typical/average values, clearly labelled with `next_months_label` ("not a forecast").
