@@ -133,7 +133,7 @@ abbr { text-decoration: none; }
 .globe--pick { cursor: crosshair; }
 .globe--state { cursor: pointer; }
 .globe-tip { position: absolute; z-index: 2; transform: translate(-50%, calc(-100% - 18px)); padding: 5px 10px; border-radius: var(--r-sm); background: var(--ink); color: #fff; font-size: var(--t-sm); font-weight: 550; white-space: nowrap; pointer-events: none; animation: tip-in 0.14s var(--ease); }
-/* decorative flames over the chosen area (Standard and Satellite views; random places, never data):
+/* flames over the chosen area where the satellites saw fire this month (Standard and Satellite views; places: geo.ts fireSpots):
    tiny balls of fire with a white-hot core, a red bloom, tongues that rise and fade, and glints (components/Flames.tsx) */
 .flames-layer { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
 .flame { display: block; width: var(--fs, 26px); height: var(--fs, 26px); pointer-events: none !important; animation: flame-in 0.6s var(--ease) both; animation-delay: var(--fd, 0s); }

@@ -118,29 +118,43 @@ export function insideArea(lon: number, lat: number, area: AreaGeometry): boolea
   return inside;
 }
 
+/** A flame on the globe or the map: where it burns ([lon, lat]) and how dense the fire is there, 0–1 (1 = densest). */
+export interface FlameSpot {
+  at: [number, number];
+  w: number;
+}
+
 /**
- * Up to `n` scattered points inside an area, for the decorative flames on the globe and the map (never data).
- * Seeded from the area, so the same place always gets the same flames.
+ * Where the fire is, for the flames on the globe and the map: the area cut into a grid of about `grid` × `grid`
+ * cells, the satellite detections counted per cell, and up to `n` of the densest cells kept. Each flame sits at
+ * the mean of its cell's detections (on the fire itself). Cells with under a tenth of the densest cell's
+ * detections get none, and flames keep a gap of 1.5 cells so two never mark one cluster.
+ * Display only: it decides where flames go, never a number on the page.
  */
-export function scatterIn(area: AreaGeometry, n: number, seedText: string): [number, number][] {
-  let seed = 2166136261;
-  for (let i = 0; i < seedText.length; i++) seed = Math.imul(seed ^ seedText.charCodeAt(i), 16777619) >>> 0;
-  const rand = () => {
-    seed = (seed + 0x6d2b79f5) >>> 0;
-    let t = seed;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
+export function fireSpots(points: [number, number][], area: AreaGeometry, n: number, grid = 12): FlameSpot[] {
+  if (!points.length || n <= 0) return [];
   const [w, s, e, nn] = areaBbox(area);
-  const out: [number, number][] = [];
-  // keep flames apart: a minimum gap of a fraction of the area's size
-  const gap = Math.max(e - w, nn - s) / (Math.sqrt(n) * 2.2);
-  for (let tries = 0; out.length < n && tries < n * 200; tries++) {
-    const p: [number, number] = [w + rand() * (e - w), s + rand() * (nn - s)];
-    if (!insideArea(p[0], p[1], area)) continue;
-    if (out.some(([x, y]) => Math.hypot(x - p[0], y - p[1]) < gap)) continue;
-    out.push(p);
+  const size = Math.max(e - w, nn - s) / grid || 0.01;
+  const cells = new Map<string, { n: number; x: number; y: number }>();
+  for (const [x, y] of points) {
+    if (!insideArea(x, y, area)) continue;
+    const key = `${Math.floor((x - w) / size)},${Math.floor((y - s) / size)}`;
+    const c = cells.get(key);
+    if (c) {
+      c.n++;
+      c.x += x;
+      c.y += y;
+    } else cells.set(key, { n: 1, x, y });
+  }
+  const ranked = [...cells.values()].sort((a, b) => b.n - a.n);
+  if (!ranked.length) return [];
+  const top = ranked[0].n;
+  const out: FlameSpot[] = [];
+  for (const c of ranked) {
+    if (out.length >= n || c.n < top * 0.1) break;
+    const at: [number, number] = [c.x / c.n, c.y / c.n];
+    if (out.some((f) => Math.hypot(f.at[0] - at[0], f.at[1] - at[1]) < size * 1.5)) continue;
+    out.push({ at, w: Math.sqrt(c.n / top) });
   }
   return out;
 }
