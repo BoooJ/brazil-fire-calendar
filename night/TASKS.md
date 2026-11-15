@@ -155,4 +155,5 @@ Global rules for this block:
   - Disabled main button is a flat dark surface with readable grey text and says "Tap the globe or type a point first"; it becomes the orange "Show my fire calendar" once a point exists.
 - [x] Phone (375px): the three "coming months" cards are cramped (words wrap to 1–2 per line); stack them as rows under 600px
   - Under 600px each card is one row: month + words on the left, the number on the right. Desktop unchanged.
-- [ ] Desktop globe edge fade still shows vertical banding over the light Brazil fill at 1366×768; check and soften
+- [x] Desktop globe edge fade still shows vertical banding over the light Brazil fill at 1366×768; check and soften
+  - Eight eased stops (to 42%) instead of four: the fade over Brazil's west no longer ends in a visible edge.
