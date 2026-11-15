@@ -158,8 +158,9 @@ function Season({ data, levels, quiet, period }: { data: Analysis; levels: Retur
             </li>
           );
         })}
+        <li className="season-est" aria-hidden="true"><b>Estimate</b></li>
       </ol>
-      <p className="season-split" aria-hidden="true"><span>Earlier</span><span>Now</span><span>Coming up · estimate</span></p>
+      <p className="season-split" aria-hidden="true"><span>Earlier</span><span>Now</span><span>Coming up</span></p>
       <p className="season-read" aria-live="polite">
         <span><b>{MONTHS[lit - 1]}</b> · {LEVEL_WORDS[litLevel].toLowerCase()}{lit === peak && ' · the peak'}{lit === c.ref_month && ' · this month'}</span>
         <span className="season-src">Estimate from the {period} average, not a forecast.</span>

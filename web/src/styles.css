@@ -223,9 +223,13 @@ abbr { text-decoration: none; }
 .season-col i.lv0 { background: #d6d6d6; } .season-col i.lv1 { background: var(--lv1); } .season-col i.lv2 { background: var(--lv2); } .season-col i.lv3 { background: var(--lv3); } .season-col i.lv4 { background: var(--lv4); }
 .season-bars.is-hot li:not(.is-lit) .season-col i { opacity: 0.35; }
 /* the coming months: the same averages, drawn hollow because they are an estimate of what is ahead */
-.season-bars li.is-ahead .season-col i { background: transparent; border: 1.5px dashed var(--lv0d); min-height: 6px; }
-.season-bars li.is-ahead .season-col i.lv1 { border-color: var(--lv1d); } .season-bars li.is-ahead .season-col i.lv2 { border-color: var(--lv2d); }
-.season-bars li.is-ahead .season-col i.lv3 { border-color: var(--lv3d); } .season-bars li.is-ahead .season-col i.lv4 { border-color: var(--lv4d); }
+.season-bars { position: relative; }
+.season-bars li.is-ahead .season-col i { opacity: 0.38; }
+.season-bars li.is-ahead .season-col i.lv0 { opacity: 0.6; }
+.season-bars.is-hot li.is-ahead.is-lit .season-col i { opacity: 0.6; }
+/* "Estimate" sits over the coming months, in the middle of them */
+.season-est { position: absolute; left: calc(50% + 3px); right: 0; top: 0; height: 56px; display: grid; place-content: center; pointer-events: none; }
+.season-est b { padding: 2px 10px; background: var(--card); border-radius: var(--r-pill, 999px); font-family: var(--mono); font-size: 15px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink); }
 .season-split { display: grid; grid-template-columns: 5fr 1fr 6fr; gap: 6px; margin-top: 6px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-2); }
 .season-split span { padding-top: 5px; border-top: 1px solid var(--line-strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .season-split span:nth-child(2) { border-top-color: var(--fire); color: var(--ink); text-align: center; }
@@ -276,20 +280,23 @@ abbr { text-decoration: none; }
 .yr-label { font-size: var(--t-sm); font-weight: 550; font-variant-numeric: tabular-nums; line-height: 1.15; }
 .yr-label small { display: block; font-size: var(--t-2xs); font-weight: 400; color: var(--ink-2); }
 .yr-ahead .yr-label { color: var(--ink-2); }
-.yr-months { display: grid; grid-template-columns: repeat(var(--n, 12), minmax(0, 1fr)); gap: clamp(1px, calc(72px / var(--n, 12)), 6px); max-width: calc(var(--n, 12) * 46px); }
-.cal-grid[data-period='week'] .day { border-radius: 2px; }
+.yr-months { position: relative; display: grid; gap: var(--brick-gap, 6px); max-width: calc(var(--per, 12) * 46px); }
+/* a year can wrap onto several lines (weeks: Jan–Jun / Jul–Dec); --per = bricks per line */
+.yr-line { display: grid; grid-template-columns: repeat(var(--per, 12), minmax(0, 1fr)); gap: var(--brick-gap, 6px); }
+.cal-grid[data-period='week'] { --brick-gap: 4px; row-gap: 12px; }
+.cal-grid[data-period='week'] .day { border-radius: 4px; }
 /* weeks: month names sit over the week where the month starts */
 .cal-grid[data-period='week'] .yr-colhead .yr-months span { text-align: left; white-space: nowrap; overflow: hidden; }
-.cal-grid[data-period='week'] .day.is-now, .cal-grid[data-period='week'] .day.is-sel { outline-width: 1.5px; outline-offset: 1px; }
-/* phones: 53 bricks would be 3 px wide, so the weeks scroll sideways (newest first in view) and the years stay pinned */
-@media (max-width: 700px) {
-  .cal-grid[data-period='week'] { overflow-x: auto; overscroll-behavior-x: contain; padding: 4px 0; scrollbar-width: thin; }
-  .cal-grid[data-period='week'] .yr { grid-template-columns: 44px max-content; }
-  .cal-grid[data-period='week'] .yr-months { grid-template-columns: repeat(53, 11px); gap: 3px; max-width: none; }
-  .cal-grid[data-period='week'] .yr-colhead .yr-months span { font-size: var(--t-2xs); }
-  .cal-grid[data-period='week'] .yr-colhead .yr-months span::before { content: none; }
-  .cal-grid[data-period='week'] .yr-label { position: sticky; left: 0; z-index: 3; align-self: stretch; display: flex; flex-direction: column; justify-content: center; background: var(--card); }
-}
+.cal-grid[data-period='week'] .yr-colhead .yr-months span { font-size: var(--t-xs); }
+.cal-grid[data-period='week'] .yr-colhead .yr-months span::before { content: none; }
+.cal-grid[data-period='week'] .day.is-now, .cal-grid[data-period='week'] .day.is-sel { outline-width: 2px; outline-offset: 1px; }
+/* coming weeks/months: the same colours as the past, faded (an estimate from the average, not a forecast) */
+.day.est { opacity: 0.38; }
+.day.est.lv0, .day.est.vs2 { opacity: 0.6; }
+.cal-est { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 1px; pointer-events: none; text-align: center; }
+.cal-est b, .cal-est span { padding: 1px 10px; background: var(--card); border-radius: var(--r-pill, 999px); }
+.cal-est b { font-family: var(--mono); font-size: 15px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink); }
+.cal-est span { font-size: var(--t-xs); color: var(--ink-2); white-space: nowrap; }
 .cell { position: relative; display: grid; place-items: center; }
 .day { position: relative; width: 100%; max-width: 40px; aspect-ratio: 1; border-radius: var(--r-brick); display: block; padding: 0; border: 0; background-color: var(--lv0); font-size: 0; cursor: pointer; transition: background-color 0.3s ease, transform 0.16s var(--ease), box-shadow 0.16s ease, opacity 0.16s ease; }
 span.day { cursor: default; }
@@ -327,10 +334,11 @@ button.day:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px;
 .cal-keys { display: flex; flex-wrap: wrap; gap: 6px var(--s-4); margin-top: var(--s-4); padding-top: var(--s-4); border-top: 1px solid var(--line); font-size: var(--t-xs); color: var(--ink-2); }
 .cal-keys li { display: inline-flex; align-items: center; gap: 6px; }
 /* tooltip (hover, keyboard focus) and the month's small card, anchored to its brick */
-.cal-tip { position: fixed; z-index: 30; transform: translate(-50%, calc(-100% - 12px)); max-width: 264px; text-align: center; white-space: nowrap; pointer-events: none; animation: tip-soft 0.45s ease 0.18s both; }
+.cal-tip { position: fixed; z-index: 30; transform: translate(-50%, calc(-100% - 12px)); max-width: 300px; text-align: center; white-space: nowrap; pointer-events: none; animation: tip-soft 0.45s ease 0.18s both; }
 @keyframes tip-soft { from { opacity: 0; transform: translate(-50%, calc(-100% - 8px)); } }
 .cal-tip b { font-weight: 550; }
 .cal-tip span { opacity: 0.75; white-space: normal; }
+.cal-tip span .nowrap { opacity: 1; white-space: nowrap; }
 .cal-pop { position: fixed; z-index: 31; width: 300px; translate: -50% 0; padding: var(--s-5); border-radius: var(--r-lg); background: var(--card); color: var(--ink); border: 1px solid var(--line); box-shadow: var(--shadow-float); font-size: var(--t-base); line-height: 1.4; display: grid; gap: 6px; font-variant-numeric: tabular-nums; transform-origin: 50% 0; animation: pop-in 0.18s var(--ease); }
 .cal-pop.is-above { translate: -50% -100%; transform-origin: 50% 100%; }
 .cal-pop-title { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); }
