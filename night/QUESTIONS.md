@@ -6,6 +6,8 @@
 - 2026-11-15 (03:50 run): The reference pages (details.so, scrolltide, a1.gallery, refero) could not be fetched unattended (permission prompt timed out). The CTA hover/press and folder cards are adapted from the described pattern, not studied from the pages. Mike: please glance at them.
 - 2026-11-15: The method panels and the idea frame still use the kit's painted / grain-gradient grounds (data-fx). The CTA and the timeline are flat now; should the three method panels go flat too (the "no gradients" rule says yes)? Added as a task.
 - 2026-11-15: The new brick calendar on a 375px phone has ~20px bricks (12 per row, GitHub style), under the 44px tap-target rule. Taps still work and open the month card; OK for the look Mike asked for, or should phones get bigger bricks with horizontal scroll?
+- 2026-11-15 (04:55 run): The calendar drew the same averages twice ("Typical" row + "2027 typical" row). I merged them: while the API has no months after the reference year, the average row is labelled "2027 · typical" (total "avg") with the not-a-forecast note under it. Mike: OK, or would you rather keep a plain "Typical" row and drop the 2027 label?
+- 2026-11-15 (04:55 run): The landing's closing band used the kit's mid-blue "painting" ground; I overrode it to a pastel blue (#dfe7f1) to match the flat light palette. Easy to revert in landing.css (last rule).
 
 ## For Paul (infra/)
 
