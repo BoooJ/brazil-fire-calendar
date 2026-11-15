@@ -59,13 +59,15 @@ npm run preview    # serve the build
 | `src/geo.ts` | Circle, rectangle, drawn polygon → GeoJSON; preset areas |
 | `src/pages/Tool.tsx` | The tool: location step, the one message, dates, the sheet, the globe/map stage |
 | `src/components/LocationGate.tsx` | "Where should we look?": location, region, point + radius, or draw on the map |
-| `src/components/Globe.tsx` | Globe: Brazil lit, area outline, hotspot points |
-| `src/components/MapView.tsx` | The map: hotspots by fire strength, popups, drawing a rectangle or polygon (no draw plugin) |
-| `src/components/FireCalendar.tsx` | Quick view calendar (filled = happened, dotted = typical, hatched = provisional) |
+| `src/components/Globe.tsx` | Globe: Brazil lit, area outline, hotspot points, the picked point's marker (`pick`) |
+| `src/components/MapView.tsx` | The map: hotspots by fire strength, or next week's forecast cells by chance (`cells`, viridis `CHANCE_STOPS`), popups, drawing a rectangle or polygon (no draw plugin); zooms to the forecast cells when shown and fits a month's hotspots beside the desktop month card; if the GIBS imagery fails it says so and shows the globe's country outlines instead (`loadWorld()` from Globe.tsx) |
+| `src/components/FireCalendar.tsx` | Quick view calendar, GitHub style: a row per year, a rounded brick per month (filled = happened, dotted = typical, hatched = provisional), a card anchored to the clicked brick; the average row is labelled as next year's typical row (not a forecast); newest 3 years first; bricks per year set by `--n` (ready for weeks) |
 | `src/components/Detailed.tsx` | Detailed view: `BurningCalendar.tsx` (heatmap), `Charts.tsx` (typical year, year by year), PNG downloads |
-| `src/components/Controls.tsx`, `Panels.tsx`, `MonthDetail.tsx` | Dates and view switch · key numbers, reliability, data sources · one month's details |
+| `src/components/Controls.tsx`, `Panels.tsx`, `MonthDetail.tsx` | Dates and view switch · key numbers, reliability, data sources · one month's details (`useClosing.ts`: their close animation) |
+| `src/components/ForecastPanel.tsx` | Next-week fire chance (`POST /api/forecast`, the only forecast): always with its `label`, hidden while `forecast_available` is false |
+| `src/format.ts` | Number/date formats and the one message's wording (`headlineFor`, `trendOf`, `rankLine`), shared by the tool and the landing page |
 | `src/pages/Landing.tsx`, `src/landing/` | The landing page: markup, the kit loader, its stylesheet, the product UI drawn from the data |
 
-**Display only, never for numbers:** country outlines on the globe (Natural Earth, `world-atlas` npm package) and the map's imagery (NASA GIBS). Never use them to select, clip or count data. Both are credited on the landing page and in the data sources dialog.
+**Display only, never for numbers:** country outlines on the globe and on the map when its imagery fails (Natural Earth, `world-atlas` npm package) and the map's imagery (NASA GIBS). Never use them to select, clip or count data. Both are credited on the landing page and in the data sources dialog.
 
 Waiting for the API: "Update now" shows the API's own answer (`/api/update` is still a stub).

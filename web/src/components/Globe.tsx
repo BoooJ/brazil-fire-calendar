@@ -11,7 +11,8 @@ interface World {
 }
 
 let worldPromise: Promise<World> | null = null;
-function loadWorld(): Promise<World> {
+/** Natural Earth outlines (display only). Also the map's fallback ground when its imagery cannot load. */
+export function loadWorld(): Promise<World> {
   worldPromise ??= import('world-atlas/countries-50m.json').then((m) => {
     const topo = m.default as any;
     const all = feature(topo, topo.objects.countries) as unknown as FeatureCollection<Geometry>;
@@ -30,19 +31,21 @@ interface Props {
   zoom?: number; // 1 = whole globe fits the box
   area?: Polygon | null;
   points?: [number, number][];
+  /** the point chosen on the location step: drawn as a clear marker, not as a hotspot dot */
+  pick?: [number, number] | null;
   onPick?: (lon: number, lat: number) => void;
   label: string;
   /** vertical position of the globe centre, as a fraction of the box height */
   originY?: number;
 }
 
-export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, points, onPick, label, originY = 0.5 }: Props) {
+export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, points, pick, onPick, label, originY = 0.5 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const world = useRef<World | null>(null);
   const view = useRef({ center, zoom });
   const proj = useRef<GeoProjection | null>(null);
-  const extras = useRef({ area, points, originY });
-  extras.current = { area, points, originY };
+  const extras = useRef({ area, points, pick, originY });
+  extras.current = { area, points, pick, originY };
   const raf = useRef(0);
 
   const draw = () => {
@@ -116,6 +119,24 @@ export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, points
         ctx.fill();
       }
     }
+    const pk = extras.current.pick;
+    if (pk && geoDistance(pk, c) <= Math.PI / 2) {
+      const xy = projection(pk);
+      if (xy) {
+        // a soft halo, then an orange dot with a white edge: visible on light Brazil and on the dark ocean
+        ctx.beginPath();
+        ctx.arc(xy[0], xy[1], 13, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 106, 31, 0.22)';
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(xy[0], xy[1], 5.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#ff6a1f';
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#ffffff';
+        ctx.stroke();
+      }
+    }
     if (a) {
       // Drawn as a line (not a filled polygon) so ring winding order never matters.
       ctx.beginPath();
@@ -175,7 +196,7 @@ export default function Globe({ center = BRAZIL_CENTER, zoom = 1.5, area, points
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [center[0], center[1], zoom]);
 
-  useEffect(draw, [area, points, originY]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(draw, [area, points, pick, originY]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const click = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!onPick || !proj.current) return;

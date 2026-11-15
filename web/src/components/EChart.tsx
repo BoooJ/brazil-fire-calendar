@@ -8,7 +8,7 @@ import { CanvasRenderer } from 'echarts/renderers';
 echarts.use([HeatmapChart, LineChart, BarChart, GridComponent, TooltipComponent, LegendComponent, VisualMapComponent, AriaComponent, CanvasRenderer]);
 
 /** The charts are dark panels on the white sheet: one background, one text face. */
-export const CHART_BG = '#0d1017';
+export const CHART_BG = '#0d1017'; // same as --panel in styles.css
 export const CHART_FONT = "'Inter Variable', Inter, system-ui, sans-serif";
 
 export interface EChartHandle {
@@ -59,7 +59,9 @@ export const EChart = forwardRef<EChartHandle, Props>(function EChart({ option, 
   }, [eventNames]);
 
   useEffect(() => {
-    chart.current?.setOption(option, { notMerge: true });
+    // no chart animation when the visitor asked for reduced motion
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    chart.current?.setOption(still ? { ...option, animation: false } : option, { notMerge: true });
   }, [option]);
 
   useImperativeHandle(ref, () => ({

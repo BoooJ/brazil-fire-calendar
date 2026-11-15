@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import type { Preset } from '../types';
 import { circleArea, insideBox, presetArea, type Area } from '../geo';
 import type { DrawMode } from './MapView';
@@ -13,12 +13,24 @@ interface Props {
   /** drawing happens on the map beside this panel: 'none' while the globe is shown */
   drawMode: DrawMode;
   onDraw: (m: DrawMode) => void;
+  /** phones and tablets: the top bar has no room for "Data sources", so the step links to it */
+  onSources?: () => void;
 }
 
-export default function LocationGate({ presets, picked, onPickedChange, onDone, drawMode, onDraw }: Props) {
+export default function LocationGate({ presets, picked, onPickedChange, onDone, drawMode, onDraw, onSources }: Props) {
   const [radius, setRadius] = useState(100);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // after "Use my location" the result (the button, or the outside-Brazil note) is far below on a phone: bring it into view
+  const goRef = useRef<HTMLButtonElement>(null);
+  const showResult = () =>
+    requestAnimationFrame(() => {
+      const b = goRef.current;
+      if (!b) return;
+      const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      b.scrollIntoView({ block: 'center', behavior: still ? 'auto' : 'smooth' });
+      if (!b.disabled) b.focus({ preventScroll: true });
+    });
   const brazil = presets.find((p) => p.id === 'brazil');
 
   const lat = picked ? String(Math.round(picked.lat * 1000) / 1000) : '';
@@ -35,6 +47,7 @@ export default function LocationGate({ presets, picked, onPickedChange, onDone, 
   const outside = valid && brazil != null && !insideBox(picked!.lon, picked!.lat, brazil.area);
 
   const locate = () => {
+    if (busy) return; // aria-disabled, not disabled: focus stays on the button while we wait
     setError(null);
     if (!navigator.geolocation) {
       setError('This browser cannot share a location. Pick a region or type coordinates instead.');
@@ -45,6 +58,7 @@ export default function LocationGate({ presets, picked, onPickedChange, onDone, 
       (pos) => {
         setBusy(false);
         onPickedChange({ lon: pos.coords.longitude, lat: pos.coords.latitude });
+        showResult();
       },
       () => {
         setBusy(false);
@@ -63,9 +77,12 @@ export default function LocationGate({ presets, picked, onPickedChange, onDone, 
         own. We cover Brazil only.
       </p>
 
-      <button className="btn btn-light btn-wide" onClick={locate} disabled={busy}>
+      <div className="gate-or gate-or--first" aria-hidden="true"><span>your location</span></div>
+      <button className="btn btn-light btn-wide" onClick={locate} aria-disabled={busy || undefined}>
         <PinIcon /> {busy ? 'Finding you…' : 'Use my location'}
       </button>
+      {/* right under the button that caused it, so a phone shows it without scrolling */}
+      {error && <p className="note note-warn" role="alert">{error}</p>}
 
       <div className="gate-or"><span>or pick a region</span></div>
       <div className="chips">
@@ -80,15 +97,18 @@ export default function LocationGate({ presets, picked, onPickedChange, onDone, 
       <div className="coords">
         <label>
           Latitude
-          <input inputMode="decimal" type="number" step="any" min={-90} max={90} placeholder="-16.83" value={lat}
+          <input type="number" step="any" autoComplete="off" enterKeyHint="done" aria-describedby="coords-hint" aria-invalid={outside || undefined} min={-90} max={90} placeholder="-16.83" value={lat}
             onChange={(e) => setCoord('lat', e.target.value)} />
         </label>
         <label>
           Longitude
-          <input inputMode="decimal" type="number" step="any" min={-180} max={180} placeholder="-56.91" value={lon}
+          <input type="number" step="any" autoComplete="off" enterKeyHint="done" aria-describedby="coords-hint" aria-invalid={outside || undefined} min={-180} max={180} placeholder="-56.91" value={lon}
             onChange={(e) => setCoord('lon', e.target.value)} />
         </label>
       </div>
+      <p className="gate-hint" id="coords-hint">
+        Tap the globe to fill these in, or type decimal degrees. South and west are negative (Cuiabá is −15.6, −56.1).
+      </p>
       <fieldset className="radius">
         <legend>Radius around the point</legend>
         <div className="seg" role="radiogroup">
@@ -106,11 +126,10 @@ export default function LocationGate({ presets, picked, onPickedChange, onDone, 
           That point is outside Brazil, the only region we cover for now. Pick a region above or another point.
         </p>
       )}
-      {error && <p className="note note-warn" role="alert">{error}</p>}
 
-      <button className="btn btn-fire btn-wide" disabled={!valid || outside}
+      <button ref={goRef} className={'btn btn-fire btn-wide' + (valid && !outside ? ' gate-go--ready' : '')} disabled={!valid || outside}
         onClick={() => onDone(circleArea(picked!.lon, picked!.lat, radius))}>
-        Show my fire calendar
+        {valid ? 'Show my fire calendar' : 'Tap the globe or type a point first'}
       </button>
 
       <div className="gate-or"><span>or draw the area on the map</span></div>
@@ -126,13 +145,18 @@ export default function LocationGate({ presets, picked, onPickedChange, onDone, 
       </div>
       {drawMode !== 'none' && (
         <p className="note" role="status">
-          {drawMode === 'rect'
-            ? 'Drag on the map to draw a box. Press Esc to cancel.'
-            : 'Click the map to add corners. Click the first corner again, double-click or press Enter to finish. Esc cancels.'}
+          {window.matchMedia('(pointer: coarse)').matches
+            ? (drawMode === 'rect'
+              ? 'Drag on the map to draw a box. Cancel is on the map.'
+              : 'Tap the map to add corners. Tap the first corner again to finish. Cancel is on the map.')
+            : drawMode === 'rect'
+              ? 'Drag on the map to draw a box. Press Esc to cancel.'
+              : 'Click the map to add corners. Click the first corner again, double-click or press Enter to finish. Esc cancels.'}
         </p>
       )}
 
       <p className="fineprint">Your location is only used to draw this area. It is not stored on a server.</p>
+      {onSources && <button className="textlink gate-sources" onClick={onSources}>Data sources</button>}
     </section>
   );
 }

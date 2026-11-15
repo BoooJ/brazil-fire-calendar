@@ -1,3 +1,5 @@
+import type { Cards, Coverage, SatelliteKey } from './types';
+
 export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 export const MON = MONTHS.map((m) => m.slice(0, 3));
 
@@ -16,7 +18,8 @@ export function compact(n: number | null | undefined): string {
 /** +31.4 -> "▲ 31%", -12.5 -> "▼ 13%", 855 -> "▲ 9.6×" */
 export function pctShort(p: number | null | undefined): string {
   if (p == null) return '–';
-  const arrow = p > 0 ? '▲' : p < 0 ? '▼' : '';
+  // arrows only outside the ±20% "near average" band (as the legends); inside it a plain sign
+  const arrow = p >= 20 ? '▲' : p <= -20 ? '▼' : Math.round(p) > 0 ? '+' : Math.round(p) < 0 ? '−' : '';
   if (p >= 200) return `${arrow}${(p / 100 + 1).toFixed(p >= 900 ? 0 : 1)}×`;
   return `${arrow}${Math.abs(Math.round(p))}%`;
 }
@@ -26,7 +29,9 @@ export function pctLong(p: number | null | undefined): string {
   const r = Math.round(p);
   if (r === 0) return 'equal to the average';
   if (p >= 200) return `▲ ${(p / 100 + 1).toFixed(1)}× the average`;
-  return r > 0 ? `▲ ${r}% above average` : `▼ ${Math.abs(r)}% below average`;
+  // within ±20% the legends call it "near average": a neutral ● instead of an arrow (same band as trendOf)
+  const mark = p >= 20 ? '▲' : p <= -20 ? '▼' : '●';
+  return r > 0 ? `${mark} ${r}% above average` : `${mark} ${Math.abs(r)}% below average`;
 }
 
 /** 1 -> "1st", 22 -> "22nd" */
@@ -50,4 +55,51 @@ export function dateShort(iso: string): string {
   return y && m && d ? `${d} ${MON[m - 1]} ${y}` : iso;
 }
 
+/** "2026-11-14", "2026-11-20" -> "14–20 Nov 2026" (same month) or "28 Nov – 4 Dec 2026" */
+export function dateRange(from: string, to: string): string {
+  const a = dateShort(from).split(' ');
+  const b = dateShort(to).split(' ');
+  if (a.length !== 3 || b.length !== 3) return `${from} – ${to}`;
+  if (a[2] !== b[2]) return `${dateShort(from)} – ${dateShort(to)}`;
+  if (a[1] !== b[1]) return `${a[0]} ${a[1]} – ${b.join(' ')}`;
+  return `${a[0]}–${b.join(' ')}`;
+}
+
 export const todayIso = () => new Date().toISOString().slice(0, 10);
+
+/** Up, down or near a typical month: drives the ▲/▼/● mark and its calm colour (display only). */
+export const trendOf = (c: Cards): 'up' | 'down' | 'flat' | null =>
+  !c.count || c.vs_avg_pct == null ? null : c.vs_avg_pct >= 20 ? 'up' : c.vs_avg_pct <= -20 ? 'down' : 'flat';
+
+/** The tool's one message for a month: is this unusual here? Wording only: every number is the API's.
+ *  Shared with the landing page. */
+export function headlineFor(c: Cards): string {
+  const month = MONTHS[c.ref_month - 1];
+  const p = c.vs_avg_pct;
+  if (!c.count) return c.partial ? `No fires detected here so far this ${month}` : `No fires detected here in ${month} ${c.ref_year}`;
+  if (p == null) return `Fire was detected here in ${month}, with no earlier year to compare`;
+  if (p >= 200) return `Fire activity here is ${(p / 100 + 1).toFixed(1)}× a typical ${month}`;
+  if (p >= 20) return `Fire activity here is ${Math.round(p)}% above a typical ${month}`;
+  if (p <= -20) return `Fire activity here is ${Math.abs(Math.round(p))}% below a typical ${month}`;
+  return `Fire activity here is close to a typical ${month}`;
+}
+
+/** "One of the most active Novembers in 24 years", only for the top three (the API's rank, as is). */
+export function rankLine(c: Cards): string | null {
+  if (c.rank == null || c.of_years == null || c.of_years < 5 || c.rank > 3 || !c.count) return null;
+  const month = MONTHS[c.ref_month - 1];
+  return c.rank === 1
+    ? `The most active ${month} in ${c.of_years} years${c.partial ? ' so far' : ''}`
+    : `One of the ${c.rank === 2 ? 'two' : 'three'} most active ${month}s in ${c.of_years} years${c.partial ? ' so far' : ''}`;
+}
+
+/** A satellite that started or stopped inside (or stopped before) a month: "ended 2 Nov 2026" / "from 20 Jan 2012" (also explains "no data" before launch). From /api/status coverage, display only. */
+export function coverageNote(coverage: Coverage[] | null | undefined, sat: SatelliteKey, year: number, month: number): string | null {
+  const c = coverage?.find((x) => x.satellite === sat);
+  if (!c) return null;
+  const first = `${year}-${String(month).padStart(2, '0')}-01`;
+  const last = `${year}-${String(month).padStart(2, '0')}-31`;
+  if (c.to && c.to < last) return `ended ${dateShort(c.to)}`;
+  if (c.from > first) return `from ${dateShort(c.from)}`;
+  return null;
+}

@@ -40,9 +40,18 @@ export function anomalyPosition(vsAvgPct: number | null): number | null {
 }
 
 export const ANOMALY_TICKS: { pos: number; label: string }[] = [
-  { pos: -2, label: '¼×' },
-  { pos: -1, label: '½×' },
-  { pos: 0, label: 'avg' },
-  { pos: 1, label: '2×' },
-  { pos: 2, label: '4×+' },
+  { pos: -2, label: '▼ ¼×' },
+  { pos: -1, label: '▼ ½×' },
+  { pos: 0, label: '● avg' },
+  { pos: 1, label: '▲ 2×' },
+  { pos: 2, label: '▲ 4×+' },
+];
+
+// Next-week fire chance (the forecast map): viridis without its darkest stops, so it reads on the dark imagery
+// and never looks like the hotspots' inferno colours. Colour-blind safe; the legend gives every step's value.
+export const CHANCE_STOPS: [number, string][] = [
+  [0, '#3b528b'],
+  [0.1, '#21918c'],
+  [0.25, '#5ec962'],
+  [0.5, '#fde725'],
 ];

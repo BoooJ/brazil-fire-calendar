@@ -7,7 +7,7 @@ import type { Mode } from './FireCalendar';
 import type { CalendarItem, MonthAverage, YearItem } from '../types';
 import { SATELLITES, SAT_NAMES } from '../types';
 import { ANOMALY_SCALE, ANOMALY_TICKS, COUNTS_SCALE, NEUTRAL_CELL, NO_FIRE, anomalyPosition } from '../colors';
-import { MON, MONTHS, num, ordinal, pctShort } from '../format';
+import { MON, MONTHS, compact as short, num, ordinal, pctShort } from '../format';
 
 interface Props {
   calendar: CalendarItem[];
@@ -49,7 +49,7 @@ export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningC
       return {
         value: [c.month - 1, rowOf(c.year), v === null ? '-' : v],
         itemStyle: {
-          opacity: c.partial ? 0.5 : c.uncertain ? 0.75 : 1,
+          opacity: c.partial ? 0.5 : c.uncertain ? 0.6 : 1,
           borderColor: isSel ? '#ffffff' : CHART_BG,
           borderWidth: isSel ? 2.5 : compact ? 1 : 2,
           decal: c.provisional
@@ -67,25 +67,32 @@ export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningC
       .map((r) => ({
         value: [12, rowOf(r.year), r.count ?? '-'],
         itemStyle: { borderColor: CHART_BG, borderWidth: compact ? 1 : 2, opacity: r.complete ? 1 : 0.6 },
-        label: { formatter: () => (compact ? '' : num(r.count) + (r.complete ? '' : '*')), color: '#cfd3dc', fontWeight: 600 as const },
+        // phones: the short form ("2.3k") so the Year column is not a row of blank boxes
+        label: { formatter: () => (compact ? short(r.count) : num(r.count)) + (r.complete ? '' : '*'), color: '#cfd3dc', fontWeight: 600 as const, ...(compact ? { fontSize: 9 } : {}) },
         _row: r,
       }));
 
+    // Phones (compact) have no numbers in the cells, so the average row takes the month cells' colour scale
+    // (counts: its mean; vs Average: the neutral middle, since it is the average) instead of a blank neutral row.
+    const avgValue = (mean: number | null) =>
+      mean == null ? '-' : !compact ? mean : mode === 'counts' ? (mean === 0 ? -1 : log(mean)) : 0;
     const avgRow = average.map((a) => ({
-      value: [a.month - 1, 0, a.mean ?? '-'],
-      itemStyle: { borderColor: CHART_BG, borderWidth: compact ? 1 : 2 },
+      value: [a.month - 1, 0, avgValue(a.mean)],
+      // compact: a thin dotted edge marks the coloured average row as typical, like the quick view's dotted bricks
+      itemStyle: compact ? { borderColor: 'rgba(255,255,255,0.7)', borderWidth: 1, borderType: 'dotted' as const } : { borderColor: CHART_BG, borderWidth: 2 },
       label: { formatter: () => (compact ? '' : num(a.mean)), color: '#e9e6df', fontStyle: 'italic' as const },
       _avg: a,
     }));
 
     const tooltip: echarts.TooltipComponentOption = {
+      confine: true, // stays inside the card (overflow: hidden) at the heatmap's edges
       backgroundColor: 'rgba(16,19,27,0.97)',
       borderColor: '#3a4152',
       textStyle: { color: '#ece9e2', fontFamily: CHART_FONT, fontSize: 13 },
       extraCssText: 'border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.45);',
       formatter: (p: any) => {
         const [x, y] = p.value as [number, number];
-        if (p.seriesIndex === 1) {
+        if (p.seriesIndex >= 1) {
           const d = p.data as any;
           if (d._avg) {
             const a = d._avg as MonthAverage;
@@ -100,7 +107,7 @@ export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningC
         const flags = [
           c.partial ? `◐ Partial: first ${c.days_covered} days` : '',
           c.provisional ? '▨ Provisional (near-real-time data)' : '',
-          c.uncertain ? '⁙ Uncertain (few fires or high error)' : '',
+          c.uncertain ? '⁙ Uncertain (few fires or a large conversion error)' : '',
         ].filter(Boolean);
         const det = SATELLITES.map((s) =>
           c.detected[s] == null
@@ -134,8 +141,8 @@ export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningC
       },
       visualMap: [
         mode === 'counts'
-          ? { show: false, seriesIndex: 0, type: 'continuous', min: log(1), max: countsMax, inRange: { color: COUNTS_SCALE }, outOfRange: { color: NO_FIRE } }
-          : { show: false, seriesIndex: 0, type: 'continuous', min: -2, max: 2, inRange: { color: ANOMALY_SCALE }, outOfRange: { color: NO_FIRE } },
+          ? { show: false, seriesIndex: compact ? [0, 2] : 0, type: 'continuous', min: log(1), max: countsMax, inRange: { color: COUNTS_SCALE }, outOfRange: { color: NO_FIRE } }
+          : { show: false, seriesIndex: compact ? [0, 2] : 0, type: 'continuous', min: -2, max: 2, inRange: { color: ANOMALY_SCALE }, outOfRange: { color: NO_FIRE } },
         // Year totals + average row: one flat neutral colour (heatmaps require a visualMap).
         { show: false, seriesIndex: 1, type: 'piecewise', pieces: [{ min: -Infinity, max: Infinity, color: NEUTRAL_CELL }] },
       ],
@@ -159,7 +166,8 @@ export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningC
           emphasis: { itemStyle: { borderColor: '#fff', borderWidth: 2 } },
           progressive: 0,
         },
-        { type: 'heatmap', data: [...yearTotals, ...avgRow] as any, label: { show: true, fontFamily: CHART_FONT, fontSize: 10 }, emphasis: { disabled: true } },
+        { type: 'heatmap', data: (compact ? yearTotals : [...yearTotals, ...avgRow]) as any, label: { show: true, fontFamily: CHART_FONT, fontSize: 10 }, emphasis: { disabled: true } },
+        ...(compact ? [{ type: 'heatmap' as const, data: avgRow as any, label: { show: false }, emphasis: { disabled: true } }] : []),
       ],
     };
   }, [calendar, average, yearly, years, maxCount, mode, selected, compact, unitMain, period]);
@@ -204,9 +212,9 @@ export function HeatmapLegend({ mode, maxCount }: { mode: Mode; maxCount: number
       </div>
       <ul className="hm-keys">
         <li><span className="swatch swatch-nofire" />No fires</li>
-        <li><span className="swatch swatch-provisional" />Provisional</li>
-        <li><span className="swatch swatch-uncertain" />Uncertain</li>
-        <li><span className="swatch swatch-partial" />Partial month</li>
+        <li><span className="swatch swatch-provisional" />Provisional (hatched)</li>
+        <li><span className="swatch swatch-uncertain" />Uncertain (faded, dotted)</li>
+        <li><span className="swatch swatch-partial" />Partial: month in progress</li>
       </ul>
     </div>
   );

@@ -11,6 +11,7 @@ const axisText = { color: '#9aa1b0', fontFamily: CHART_FONT, fontSize: 11 };
 const split = { lineStyle: { color: '#222736' } };
 const tooltipBase: echarts.TooltipComponentOption = {
   trigger: 'axis',
+  confine: true, // the chart card clips overflow: keep the tooltip inside the chart on phones
   backgroundColor: 'rgba(16,19,27,0.97)',
   borderColor: '#3a4152',
   textStyle: { color: '#ece9e2', fontFamily: CHART_FONT, fontSize: 12 },
@@ -49,8 +50,10 @@ export const TypicalYearChart = forwardRef<EChartHandle, { average: MonthAverage
           },
           { name: 'Median', type: 'line', data: byMonth.map((a) => a?.median ?? null), symbol: 'none', lineStyle: { color: '#b4a4d8', width: 2, type: 'dashed' }, itemStyle: { color: '#b4a4d8' } },
           {
-            name: String(refYear), type: 'line', data: refCells.map((c) => c?.count ?? null), connectNulls: false,
-            lineStyle: { color: '#f9cb35', width: 3 }, itemStyle: { color: '#f9cb35' }, symbolSize: 7,
+            name: String(refYear), type: 'line', connectNulls: false,
+            // a month in progress (fewer days) is a hollow point, so its lower value does not read as a drop
+            data: refCells.map((c) => (c?.partial ? { value: c.count, itemStyle: { color: CHART_BG, borderColor: '#f9cb35', borderWidth: 2 } } : (c?.count ?? null))),
+            lineStyle: { color: '#f9cb35', width: 3 }, itemStyle: { color: '#f9cb35' }, symbol: 'circle', symbolSize: 7,
           },
         ],
       };
@@ -74,8 +77,8 @@ export const YearlyChart = forwardRef<EChartHandle, { yearly: YearItem[]; unitMa
     grid: { top: compact ? 96 : 56, left: compact ? 44 : 52, right: compact ? 40 : 52, bottom: 24 }, // a phone: the legend takes two or three lines
     xAxis: { type: 'category', data: yearly.map((r) => String(r.year)), axisLabel: axisText, axisLine: { lineStyle: { color: '#3a4152' } } },
     yAxis: [
-      { type: 'value', name: 'raw hotspots', nameTextStyle: axisText, axisLabel: { ...axisText, formatter: thousands }, splitLine: split },
-      { type: 'value', name: 'corrected fire-days', nameTextStyle: { ...axisText, color: '#f9cb35' }, axisLabel: { ...axisText, color: '#f9cb35', formatter: thousands }, splitLine: { show: false } },
+      { type: 'value', name: 'raw hotspots', nameTextStyle: { ...axisText, align: 'left' }, axisLabel: { ...axisText, formatter: thousands }, splitLine: split },
+      { type: 'value', name: compact ? 'corrected' : 'corrected fire-days', nameTextStyle: { ...axisText, color: '#f9cb35', align: 'right' }, axisLabel: { ...axisText, color: '#f9cb35', formatter: thousands }, splitLine: { show: false } },
     ],
     series: [
       ...SATELLITES.map((s) => ({
@@ -83,8 +86,10 @@ export const YearlyChart = forwardRef<EChartHandle, { yearly: YearItem[]; unitMa
         itemStyle: { color: SAT_COLOR[s], opacity: 0.85 }, barWidth: '62%',
       })),
       {
-        name: 'Corrected (harmonized)', type: 'line' as const, yAxisIndex: 1, data: yearly.map((r) => r.count),
-        lineStyle: { color: '#f9cb35', width: 3 }, itemStyle: { color: '#f9cb35', borderColor: CHART_BG, borderWidth: 2 }, symbolSize: 7, z: 5,
+        name: 'Corrected (harmonized)', type: 'line' as const, yAxisIndex: 1,
+        // a year not finished is a hollow point (yellow ring), so its lower total does not read as a drop
+        data: yearly.map((r) => (r.complete ? r.count : { value: r.count, itemStyle: { color: CHART_BG, borderColor: '#f9cb35', borderWidth: 2 } })),
+        lineStyle: { color: '#f9cb35', width: 3 }, itemStyle: { color: '#f9cb35', borderColor: CHART_BG, borderWidth: 2 }, symbol: 'circle', symbolSize: 7, z: 5,
       },
     ],
   }), [yearly, unitMain, compact]);

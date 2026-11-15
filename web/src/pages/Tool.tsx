@@ -1,19 +1,21 @@
 import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import '../styles.css';
 import { ApiError, downloadCsv, getAnalysis, getHotspots, getPresets, getStatus, requestUpdate } from '../api';
-import type { Analysis, AnalysisRequest, CalendarItem, Hotspots, Preset, Status } from '../types';
+import type { Analysis, AnalysisRequest, CalendarItem, Coverage, Forecast, Hotspots, Preset, Status } from '../types';
 import { SATELLITES, SAT_NAMES } from '../types';
 import { drawnArea, pointCount, type Area } from '../geo';
 import Globe, { BRAZIL_CENTER, zoomForRadius } from '../components/Globe';
 import LocationGate, { PinIcon } from '../components/LocationGate';
 import FireCalendar, { type Mode } from '../components/FireCalendar';
-import MonthDetail, { type MapState } from '../components/MonthDetail';
+import MonthDetail, { satNote, type MapState } from '../components/MonthDetail';
+import ErrorNote from '../components/ErrorNote';
+import ForecastPanel, { FIRST_FORECAST_DAY } from '../components/ForecastPanel';
 import DateControls, { FIRST_YEAR } from '../components/Controls';
 import { KeyCards, Reliability, SourcesDialog } from '../components/Panels';
 import { Flame } from '../components/Brand';
 import type { DrawMode } from '../components/MapView';
-import { FRP_STOPS } from '../colors';
-import { MON, MONTHS, dateShort, dateTime, num, todayIso } from '../format';
+import { CHANCE_STOPS, FRP_STOPS } from '../colors';
+import { MON, MONTHS, dateRange, dateShort, dateTime, headlineFor, num, rankLine, todayIso, trendOf } from '../format';
 
 // The two heavy parts load only when they are used: the map (MapLibre) and the detailed charts (ECharts).
 const MapView = lazy(() => import('../components/MapView'));
@@ -35,6 +37,10 @@ type Load = { kind: 'loading' } | { kind: 'error'; message: string } | { kind: '
 type Stage = 'globe' | 'map';
 
 const isPhone = () => window.matchMedia('(max-width: 899px)').matches;
+/** a touch screen: no Esc or Enter key to talk about */
+const touch = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
+/** 'auto' (jump) when the visitor asked for reduced motion, else 'smooth' */
+const scrollMotion = (): ScrollBehavior => (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth');
 const message = (e: unknown, fallback: string) => (e instanceof ApiError ? e.message : fallback);
 
 export default function Tool() {
@@ -53,6 +59,8 @@ export default function Tool() {
   const [map, setMap] = useState<MapState>({ kind: 'idle' });
   const [hotspots, setHotspots] = useState<Hotspots | null>(null);
   const [mapMonth, setMapMonth] = useState<{ year: number; month: number } | null>(null);
+  // next week's fire chance cells on the map (the only forecast), instead of a month's hotspots
+  const [fcMap, setFcMap] = useState<Forecast | null>(null);
   const [stage, setStage] = useState<Stage>('globe');
   const [drawMode, setDrawMode] = useState<DrawMode>('none');
   const [showSources, setShowSources] = useState(false);
@@ -86,6 +94,7 @@ export default function Tool() {
     setMap({ kind: 'idle' });
     setHotspots(null);
     setMapMonth(null);
+    setFcMap(null);
     setStage('globe');
   }, []);
 
@@ -133,19 +142,38 @@ export default function Tool() {
     getHotspots({ area: area.polygon, year: selected.year, month: selected.month })
       .then((h) => {
         setHotspots(h);
+        setFcMap(null);
         setMapMonth({ year: selected.year, month: selected.month });
         setMap({ kind: 'shown', total: h.total, returned: h.returned, truncated: h.truncated });
         setStage('map');
-        if (isPhone()) window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (isPhone()) window.scrollTo({ top: 0, behavior: scrollMotion() });
       })
       .catch((e) => setMap({ kind: 'error', message: message(e, 'Could not load the hotspots.') }));
   }, [area, selected]);
+
+  // the hero's link down to the next-week panel: scroll there and move focus to its heading
+  const toForecast = useCallback(() => {
+    const h = document.getElementById('fc-title');
+    if (!h) return;
+    h.scrollIntoView({ behavior: scrollMotion(), block: 'start' });
+    h.focus({ preventScroll: true });
+  }, []);
+
+  const showForecastMap = useCallback((f: Forecast) => {
+    setSelected(null);
+    setMap({ kind: 'idle' });
+    setHotspots(null);
+    setMapMonth(null);
+    setFcMap(f);
+    setStage('map');
+    if (isPhone()) window.scrollTo({ top: 0, behavior: scrollMotion() });
+  }, []);
 
   // ---------- drawing an area on the map ----------
   const startDraw = (m: DrawMode) => {
     setDrawMode(m);
     setStage(m === 'none' ? 'globe' : 'map');
-    if (m !== 'none' && isPhone()) window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (m !== 'none' && isPhone()) window.scrollTo({ top: 0, behavior: scrollMotion() });
   };
   const drawDone = (polygon: Area['polygon']) => {
     if (pointCount(polygon) > 1000) {
@@ -206,24 +234,29 @@ export default function Tool() {
   }, [area, picked]);
   const globeZoom = !area ? 1.5 : points.length ? zoomForRadius(area.radiusDeg) : zoomForRadius(area.radiusDeg, 1.5, 3);
   const globePoints = useMemo<[number, number][]>(
-    () => (area ? points : picked && isFinite(picked.lon) && isFinite(picked.lat) ? [[picked.lon, picked.lat]] : []),
-    [area, points, picked],
+    () => (area ? points : []),
+    [area, points],
+  );
+  const globePick = useMemo<[number, number] | null>(
+    () => (!area && picked && isFinite(picked.lon) && isFinite(picked.lat) ? [picked.lon, picked.lat] : null),
+    [area, picked],
   );
 
   const data = load.kind === 'ok' ? load.data : null;
   const wide = typeof window !== 'undefined' && window.matchMedia('(min-width: 900px)').matches;
   const closeSources = useCallback(() => setShowSources(false), []);
+  const closeDetail = useCallback(() => setSelected(null), []);
 
   return (
     <div className={'tool' + (stage === 'map' ? ' tool--map' : '')}>
-      <header className="topbar">
+      <header className={'topbar' + (area ? ' topbar--area' : '')}>
         <a className="brand" href="#/">
-          <Flame /> Brazil Fire Calendar
+          <Flame /> <span className="brand-text">Brazil Fire Calendar</span>
         </a>
         <div className="topbar-actions">
           <button className="toplink" onClick={() => setShowSources(true)}>Data sources</button>
           {area && (
-            <button className="pill" onClick={() => chooseArea(null)} title="Change location">
+            <button className="pill" onClick={() => chooseArea(null)} title="Change location" aria-label={`Location: ${area.label}. Change location`}>
               <PinIcon /> <span className="pill-text">{area.label}</span> <span className="pill-action">Change</span>
             </button>
           )}
@@ -231,12 +264,13 @@ export default function Tool() {
       </header>
 
       <div className="tool-grid">
-        <div className="globe-wrap">
+        <div className="globe-wrap" role="region" aria-label="Globe and map">
           <Globe
             center={globeCenter}
             zoom={globeZoom}
             area={area?.polygon ?? null}
             points={globePoints}
+            pick={globePick}
             onPick={area ? undefined : (lon, lat) => setPicked({ lon, lat })}
             originY={selected && wide ? 0.3 : 0.5}
             label={area ? `Globe centred on ${area.label}, Brazil highlighted` : 'Globe with Brazil highlighted. Click to choose a point.'}
@@ -247,6 +281,8 @@ export default function Tool() {
                 <MapView
                   area={area?.polygon ?? presets.find((p) => p.id === 'brazil')?.area ?? null}
                   hotspots={hotspots}
+                  cells={fcMap?.cells ?? null}
+                  cellsLabel={fcMap?.label}
                   drawMode={drawMode}
                   onDrawDone={drawDone}
                   onDrawCancel={() => startDraw('none')}
@@ -256,28 +292,76 @@ export default function Tool() {
             </Suspense>
           )}
           {drawMode !== 'none' && (
-            <div className="map-banner" role="status">
-              {drawMode === 'rect' ? 'Drag to draw a box' : 'Click the corners, Enter to finish'} · Esc to cancel
+            <div className="map-banner">
+              <span role="status">
+                {touch
+                  ? (drawMode === 'rect' ? 'Drag to draw a box' : 'Tap the corners, then the first again')
+                  : `${drawMode === 'rect' ? 'Drag to draw a box' : 'Click the corners, Enter to finish'} · Esc to cancel`}
+              </span>
+              {/* phones have no Esc key: a visible way out of drawing */}
+              <button type="button" className="map-banner-x" onClick={() => startDraw('none')}>Cancel</button>
             </div>
           )}
           {map.kind === 'shown' && mapMonth && (
             <div className="map-caption" role="status">
               <span className="dot" />
               <span className="map-caption-text">
-                {MON[mapMonth.month - 1]} {mapMonth.year} · {map.truncated ? `${num(map.returned)} of ${num(map.total)} hotspots` : `${num(map.total)} hotspots`}
+                {map.total === 0
+                  ? `No hotspots in ${MON[mapMonth.month - 1]} ${mapMonth.year}`
+                  : map.truncated ? `${MON[mapMonth.month - 1]} ${mapMonth.year}` : `${MON[mapMonth.month - 1]} ${mapMonth.year} · ${num(map.total)} hotspots`}
               </span>
-              <button onClick={clearMap}>Clear</button>
+              {map.truncated && (
+                <span className="map-badge" title="The map shows a sample; the CSV download has every hotspot.">
+                  <span className="hide-xs">showing </span>{num(map.returned)} of {num(map.total)}
+                </span>
+              )}
+              <button onClick={clearMap} aria-label="Clear the hotspots from the map">Clear</button>
+            </div>
+          )}
+          {/* the globe does not draw forecast cells, so their caption shows only with the map */}
+          {fcMap && stage === 'map' && (
+            <div className="map-caption" role="status">
+              <span className="dot dot-fc" />
+              <span className="map-caption-text">Next week</span>
+              {fcMap.truncated && (
+                <span className="map-badge" title="The cells with the highest chance first.">
+                  <span className="hide-xs">showing </span>{num(fcMap.returned)} of {num(fcMap.total)}
+                </span>
+              )}
+              <button onClick={clearMap} aria-label="Clear the fire chance cells from the map">Clear</button>
+            </div>
+          )}
+          {stage === 'map' && fcMap && (
+            <div className="map-legend map-legend--fc" aria-label="Map legend: chance of fire next week, per 5 km cell">
+              <span>Chance of fire {dateRange(fcMap.period.from, fcMap.period.to)}, per 5&nbsp;km cell</span>
+              <span className="map-legend-scale">
+              {CHANCE_STOPS.map(([from, colour], i) => (
+                <span key={from} className="map-legend-item">
+                  <i style={{ background: colour }} />
+                  {i === CHANCE_STOPS.length - 1 ? `${from * 100}%+` : `${from * 100}–${CHANCE_STOPS[i + 1][0] * 100}%`}
+                </span>
+              ))}
+              </span>
+              <span className="map-legend-label">{fcMap.label}</span>
+            </div>
+          )}
+          {stage === 'map' && map.kind === 'shown' && map.total === 0 && mapMonth && (
+            <div className="map-empty" role="note">
+              <strong>No fires detected</strong>
+              <span>The satellites saw no hotspots in this area in {MONTHS[mapMonth.month - 1]} {mapMonth.year}.</span>
             </div>
           )}
           {stage === 'map' && map.kind === 'shown' && map.returned > 0 && (
             <div className="map-legend" aria-label="Map legend: fire strength in megawatts">
               <span>Fire strength</span>
+              <span className="map-legend-scale">
               {FRP_STOPS.map(([from, colour], i) => (
                 <span key={from} className="map-legend-item">
                   <i style={{ background: colour }} />
                   {i === 0 ? `under ${FRP_STOPS[1][0]}` : i === FRP_STOPS.length - 1 ? `${from}+ MW` : `${from}–${FRP_STOPS[i + 1][0]}`}
                 </span>
               ))}
+              </span>
             </div>
           )}
           {area && drawMode === 'none' && (
@@ -290,7 +374,7 @@ export default function Tool() {
 
         <main className="col">
           {!area ? (
-            <LocationGate presets={presets} picked={picked} onPickedChange={setPicked} onDone={chooseArea} drawMode={drawMode} onDraw={startDraw} />
+            <LocationGate presets={presets} picked={picked} onPickedChange={setPicked} onDone={chooseArea} drawMode={drawMode} onDraw={startDraw} onSources={() => setShowSources(true)} />
           ) : (
             <>
               {data?._mock && (
@@ -300,28 +384,27 @@ export default function Tool() {
 
               {load.kind === 'loading' && <LoadingHero />}
               {load.kind === 'error' && (
-                <section className="hero" role="alert">
-                  <p className="eyebrow">Something went wrong</p>
-                  <h1>We could not load the fire data</h1>
-                  <p className="hero-sub">{load.message}</p>
-                  <button className="btn btn-light" onClick={() => setAttempt((n) => n + 1)}>Try again</button>
+                <section className="hero">
+                  <ErrorNote size="page" title="We could not load the fire data" message={load.message} onRetry={() => setAttempt((n) => n + 1)} />
                 </section>
               )}
-              {data && <Hero data={data} area={area} status={status} asOf={refDate} updating={updating} onUpdate={updateNow} />}
+              {data && <Hero key={`${area.label}|${data.query.ref_date}`} data={data} area={area} status={status} asOf={refDate} updating={updating} onUpdate={updateNow} onForecast={status?.forecast_available === false || (refDate != null && refDate < FIRST_FORECAST_DAY) ? undefined : toForecast} />}
               <DateControls refDate={refDate} setRefDate={changeRefDate} fromYear={fromYear} setFromYear={setFromYear}
-                detailed={detailed} setDetailed={setDetailed} today={today} />
+                detailed={detailed} setDetailed={setDetailed} today={today} shown={data?.query.ref_date} />
               {load.kind === 'loading' && (
-                <div className="sheet" aria-busy="true" aria-label="Loading fire data"><div className="sk sk-block" /></div>
+                <div className="sheet" aria-busy="true" aria-label="Loading fire data"><SheetSkeleton /></div>
               )}
               {data && (
                 <>
                   <div className="sheet">
                     {detailed && <KeyCards data={data} />}
-                    <Upcoming data={data} />
+                    <div className="view-swap" key={`${detailed ? 'detailed' : 'quick'}|${area.label}|${data.query.ref_date}`}>
                     {data.calendar.every((c) => !c.count) ? (
-                      <section className="empty">
+                      <section className="empty-state">
+                        <span className="empty-art" aria-hidden="true"><i /><i /><i /><i /><i /><i /></span>
                         <h2>No fires detected here</h2>
-                        <p className="muted">The satellites recorded no fire-days in this area since {data.query.start.slice(0, 4)}. Try a larger radius or another region.</p>
+                        <p className="muted">The satellites saw no fire in this area since {data.query.start.slice(0, 4)}. That is good news, or the area may be too small to catch any.</p>
+                        <button className="btn btn-ghost" onClick={() => chooseArea(null)}>Try a larger radius or another region</button>
                       </section>
                     ) : detailed ? (
                       <Suspense fallback={<section><div className="sk sk-block" aria-busy="true" aria-label="Loading the charts" /></section>}>
@@ -330,7 +413,10 @@ export default function Tool() {
                     ) : (
                       <FireCalendar data={data} selected={selected} onSelect={select} mode={mode} onMode={setMode} onCsv={calendarCsv} />
                     )}
-                    <Briefing data={data} short={!detailed} />
+                    </div>
+                    <Upcoming data={data} />
+                    <ForecastPanel area={area.polygon} refDate={refDate} available={status?.forecast_available !== false} refresh={attempt} onShowMap={showForecastMap} onHideMap={clearMap} onShown={!!fcMap && stage === 'map'} />
+                    <Briefing data={data} short={!detailed} coverage={status?.coverage} />
                     {detailed && <Reliability data={data} status={status} />}
                     <footer className="sheet-foot">
                       <p>Data: NASA FIRMS (MODIS C6.1, VIIRS S-NPP and NOAA-20). Map imagery: NASA GIBS, for display only.</p>
@@ -344,7 +430,7 @@ export default function Tool() {
         </main>
       </div>
 
-      {selected && <MonthDetail item={selected} map={map} onShowMap={showOnMap} onCsv={hotspotsCsv} onClose={() => setSelected(null)} />}
+      {selected && <MonthDetail item={selected} map={map} onShowMap={showOnMap} onCsv={hotspotsCsv} onClose={closeDetail} coverage={status?.coverage} />}
       {showSources && <SourcesDialog status={status} onClose={closeSources} />}
       {toast && <div className="toast" role="status">{toast}</div>}
     </div>
@@ -352,7 +438,7 @@ export default function Tool() {
 }
 
 /** The one message that matters, first. Wording only: every number comes from the API. */
-function Hero({ data, area, status, asOf, updating, onUpdate }: {
+function Hero({ data, area, status, asOf, updating, onUpdate, onForecast }: {
   data: Analysis;
   area: Area;
   status: Status | null;
@@ -360,44 +446,49 @@ function Hero({ data, area, status, asOf, updating, onUpdate }: {
   asOf: string | null;
   updating: boolean;
   onUpdate: () => void;
+  /** jumps to the next-week panel (the only forecast); absent while the model is unavailable */
+  onForecast?: () => void;
 }) {
   const c = data.cards;
   const month = MONTHS[c.ref_month - 1];
-  const p = c.vs_avg_pct;
   const scope = c.partial ? `the first ${c.days_covered} days of ${month}` : month;
 
-  let headline: string;
-  if (!c.count) headline = `No fires detected around you in ${scope}`;
-  else if (p == null) headline = `${num(c.count)} fire-days around you in ${scope}`;
-  else if (p >= 200) headline = `Fire activity around you is ${(p / 100 + 1).toFixed(1)}× the normal level`;
-  else if (p >= 20) headline = `Fire activity around you is ${Math.round(p)}% above normal`;
-  else if (p <= -20) headline = `Fire activity around you is ${Math.abs(Math.round(p))}% below normal`;
-  else headline = 'Fire activity around you is close to normal';
-
+  const trend = trendOf(c);
+  const rankText = rankLine(c);
   const provisional = data.calendar.find((i) => i.year === c.ref_year && i.month === c.ref_month)?.provisional;
+  const peak = c.peak_month;
 
   return (
     <section className="hero">
       <p className="eyebrow">
         {month} {c.ref_year}{c.partial && ` · first ${c.days_covered} days`} · {area.label}
       </p>
-      <h1>{headline}</h1>
-      <p className="hero-sub">
-        {data.average_period
-          ? <>Compared with {scope} in an average year ({data.average_period.from}–{data.average_period.to}). </>
-          : <>There is no complete earlier year to compare with. </>}
-        An estimate from satellite detections, not a forecast.
-      </p>
-      <dl className="stats">
-        <div><dd>{num(c.count)}</dd><dt>fire-days{c.partial ? ' so far' : ''}</dt></div>
-        <div><dd>{c.estimated_fires == null ? '–' : `≈ ${num(c.estimated_fires)}`}</dd><dt>separate fires</dt></div>
-        <div><dd>{c.rank == null ? '–' : <>{c.rank}<small> of {c.of_years}</small></>}</dd><dt>rank among {MON[c.ref_month - 1]}s</dt></div>
-      </dl>
+      <h1 className={trend ? `is-${trend}` : undefined}>
+        {trend && <span className="hero-mark" aria-hidden="true">{trend === 'up' ? '▲' : trend === 'down' ? '▼' : '●'}</span>}
+        {headlineFor(c)}
+      </h1>
+      {rankText && <p className="hero-rank">{rankText}</p>}
+      <ul className="hero-context">
+        {peak != null && (
+          <li>{peak === c.ref_month ? <>{month} is usually the busiest month for fire here.</> : <>Fires here usually peak in <b>{MONTHS[peak - 1]}</b>; the calendar below shows the whole season.</>}</li>
+        )}
+        <li>
+          {data.average_period
+            ? <>Compared with {scope} in {data.average_period.from}–{data.average_period.to}.</>
+            : <>There is no complete earlier year to compare with.</>}
+          {' '}History from satellite detections, not a forecast{provisional ? '; recent days may still change' : ''}.
+          {onForecast && <>{' '}<button className="textlink hero-fc-link" onClick={onForecast}>Next week: model estimate ↓</button></>}
+        </li>
+        <li>Smoke from fires can lower air quality nearby.</li>
+      </ul>
       <p className="hero-meta">
         {provisional && <span className="tag">Provisional</span>}
         {asOf && <span className="tag">As of {dateShort(data.query.ref_date)}</span>}
-        <span>Data updated {dateTime(status?.data_updated ?? data.data_updated)}</span>
-        <button className="textlink" onClick={onUpdate} disabled={updating}>{updating ? 'Updating…' : 'Update now'}</button>
+        {/* the time and its action wrap together, so "Update now" is never alone on a phone line */}
+        <span className="hero-meta-upd">
+          <span><span className="hide-phone">Data u</span><span className="show-phone">U</span>pdated {dateTime(status?.data_updated ?? data.data_updated)}</span>
+          <button className="textlink" onClick={onUpdate} disabled={updating}>{updating ? 'Updating…' : 'Update now'}</button>
+        </span>
       </p>
     </section>
   );
@@ -416,7 +507,7 @@ function Upcoming({ data }: { data: Analysis }) {
           <li key={`${m.year}-${m.month}`}>
             <span className="next-mon">{MONTHS[m.month - 1]} {m.year}</span>
             <span className="next-val">{num(m.mean)}</span>
-            <span className="muted">fire-days on average<br />usually {num(m.p10)}–{num(m.p90)}</span>
+            <span className="muted">on average (corrected count)<br />usually {num(m.p10)}–{num(m.p90)}</span>
           </li>
         ))}
       </ul>
@@ -428,33 +519,36 @@ function Upcoming({ data }: { data: Analysis }) {
   );
 }
 
-function Briefing({ data, short }: { data: Analysis; short: boolean }) {
-  const [copied, setCopied] = useState(false);
+function Briefing({ data, short, coverage }: { data: Analysis; short: boolean; coverage?: Coverage[] }) {
+  const [copied, setCopied] = useState<null | 'ok' | 'fail'>(null);
   const c = data.cards;
   const copy = () => {
-    navigator.clipboard?.writeText(data.briefing).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
+    const done = (r: 'ok' | 'fail') => { setCopied(r); setTimeout(() => setCopied(null), 2500); };
+    if (!navigator.clipboard) return done('fail');
+    navigator.clipboard.writeText(data.briefing).then(() => done('ok'), () => done('fail'));
   };
   return (
     <section className="briefing">
       <h2>Fire briefing</h2>
       <p>{data.briefing}</p>
-      <button className="btn btn-ghost" onClick={copy}>{copied ? 'Copied' : 'Copy text'}</button>
+      <div className="copy-row">
+        <button className="btn btn-ghost" onClick={copy}>{copied === 'ok' ? '✓ Copied' : 'Copy text'}</button>
+        {/* announced to screen readers; on failure the text is still selectable above */}
+        <span className={'copy-note' + (copied === 'ok' ? ' sr-only' : '')} role="status">{copied === 'ok' ? 'Briefing copied to the clipboard.' : copied === 'fail' ? 'Could not copy here: select the text above instead.' : ''}</span>
+      </div>
 
       <h3>Hotspots seen by each satellite this month</h3>
       <dl className="sats">
         {SATELLITES.map((k) => (
           <div key={k}>
-            <dt>{SAT_NAMES[k]}</dt>
+            <dt>{SAT_NAMES[k]}{satNote(coverage, k, c.ref_year, c.ref_month)}</dt>
             <dd>{c.detected[k] == null ? <span className="muted">no data</span> : num(c.detected[k])}</dd>
           </div>
         ))}
       </dl>
       {short && (
         <>
-          <h3>How reliable is this?</h3>
+          <h3>Brazil Fire Calendar can make mistakes</h3>
           <p className="muted">
             {data.reliability.median_error_pct != null && <>Typical error of the harmonized count: about ±{data.reliability.median_error_pct}%. </>}
             {data.reliability.validated_years.length > 0 && <>Checked against {data.reliability.validated_years.join(', ')}. </>}
@@ -473,6 +567,20 @@ function LoadingHero() {
       <div className="sk sk-title" />
       <div className="sk sk-title" style={{ width: '70%' }} />
       <div className="sk sk-line" style={{ width: '85%' }} />
+      <div className="sk sk-line" style={{ width: '75%' }} />
+      <div className="sk sk-line" style={{ width: '60%' }} />
     </section>
+  );
+}
+
+/** The sheet's shape while loading: calendar rows, then the coming months, so nothing jumps when data arrives. */
+function SheetSkeleton() {
+  return (
+    <div className="sk-sheet" aria-hidden="true">
+      <div className="sk sk-line" style={{ width: '40%', height: 24 }} />
+      {[0, 1, 2, 3, 4].map((i) => <div key={i} className="sk sk-calrow" />)}
+      <div className="sk sk-line" style={{ width: '60%', height: 24, marginTop: 32 }} />
+      <div className="sk-row3">{[0, 1, 2].map((i) => <div key={i} className="sk sk-card" />)}</div>
+    </div>
   );
 }
