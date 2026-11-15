@@ -46,7 +46,8 @@ Global rules for this block:
   - Hover/focus: brick grows with a dark ring + tooltip. Click/Enter: a small card anchored to the brick (fire detected or not, corrected count, ▲/▼ % vs average + typical, provisional/partial/uncertain/final) with "Details and map" (opens the month card, which has the map button) and "Close". Focus moves in, Escape/outside click closes, focus returns to the brick. Legend minis are square.
 - [x] **Show only the last 2–3 years by default** with "Show more years" / "Show less" toggles.
   - Quick view shows the newest 3 years; "Show more years (10 more)" adds ten at a time, "Show less" goes back to 3, with "3 of 24 years" beside them.
-- [ ] **Add one year forward** (rest of 2026 + 2027) as "typical" bricks (dotted/outlined) using the API's typical/average values, clearly labelled with `next_months_label` ("not a forecast").
+- [x] **Add one year forward** (rest of 2026 + 2027) as "typical" bricks (dotted/outlined) using the API's typical/average values, clearly labelled with `next_months_label` ("not a forecast").
+  - A dotted "2027 · typical" row above the newest year, from `average_by_month` as-is, plus a note with `next_months_label`. The rest of 2026 was already dotted typical bricks. Hidden if the API ever returns months after the reference year.
 - [ ] **Weekly bricks:** the API currently gives **monthly** values only (`docs/api-contract.md`), and we must not compute weeks from hotspots in the browser. Build the brick component so it works with months now and can switch to weeks (52/53 per year row) when the API provides weekly values. Write the exact weekly endpoint/field request for Paul in QUESTIONS.md.
 
 ### Polish

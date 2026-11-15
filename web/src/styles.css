@@ -487,6 +487,9 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
   .yr-label { font-size: 12px; }
 }
 .view-swap + .upcoming { margin-top: 32px; }
+.yr-ahead .yr-label { color: var(--sheet-ink-2); }
+.yr-ahead + .yr { margin-top: 2px; }
+.cal-ahead-note { margin: 2px 0 6px 68px; font-size: 11px; color: var(--sheet-ink-2); }
 /* the month's small card, anchored to its brick */
 .cal-pop { position: fixed; z-index: 31; width: 280px; transform: translate(-50%, 0); padding: 14px 16px; border-radius: var(--r-lg); background: var(--sheet); color: var(--sheet-ink); border: 1px solid var(--sheet-border); box-shadow: 0 12px 32px rgba(20, 21, 26, 0.22); font-size: 13px; line-height: 1.4; display: grid; gap: 4px; font-variant-numeric: tabular-nums; animation: pop-in 0.14s ease-out; }
 .cal-pop.is-above { transform: translate(-50%, -100%); }

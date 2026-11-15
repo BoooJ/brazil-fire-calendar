@@ -168,6 +168,25 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
           <div className="yr-total muted">avg</div>
         </div>
 
+        {/* one year forward: what is typical for each month of next year (history, not a forecast) */}
+        {!data.calendar.some((c) => c.year > ref_year) && (
+          <div className="yr yr-ahead">
+            <div className="yr-label">{ref_year + 1}<small>typical</small></div>
+            <div className="yr-months">
+              {MON.map((m, idx) => {
+                const a = avg.get(idx + 1);
+                const text = `${MONTHS[idx]} ${ref_year + 1} is usually around ${num(a?.mean)} (typical ${period}; ${data.next_months_label})`;
+                return (
+                  <div className="cell" key={m}>
+                    <span className={`day typical lv${levels.level(a?.mean ?? null)}`} role="img" aria-label={text} title={text} />
+                  </div>
+                );
+              })}
+            </div>
+            <div className="yr-total muted" title={data.next_months_label}>typ.</div>
+          </div>
+        )}
+        {!data.calendar.some((c) => c.year > ref_year) && <p className="cal-ahead-note">{ref_year + 1} and the rest of {ref_year} show typical months. {data.next_months_label}.</p>}
         {visibleYears.map((y) => {
           const total = yearTotals.get(y);
           return (
