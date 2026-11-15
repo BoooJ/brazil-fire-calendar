@@ -192,8 +192,8 @@ export default function Landing() {
             <p className="l-eyebrow">NASA Space Apps 2026 · Two satellites, one fire record</p>
             <h1 id="hero-h">There’s a wildfire in your area.</h1>
             <p className="l-lead l-hero__lead">
-              Maybe not today. But we estimated when. 23 years of NASA satellite detections over Brazil show when
-              fire usually comes to your area, how big it gets, and whether this year is worse than usual.
+              Maybe not today. But we estimated when. 23 years of NASA satellite fire detections over Brazil, showing
+              the history of fire in your area, its intensity, and what to expect in the future.
             </p>
             <div className="l-row">
               <Go>Check my area</Go>
