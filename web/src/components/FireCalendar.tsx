@@ -272,7 +272,7 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
       </div>
       {tip && (
         <div className="cal-tip" role="presentation" aria-hidden="true"
-          style={{ left: Math.min(Math.max(tip.x, 120), window.innerWidth - 120), top: tip.y }}>
+          style={{ left: Math.min(Math.max(tip.x, 128), window.innerWidth - 128) /* half the tip + 8px from the screen edge */, top: tip.y }}>
           {tip.item ? (
             <>
               <b>{MONTHS[tip.item.month - 1]} {tip.item.year}</b>

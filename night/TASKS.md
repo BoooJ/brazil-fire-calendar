@@ -343,3 +343,5 @@ Global rules for this block:
   - The map banner has a Cancel button (all screens); on touch screens it and the gate note say "Tap the corners, then the first again" / "Drag to draw a box" without key names. Desktop wording unchanged. Checked iPhone 13 emulation and 1440; Cancel ends drawing.
 - [x] Detailed view on phones said "Click a month for details and the map"
   - Says "Tap" on touch screens, "Click" with a mouse (Detailed.tsx subtitle only; other copy unchanged).
+- [x] Quick calendar tooltip at 375: on bricks near the left it touched the screen edge (left 0)
+  - The tip's centre is kept 128px from each edge (was 120), so it stays 8px inside. Checked 320 / 375 / 1440.
