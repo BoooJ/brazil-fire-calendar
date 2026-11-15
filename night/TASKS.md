@@ -275,3 +275,5 @@ Global rules for this block:
   - It stays enabled and toggles: "Show the cells on the map" ↔ "Hide the cells from the map" (hide = Clear).
 - [x] Demo data: replaying 14 Sep 2020 showed the forecast mock's "14–20 Nov 2026" week under a 2020 page
   - api.ts (mocks only): a past `ref_date` returns MOCK_ONLY; the panel shows it as a quiet note ("Demo data has a next-week estimate only for the latest data…"). The real API replays past dates itself and says so in `notes[]`.
+- [x] Desktop map: the forecast caption ran under the Globe/Map switch at 1366 (its Clear touched the switch)
+  - Desktop map caption is capped clear of the switch (`max-width: calc(100% - 196px)`, also protects the hotspots caption); the forecast caption is just "Next week" + "showing 300 of 7,774" + Clear, the dates moved to the legend title. Checked 375, 1366.

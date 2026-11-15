@@ -578,7 +578,7 @@ button.day:hover, button.day:focus-visible { transform: scale(1.18); z-index: 2;
   .globe-wrap { position: sticky; top: 0; grid-column: 2; grid-row: 1; height: 100vh; margin-top: -80px; }
   .globe-wrap::after { background: linear-gradient(to right, var(--bg) 0%, rgba(4, 5, 11, 0.86) 6%, rgba(4, 5, 11, 0.62) 12%, rgba(4, 5, 11, 0.4) 18%, rgba(4, 5, 11, 0.22) 24%, rgba(4, 5, 11, 0.1) 30%, rgba(4, 5, 11, 0.03) 36%, rgba(4, 5, 11, 0) 42%); } /* eased: no visible edge over the light Brazil fill */
   .map-caption { left: 15%; right: auto; top: 96px; bottom: auto; }
-  .tool--map .map-caption { left: 24px; right: auto; top: 92px; }
+  .tool--map .map-caption { left: 24px; right: auto; top: 92px; max-width: calc(100% - 196px); /* clear of the Globe/Map switch on the same line */ }
   .tool--map .col { padding-top: 24px; }
   .map-banner { top: 96px; }
   .map-legend { left: 24px; top: 148px; max-width: calc(100% - 48px); }

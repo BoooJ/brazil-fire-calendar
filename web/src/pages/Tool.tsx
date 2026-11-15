@@ -303,7 +303,7 @@ export default function Tool() {
           {fcMap && (
             <div className="map-caption" role="status">
               <span className="dot dot-fc" />
-              <span className="map-caption-text">Next week · {dateRange(fcMap.period.from, fcMap.period.to)}</span>
+              <span className="map-caption-text">Next week</span>
               {fcMap.truncated && (
                 <span className="map-badge" title="The cells with the highest chance first.">
                   showing {num(fcMap.returned)} of {num(fcMap.total)}
@@ -314,7 +314,7 @@ export default function Tool() {
           )}
           {stage === 'map' && fcMap && (
             <div className="map-legend map-legend--fc" aria-label="Map legend: chance of fire next week, per 5 km cell">
-              <span>Chance of fire, 5&nbsp;km cell</span>
+              <span>Chance of fire {dateRange(fcMap.period.from, fcMap.period.to)}, per 5&nbsp;km cell</span>
               {CHANCE_STOPS.map(([from, colour], i) => (
                 <span key={from} className="map-legend-item">
                   <i style={{ background: colour }} />
