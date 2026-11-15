@@ -10,7 +10,8 @@
   - Hero skeleton now includes the stats box; the sheet skeleton mirrors the coming-months cards and calendar rows (SheetSkeleton in Tool.tsx).
 - [x] Zero-fires state: a clear, friendly empty state in the calendar and map instead of an empty grid
   - Calendar: hollow dotted-circle art, friendlier text and a button back to the location step. Map: centred "No fires detected" note and caption "No hotspots in Mon YYYY".
-- [ ] API error state: one consistent error message component with a retry button
+- [x] API error state: one consistent error message component with a retry button
+  - New components/ErrorNote.tsx (page + inline sizes, retry) used for the analysis error and the month's map error.
 - [ ] Truncated hotspots: visible "showing 300 of N" badge on the map, readable on mobile
 - [ ] Provisional / uncertain / partial cells: make the hatching/fading consistent between FireCalendar and BurningCalendar and explain it in the legend
 - [ ] Legends: show values for every colour step; vs Average legend with ▲/▼ and a neutral middle

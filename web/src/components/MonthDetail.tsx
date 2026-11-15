@@ -1,6 +1,7 @@
 import type { CalendarItem } from '../types';
 import { SATELLITES, SAT_NAMES } from '../types';
 import { MONTHS, num, pctLong } from '../format';
+import ErrorNote from './ErrorNote';
 
 export type MapState =
   | { kind: 'idle' }
@@ -56,12 +57,12 @@ export default function MonthDetail({ item, map, onShowMap, onCsv, onClose }: Pr
               ? `Showing ${num(map.returned)} of ${num(map.total)} hotspots on the map.`
               : `Showing all ${num(map.total)} hotspots on the map.`}
         </p>
-      ) : (
+      ) : map.kind === 'error' ? null : (
         <button className="btn btn-light btn-wide" onClick={onShowMap} disabled={map.kind === 'loading'}>
           {map.kind === 'loading' ? 'Loading hotspots…' : 'Show this month on the map'}
         </button>
       )}
-      {map.kind === 'error' && <p className="note note-warn" role="alert">{map.message}</p>}
+      {map.kind === 'error' && <ErrorNote title="The map could not load" message={map.message} onRetry={onShowMap} />}
       <button className="btn btn-quiet btn-wide" onClick={onCsv}>Download this month's hotspots (CSV)</button>
     </aside>
   );

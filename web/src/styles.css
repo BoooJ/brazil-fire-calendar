@@ -74,6 +74,17 @@ strong { font-weight: 650; }
 .note { font-size: 14px; padding: 10px 14px; border-radius: 14px; background: rgba(255, 255, 255, 0.08); margin-top: 12px; }
 .note-warn { background: rgba(255, 179, 71, 0.16); color: #ffd08a; }
 
+/* ---------- error message (one component: components/ErrorNote.tsx) ---------- */
+.error-note { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 16px; background: linear-gradient(rgba(255, 179, 71, 0.12), rgba(255, 179, 71, 0.12)), #14151c; border: 1px solid rgba(255, 179, 71, 0.35); color: var(--ink); margin-top: 12px; }
+.error-note-icon { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #ffb347; color: #1c0a00; font-weight: 800; font-size: 15px; }
+.error-note-body { display: grid; gap: 4px; justify-items: start; min-width: 0; }
+.error-note-body p { font-size: 14px; color: #ffd08a; }
+.error-note-body .btn { margin-top: 8px; }
+.error-note--page { padding: 20px; margin-top: 0; }
+.error-note--page .error-note-icon { width: 36px; height: 36px; font-size: 18px; }
+.error-note.error-note--page h1 { font-size: clamp(26px, 6vw, 40px); line-height: 1.1; letter-spacing: -0.03em; margin: 0 0 6px; }
+.error-note--page p { font-size: 16px; }
+
 /* ---------- top bar ---------- */
 .topbar { position: relative; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; max-width: 1500px; margin: 0 auto; }
 .topbar-actions { display: flex; align-items: center; gap: 10px; min-width: 0; }

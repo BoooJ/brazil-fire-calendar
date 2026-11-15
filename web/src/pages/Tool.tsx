@@ -8,6 +8,7 @@ import Globe, { BRAZIL_CENTER, zoomForRadius } from '../components/Globe';
 import LocationGate, { PinIcon } from '../components/LocationGate';
 import FireCalendar, { type Mode } from '../components/FireCalendar';
 import MonthDetail, { type MapState } from '../components/MonthDetail';
+import ErrorNote from '../components/ErrorNote';
 import DateControls, { FIRST_YEAR } from '../components/Controls';
 import { KeyCards, Reliability, SourcesDialog } from '../components/Panels';
 import { Flame } from '../components/Brand';
@@ -308,11 +309,8 @@ export default function Tool() {
 
               {load.kind === 'loading' && <LoadingHero />}
               {load.kind === 'error' && (
-                <section className="hero" role="alert">
-                  <p className="eyebrow">Something went wrong</p>
-                  <h1>We could not load the fire data</h1>
-                  <p className="hero-sub">{load.message}</p>
-                  <button className="btn btn-light" onClick={() => setAttempt((n) => n + 1)}>Try again</button>
+                <section className="hero">
+                  <ErrorNote size="page" title="We could not load the fire data" message={load.message} onRetry={() => setAttempt((n) => n + 1)} />
                 </section>
               )}
               {data && <Hero data={data} area={area} status={status} asOf={refDate} updating={updating} onUpdate={updateNow} />}
