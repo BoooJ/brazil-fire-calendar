@@ -133,7 +133,7 @@ export default function MonthHistory({ data }: { data: Analysis }) {
                   return (
                     <li key={i.year} className={(i.year === shown?.year ? 'is-lit' : '') + (i.provisional || i.partial ? ' is-prov' : '') + (i.count == null ? ' is-none' : '')}>
                       <button type="button" tabIndex={i === shown ? 0 : -1} ref={(el) => { bars.current[at] = el; }}
-                        aria-label={`${name} ${i.year}${i.partial ? `, first ${i.days_covered} days` : ''}: ${i.count == null ? 'no data' : `${num(i.count)} fire-days`}${vs ? `, ${vs}` : ''}${i.provisional ? ', provisional' : ''}`}
+                        aria-label={`${name} ${i.year}${i.partial ? `, first ${i.days_covered} days` : ''}: ${i.count == null ? 'no data' : `${num(i.count)} hotspots`}${vs ? `, ${vs}` : ''}${i.provisional ? ', provisional' : ''}`}
                         onPointerEnter={() => setActive(i.year)} onFocus={() => setActive(i.year)} onBlur={() => setActive(null)}
                         onKeyDown={(e) => barKey(e, at)}>
                         <i className={`lv${levels.level(i.count)}`} style={{ height: `${h}%`, transitionDelay: `${at * 12}ms` }}>
@@ -156,7 +156,7 @@ export default function MonthHistory({ data }: { data: Analysis }) {
           <p className="mh-read" aria-live="polite">
             {shown && (
               <>
-                <span><b>{name} {shown.year}</b>{shown.partial && `, first ${shown.days_covered} days`} · {shown.count == null ? 'no data' : `${num(shown.count)} fire-days`}{shown.vs_avg_pct != null && <> · {pctShort(shown.vs_avg_pct)} vs typical</>}</span>
+                <span><b>{name} {shown.year}</b>{shown.partial && `, first ${shown.days_covered} days`} · {shown.count == null ? 'no data' : `${num(shown.count)} hotspots`}{shown.vs_avg_pct != null && <> · {pctShort(shown.vs_avg_pct)} vs typical</>}</span>
                 <span className="mh-read-rank">{[rankWords(shown), shown.provisional ? 'provisional' : null].filter(Boolean).join(' · ')}</span>
               </>
             )}
@@ -166,8 +166,8 @@ export default function MonthHistory({ data }: { data: Analysis }) {
           </p>
 
           <table className="sr-only">
-            <caption>{name} in each year, corrected fire-days</caption>
-            <thead><tr><th scope="col">Year</th><th scope="col">Fire-days</th><th scope="col">Against a typical {name}</th></tr></thead>
+            <caption>{name} in each year, hotspots (satellite-adjusted)</caption>
+            <thead><tr><th scope="col">Year</th><th scope="col">Hotspots</th><th scope="col">Against a typical {name}</th></tr></thead>
             <tbody>
               {items.map((i) => (
                 <tr key={i.year}><th scope="row">{i.year}{i.partial ? ` (first ${i.days_covered} days)` : ''}</th><td>{num(i.count)}</td><td>{i.vs_avg_pct == null ? '–' : pctShort(i.vs_avg_pct)}</td></tr>

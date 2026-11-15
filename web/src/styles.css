@@ -426,6 +426,9 @@ button.day:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px;
 .briefing .btn { margin-top: var(--s-3); }
 .sheet-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-3); margin-top: var(--s-8); padding-top: var(--s-5); border-top: 1px solid var(--line); font-size: var(--t-sm); color: var(--ink-2); }
 .sheet-foot p { max-width: 52ch; }
+/* the page's one note on the estimates: said once, here, nowhere else */
+.sheet-disclaimer { margin-top: var(--s-8); text-align: center; font-size: var(--t-sm); color: var(--ink-2); }
+.sheet-disclaimer + .sheet-foot { margin-top: var(--s-4); }
 /* zero fires: a calm, hollow calendar instead of an empty grid */
 .empty-state { display: grid; justify-items: center; gap: var(--s-3); text-align: center; padding: var(--s-8) 0; }
 .empty-state p { max-width: 44ch; }

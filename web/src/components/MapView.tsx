@@ -435,7 +435,7 @@ export default function MapView({ area, hotspots, cells = null, cellsLabel = '',
 
   return (
     <>
-      <div ref={el} className="map" aria-label={cells ? "Map of next week's fire chance (model estimate)" : "Map of fire hotspots for the selected month"} role="region" />
+      <div ref={el} className="map" aria-label={cells ? "Map of next week's fire chance" : "Map of satellite fire detections for the selected month"} role="region" />
       {noImagery && (
         <p className="map-imagery-note" role="status">Satellite imagery could not load.<span className="map-imagery-more"> Showing plain country outlines instead.</span></p>
       )}

@@ -4993,7 +4993,7 @@
     }
   ],
   "next_months_label": "Based on history (2003-2025), not a forecast",
-  "briefing": "In this area, fire activity usually peaks in August, and the main fire season runs from June to October. The most active year since 2003 was 2024 (3.3x an average year). So far in November 2026, activity is 52% below the average for the same days (rank 19 of 24 years). Of the next three months, January is historically the most active (average 70 fire-days). This is what is normal, not a forecast. Source: NASA FIRMS (MODIS + VIIRS), harmonized.",
+  "briefing": "In this area, fire activity usually peaks in August, and the main fire season runs from June to October. The most active year since 2003 was 2024 (3.3x an average year). So far in November 2026, activity is 52% below the average for the same days (rank 19 of 24 years). Of the next three months, January is historically the most active (average 70 hotspots). Source: NASA FIRMS (MODIS + VIIRS), harmonized.",
   "reliability": {
     "median_error_pct": 12.0,
     "validated_years": [

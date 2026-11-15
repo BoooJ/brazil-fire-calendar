@@ -59,7 +59,6 @@ export default function ForecastPanel({ area, refDate, available, refresh = 0, o
   if (!available) return null;
 
   const retry = () => setAttempt((n) => n + 1);
-  const label = load.kind === 'ok' ? load.data.label : 'Model estimate (experimental), not an official fire warning.';
 
   return (
     <section className="fc" aria-labelledby="fc-title" aria-busy={load.kind === 'loading' || undefined}>
@@ -88,8 +87,6 @@ export default function ForecastPanel({ area, refDate, available, refresh = 0, o
       ) : (
         <ForecastBody f={load.data} />
       )}
-      {/* the API's own label, always with the numbers: small and quiet, under them */}
-      <p className="quiet-note fc-label">{label}</p>
     </section>
   );
 }

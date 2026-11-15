@@ -171,7 +171,7 @@ export default function Tool() {
         setStage('map');
         if (isPhone()) window.scrollTo({ top: 0, behavior: scrollMotion() });
       })
-      .catch((e) => setMap({ kind: 'error', message: message(e, 'Could not load the hotspots.') }));
+      .catch((e) => setMap({ kind: 'error', message: message(e, 'Could not load the map points.') }));
   }, [area]);
 
   // the hero's link down to the next-week panel: scroll there and move focus to its heading
@@ -252,7 +252,7 @@ export default function Tool() {
       const r = await requestUpdate();
       if (r.status === 'updated') {
         setStatus((s) => (s ? { ...s, data_updated: r.data_updated } : s));
-        flash(`Updated: ${num(r.new_hotspots)} new hotspots`);
+        flash(`Updated: ${num(r.new_hotspots)} new detections`);
         setAttempt((n) => n + 1);
       } else if (r.status === 'too_soon') flash('Already updated in the last 15 minutes.');
       else flash(r.message ?? 'The update failed. Try again later.');
@@ -358,15 +358,15 @@ export default function Tool() {
               <span className="dot" />
               <span className="map-caption-text">
                 {map.total === 0
-                  ? `No hotspots in ${MON[mapMonth.month - 1]} ${mapMonth.year}`
-                  : map.truncated ? `${MON[mapMonth.month - 1]} ${mapMonth.year}` : `${MON[mapMonth.month - 1]} ${mapMonth.year} · ${num(map.total)} hotspots`}
+                  ? `No detections in ${MON[mapMonth.month - 1]} ${mapMonth.year}`
+                  : map.truncated ? `${MON[mapMonth.month - 1]} ${mapMonth.year}` : `${MON[mapMonth.month - 1]} ${mapMonth.year} · ${num(map.total)} detections`}
               </span>
               {map.truncated && (
-                <span className="map-badge" title="The map shows a sample; the CSV download has every hotspot.">
+                <span className="map-badge" title="The map shows a sample; the CSV download has every detection.">
                   <span className="hide-xs">showing </span>{num(map.returned)} of {num(map.total)}
                 </span>
               )}
-              <button onClick={clearMap} aria-label="Clear the hotspots from the map">Clear</button>
+              <button onClick={clearMap} aria-label="Clear the detections from the map">Clear</button>
             </div>
           )}
           {/* the globe does not draw forecast cells, so their caption shows only with the map */}
@@ -399,7 +399,7 @@ export default function Tool() {
           {stage === 'map' && map.kind === 'shown' && map.total === 0 && mapMonth && (
             <div className="map-empty" role="note">
               <strong>No fires detected</strong>
-              <span>The satellites saw no hotspots in this area in {MONTHS[mapMonth.month - 1]} {mapMonth.year}.</span>
+              <span>The satellites saw no fire in this area in {MONTHS[mapMonth.month - 1]} {mapMonth.year}.</span>
             </div>
           )}
           {stage === 'map' && map.kind === 'shown' && map.returned > 0 && (
@@ -427,7 +427,7 @@ export default function Tool() {
                   aria-disabled={!cellsReady}
                   className={(view === 'cells' ? 'on' : '') + (cellsReady ? '' : ' is-off')}
                   onClick={toCells}
-                  title={cellsReady ? "Next week's chance of fire, per 5 km cell (model estimate)" : forecast ? 'No cells to show for this area' : "Loading next week's estimate…"}
+                  title={cellsReady ? "Next week's chance of fire, per 5 km cell" : forecast ? 'No cells to show for this area' : "Loading next week's estimate…"}
                 >
                   Fire cells
                 </button>
@@ -482,6 +482,7 @@ export default function Tool() {
                     <ForecastPanel area={area.polygon} refDate={null} available={status?.forecast_available !== false} refresh={attempt} onLoad={setForecast} />
                     <Briefing data={data} detailed={detailed} coverage={status?.coverage} />
                     {detailed && <Reliability data={data} status={status} />}
+                    <p className="sheet-disclaimer">Experimental estimate. Not a real forecast.</p>
                     <footer className="sheet-foot">
                       <p>Data: NASA FIRMS (MODIS C6.1, VIIRS S-NPP and NOAA-20). Map imagery: NASA GIBS, for display only.</p>
                       <button className="btn btn-ghost" onClick={() => setShowSources(true)}>Data sources</button>
@@ -522,7 +523,6 @@ function Upcoming({ data }: { data: Analysis }) {
           );
         })}
       </ul>
-      <p className="quiet-note">{data.next_months_label}.</p>
     </section>
   );
 }
@@ -536,7 +536,7 @@ function Briefing({ data, detailed, coverage }: { data: Analysis; detailed: bool
 
       {detailed ? (
         <>
-          <h3>Hotspots seen by each satellite this month</h3>
+          <h3>Detections by each satellite this month</h3>
           <dl className="sats">
             {SATELLITES.map((k) => (
               <div key={k}>

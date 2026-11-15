@@ -223,7 +223,7 @@ def _briefing(cards: dict, mean_of: dict, complete_years: dict, next_months: lis
     nxt = max(next_months, key=lambda n: n["mean"])
     if nxt["mean"] > 0:
         parts.append(f"Of the next three months, {MONTH_NAMES[nxt['month'] - 1]} is historically the most "
-                     f"active (average {nxt['mean']:.0f} fire-days). This is what is normal, not a forecast.")
+                     f"active (average {nxt['mean']:.0f} hotspots).")
     parts.append("Source: NASA FIRMS (MODIS + VIIRS), harmonized.")
     return " ".join(parts)
 

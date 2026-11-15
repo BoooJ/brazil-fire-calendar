@@ -8,6 +8,9 @@ import { savePng, type EChartHandle } from './EChart';
 import type { Mode } from './FireCalendar';
 import { MON, MONTHS, compact as short, num, pctLong, pctShort } from '../format';
 
+/** how the main number is named on the page (the API's unit.main still says "fire-days", its old name) */
+const UNIT = 'hotspots (satellite-adjusted)';
+
 interface Props {
   data: Analysis;
   mode: Mode;
@@ -78,14 +81,14 @@ export default function Detailed({ data, mode, onMode, selected, onSelect, slug,
               selected={sel}
               onSelect={pick}
               compact={compact}
-              unitMain={data.unit.main}
+              unitMain={UNIT}
               period={period}
             />
           </div>
           <HeatmapLegend mode={mode} maxCount={maxCount} />
         </div>
         <p className="fineprint">
-          Numbers are {data.unit.main}. * year not complete. The top row is the {period} average: history, not a forecast.
+          Numbers are {UNIT}. * year not complete. The top row is the {period} average.
         </p>
       </section>
 
@@ -111,7 +114,7 @@ export default function Detailed({ data, mode, onMode, selected, onSelect, slug,
           <button className="btn btn-ghost" onClick={() => savePng(yrRef.current, `year-by-year-${slug}.png`)} aria-label="Download the year-by-year chart as a PNG image">PNG</button>
         </div>
         <div className="chart-card">
-          <YearlyChart ref={yrRef} yearly={data.yearly} unitMain={data.unit.main} compact={compact} />
+          <YearlyChart ref={yrRef} yearly={data.yearly} unitMain={UNIT} compact={compact} />
         </div>
       </section>
     </>
@@ -126,10 +129,10 @@ function CalendarTable({ data, mode, onPick, period }: { data: Analysis; mode: M
   return (
     <>
     {/* the words sit outside the scrolling box, so a phone shows them whole; the caption stays for screen readers */}
-    <p className="cal-table-note" aria-hidden="true">{mode === 'counts' ? 'Corrected count (fire-days)' : 'Compared with the average'} per month, * provisional. Top row: the {period} average (history, not a forecast). Choose a month for details and the map.</p>
+    <p className="cal-table-note" aria-hidden="true">{mode === 'counts' ? 'Hotspots' : 'Compared with the average'} per month, * provisional. Top row: the {period} average. Choose a month for details and the map.</p>
     <div className="cal-table-wrap">
       <table className="cal-table">
-        <caption className="sr-only">Burning calendar as a table: {mode === 'counts' ? 'corrected count (fire-days)' : 'compared with the average'} per month, * provisional; first row: the {period} average, history, not a forecast; last column: the year's total. Choose a month for details and the map.</caption>
+        <caption className="sr-only">Burning calendar as a table: {mode === 'counts' ? 'hotspots' : 'compared with the average'} per month, * provisional; first row: the {period} average; last column: the year's total. Choose a month for details and the map.</caption>
         <thead><tr><th scope="col">Year</th>{MON.map((m) => <th scope="col" key={m}>{m}</th>)}<th scope="col">Total</th></tr></thead>
         <tbody>
           {/* the same average row as the heatmap: the API's monthly means, as they are */}
@@ -152,7 +155,7 @@ function CalendarTable({ data, mode, onPick, period }: { data: Analysis; mode: M
                       <button className={c.provisional ? 'is-prov' : undefined} onClick={() => onPick(y, i + 1)}>
                         <span className="sr-only">{MONTHS[i]} {y}: </span>
                         {mode === 'counts' ? short(c.count) : pctShort(c.vs_avg_pct)}
-                        <span className="sr-only"> ({num(c.count)} fire-days, {pctLong(c.vs_avg_pct)}{c.provisional ? ', provisional' : ''})</span>
+                        <span className="sr-only"> ({num(c.count)} hotspots, {pctLong(c.vs_avg_pct)}{c.provisional ? ', provisional' : ''})</span>
                       </button>
                     ) : '–'}
                   </td>

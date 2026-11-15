@@ -53,13 +53,13 @@ export default function MonthDetail({ item, map, onShowMap, onCsv, onClose, cove
         {item.partial && ` · first ${item.days_covered} days`}
       </p>
       <p className="detail-big">
-        {num(item.count)} <span>fire-days</span>
+        {num(item.count)} <span>hotspots</span>
       </p>
       <p className="detail-line">
         {pctLong(item.vs_avg_pct)}
         {item.rank != null && <> · <span className="nobr">{item.rank === 1 ? 'the most active' : `${ordinal(item.rank)} most active`} {MONTHS[item.month - 1]} of {item.of_years}</span></>}
       </p>
-      <p className="fineprint detail-unit">A fire-day is a 1 km square where a satellite saw fire on one day, adjusted so every satellite counts alike.</p>
+      <p className="fineprint detail-unit">A hotspot is a 1 km square where a satellite saw fire on one day, adjusted so every satellite counts alike.</p>
       {(item.provisional || item.uncertain || item.partial) && (
         <ul className="flags">
           {item.partial && <li>Month not finished: compared with the same days in other years.</li>}
@@ -80,18 +80,18 @@ export default function MonthDetail({ item, map, onShowMap, onCsv, onClose, cove
       {map.kind === 'shown' ? (
         <p className="note">
           {map.returned === 0
-            ? 'No hotspots in this month.'
+            ? 'No detections in this month.'
             : map.truncated
-              ? `Showing ${num(map.returned)} of ${num(map.total)} hotspots on the map.`
-              : `Showing all ${num(map.total)} hotspots on the map.`}
+              ? `Showing ${num(map.returned)} of ${num(map.total)} satellite detections on the map.`
+              : `Showing all ${num(map.total)} satellite detections on the map.`}
         </p>
       ) : map.kind === 'error' ? null : (
         <button className="btn btn-light btn-wide" onClick={onShowMap} disabled={map.kind === 'loading'}>
-          {map.kind === 'loading' ? 'Loading hotspots…' : 'Show this month on the map'}
+          {map.kind === 'loading' ? 'Loading the map…' : 'Show this month on the map'}
         </button>
       )}
       {map.kind === 'error' && <ErrorNote title="The map could not load" message={map.message} onRetry={onShowMap} />}
-      <button className="btn btn-quiet btn-wide" onClick={onCsv}>Download this month's hotspots (CSV)</button>
+      <button className="btn btn-quiet btn-wide" onClick={onCsv}>Download this month's detections (CSV)</button>
     </div>
   );
 }
