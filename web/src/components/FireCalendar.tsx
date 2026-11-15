@@ -208,7 +208,7 @@ export default function FireCalendar({ data, selected, onSelect, mode, onMode, o
                 </div>
                 <div className="yr-total muted" title={ahead ? data.next_months_label : undefined}>avg</div>
               </div>
-              {ahead && <p className="cal-ahead-note">{next} and the rest of {ref_year} show the {period} average. {data.next_months_label}.</p>}
+              {ahead && <p className="cal-ahead-note">Dotted bricks: a typical year (the {period} average) for {next} and the rest of {ref_year}. {data.next_months_label}.</p>}
             </>
           );
         })()}
