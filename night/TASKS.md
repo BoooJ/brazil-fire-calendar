@@ -200,3 +200,5 @@ Global rules for this block:
   - Inside the frame's white pane the drawn sheet has no radius (the pane gives the edge); the heading shows whole.
 - [x] The "SO FAR" / "NOW" tag under the current brick was 8px (the last literal font size, hard to read)
   - Now --t-2xs (10px), a little more room under that row. Type scale has no literal sizes left in styles.css.
+- [x] web/CLAUDE.md: FireCalendar line mentions that the average row doubles as next year's typical row
+  - One clause added (needs the usual quick human review of CLAUDE.md changes).
