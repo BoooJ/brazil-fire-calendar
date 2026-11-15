@@ -55,8 +55,6 @@ export default function StatusHero({ data, area, status, updating, onUpdate, onF
   // this week (the API's newest ISO week, usually still running); the month's count when there are no weeks
   const week = data.calendar_weekly?.length ? data.calendar_weekly[data.calendar_weekly.length - 1] : null;
   const fireNow = week ? !!week.count : !!c.count;
-  // the quietest month of the typical year: the lowest of the API's twelve averages, read off as it is
-  const quiet = avg.reduce<number | null>((best, a) => (a.mean == null ? best : best == null || a.mean < (avg.find((x) => x.month === best)?.mean ?? Infinity) ? a.month : best), null);
   // where this month sits between "lower" and "higher": log scale, eased so it never sticks to an end (display only)
   const pos = c.count && c.vs_avg_pct != null ? 50 + 50 * Math.tanh(Math.log2(Math.max(1 / 64, 1 + c.vs_avg_pct / 100)) / 2) : null;
   const peak = c.peak_month == null ? null : MONTHS[c.peak_month - 1];
@@ -108,7 +106,7 @@ export default function StatusHero({ data, area, status, updating, onUpdate, onF
         </div>
       </dl>
 
-      <Season data={data} levels={levels} quiet={quiet} period={period} />
+      <Season data={data} levels={levels} place={area.label} period={period} />
 
       <p className="hero-meta">
         {provisional && <span className="tag" title="Recent days use NASA's near-real-time data and may still change">Provisional</span>}
@@ -118,7 +116,6 @@ export default function StatusHero({ data, area, status, updating, onUpdate, onF
         </span>
         {onForecast && <button className="textlink" onClick={onForecast}>Next week's fire chance ↓</button>}
       </p>
-      <p className="hero-smoke">Smoke from fires can lower air quality nearby. We don’t measure air quality.</p>
     </section>
   );
 }
@@ -127,14 +124,14 @@ export default function StatusHero({ data, area, status, updating, onUpdate, onF
 function seasonWords(month: string, lv: number | null, peak: string | null): { head: string; note: string } {
   if (lv == null) return { head: 'Not known yet', note: 'No typical year to compare with yet.' };
   const peaks = peak == null ? '' : peak === month ? ` ${month} is usually the peak.` : ` The season usually peaks in ${peak}.`;
-  if (lv >= 4) return { head: `${month} is the height of the fire season`, note: `Usually the busiest time of the year for fire here.${peaks}` };
-  if (lv >= 2) return { head: `${month} is in the fire season`, note: `Fires are common here at this time of year.${peaks}` };
+  if (lv >= 4) return { head: `${month} is the height of the fire season`, note: `Usually the busiest time of the year for fire here.${peaks} Air quality may be reduced.` };
+  if (lv >= 2) return { head: `${month} is in the fire season`, note: `Fires are common here at this time of year.${peaks} Air quality may be reduced.` };
   if (lv === 1) return { head: `${month} is at the edge of the fire season`, note: `Usually only a little fire here at this time of year.${peaks}` };
   return { head: `${month} is outside the fire season`, note: `Usually calm here: fire is rare at this time of year.${peaks}` };
 }
 
 /** A typical year here: the API's twelve monthly averages as bars. Hover (or focus) lights one and dims the rest. */
-function Season({ data, levels, quiet, period }: { data: Analysis; levels: ReturnType<typeof makeCountLevels>; quiet: number | null; period: string | null }) {
+function Season({ data, levels, place, period }: { data: Analysis; levels: ReturnType<typeof makeCountLevels>; place: string; period: string | null }) {
   const c = data.cards;
   const [on, setOn] = useState<number | null>(null);
   const [grown, setGrown] = useState(false);
@@ -155,11 +152,7 @@ function Season({ data, levels, quiet, period }: { data: Analysis; levels: Retur
   return (
     <div className="season">
       <div className="season-head">
-        <h2>A typical year here</h2>
-        <p>
-          {peak != null && <>Peaks in <b>{MONTHS[peak - 1]}</b></>}
-          {peak != null && quiet != null && quiet !== peak && <>, calmest in <b>{MONTHS[quiet - 1]}</b></>}.
-        </p>
+        <h2>Typical year in {place}</h2>
       </div>
       <ol className={'season-bars' + (on != null ? ' is-hot' : '')} onPointerLeave={() => setOn(null)}>
         {order.map((m, i) => {
@@ -181,8 +174,7 @@ function Season({ data, levels, quiet, period }: { data: Analysis; levels: Retur
       </ol>
       <p className="season-split" aria-hidden="true"><span>Earlier</span><span>Now</span><span>Coming up</span></p>
       <p className="season-read" aria-live="polite">
-        <span><b>{MONTHS[lit - 1]}</b> · {LEVEL_WORDS[litLevel].toLowerCase()}{lit === peak && ' · the peak'}{lit === c.ref_month && ' · this month'}</span>
-        <span className="season-src">From the {period} average.</span>
+        <span><b>{LEVEL_WORDS[litLevel]}</b> {lit === c.ref_month ? 'this month' : `in ${MONTHS[lit - 1]}`}</span>
       </p>
     </div>
   );
