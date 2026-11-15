@@ -315,7 +315,7 @@ strong { font-weight: 650; }
   .faq__item + .faq__item { padding-top: 16px; margin-top: 0; }
   .faq__item h3 { font-size: 18px; }
   #method .panel { --p-h: 256px; }
-  #method .bfc-step { transform: scale(0.84); }
+  #method .bfc-step { transform: scale(0.8); }
   .bfc-method-act { margin-top: var(--s-5); }
 }
 @media (max-width: 639px) {

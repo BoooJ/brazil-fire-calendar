@@ -332,3 +332,5 @@ Global rules for this block:
   - DateControls gets `shown` (the API's `query.ref_date`); "Other day" starts there (today if nothing is shown, or from the 2020 replay). Checked 375.
 - [x] Quick view calendar keyboard: every brick was its own Tab stop (36 with 3 years, up to 288 with all years) before reaching the controls after the calendar
   - Roving tabindex: one Tab stop for the grid (the brick last focused, else this month, else the newest); the existing arrow keys move between months/years; a screen-reader-only line says so. axe clean at 375; checked Tab / Shift+Tab / arrows at 1440.
+- [x] Landing method panels on 768px-high laptops (1366×768): the fire-day grid almost touched the top of its panel
+  - The steps there scale to 0.8 (was 0.84), so each picture has air above and below. Section still one screen at 1366×768.
