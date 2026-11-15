@@ -71,7 +71,7 @@ export default function Landing() {
     if (!styled) return;
     startKit();
     const id = decodeURIComponent(window.location.hash.slice(1));
-    if (id && !id.startsWith('/')) document.getElementById(id)?.scrollIntoView();
+    if (id && !id.startsWith('/')) document.getElementById(id)?.scrollIntoView({ behavior: 'instant' });
   }, [styled]);
 
   if (!styled) return null;

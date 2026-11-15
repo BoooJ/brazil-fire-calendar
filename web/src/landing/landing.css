@@ -325,3 +325,8 @@ strong { font-weight: 650; }
 /* ---------- the "Source code" link: GitHub's mark at the size of the text ---------- */
 .bfc-src { display: inline-flex; align-items: center; gap: 0.5em; }
 .bfc-gh { width: 1.05em; height: 1.05em; flex: none; }
+
+/* ---------- gentle scroll for the in-page links (The idea, How it works…); the hash still lands in the URL ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  html:root { scroll-behavior: smooth; }
+}
