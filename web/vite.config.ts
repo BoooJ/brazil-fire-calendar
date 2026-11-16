@@ -1,6 +1,6 @@
 import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
-import { FULL_NAME, SEAL, markSvg } from './src/brand';
+import { FULL_NAME, SEAL, markSvg } from './src/brand.ts';
 
 // The loading screen (#splash in index.html) shows the logo before any script runs, so its SVG is written
 // into the page here, from the same artwork the pages use (src/brand.ts).
