@@ -4,16 +4,13 @@ import { useClosing } from './useClosing';
 import type { Analysis, Status } from '../types';
 import { SAT_NAMES } from '../types';
 import { SAT_COLOR } from '../colors';
-import { MONTHS, dateShort, num, ordinal, vsTypicalShort } from '../format';
+import { MONTHS, dateShort, num, ordinal } from '../format';
 
 /** Every number comes from the API (`cards`); nothing is computed here. */
 export function KeyCards({ data }: { data: Analysis }) {
   const c = data.cards;
   const month = MONTHS[c.ref_month - 1];
   const period = `${month} ${c.ref_year}`;
-  const p = c.vs_avg_pct;
-  const tone = p == null ? '' : p >= 20 ? ' is-up' : p <= -20 ? ' is-down' : '';
-  const avg = data.average_period ? `${data.average_period.from}–${data.average_period.to}` : null;
   return (
     <section className="keycards" aria-labelledby="key-title">
       <h2 id="key-title">Key numbers</h2>
@@ -24,11 +21,6 @@ export function KeyCards({ data }: { data: Analysis }) {
           <dd>{num(c.count)}</dd>
           <dd className="kc-note">satellite-adjusted</dd>
         </div>
-        <div className={'kc-vs' + tone}>
-          <dt>vs typical {month}</dt>
-          <dd>{vsTypicalShort(p)}</dd>
-          <dd className="kc-note">{avg ? `${avg} average` : 'no average yet'}</dd>
-        </div>
         <div>
           <dt>Rank</dt>
           <dd>{c.rank == null ? '–' : <>{ordinal(c.rank)}<small> of {c.of_years}</small></>}</dd>
@@ -37,7 +29,7 @@ export function KeyCards({ data }: { data: Analysis }) {
         <div>
           <dt>Estimated fires</dt>
           <dd>{c.estimated_fires == null ? '–' : `≈ ${num(c.estimated_fires)}`}</dd>
-          <dd className="kc-note">touching cells = one fire</dd>
+          <dd className="kc-note">touching squares = one fire</dd>
         </div>
         <div>
           <dt>Peak month</dt>
@@ -58,19 +50,17 @@ export function Reliability({ data, status }: { data: Analysis; status: Status |
         <div>
           <dt>Typical error</dt>
           <dd>{r.median_error_pct == null ? '–' : `±${r.median_error_pct}%`}</dd>
-          <dd className="kc-note">median, on held-out years</dd>
         </div>
         <div>
           <dt>Years checked</dt>
           <dd>{r.validated_years.join(', ') || '–'}</dd>
-          <dd className="kc-note">months both satellites saw</dd>
         </div>
       </dl>
       <p className="muted">{r.note}</p>
       <ul className="points">
-        <li><strong>Why adjust?</strong> VIIRS (from 2018) sees far more than MODIS, so raw counts jump when it arrives. We put every year on one scale.</li>
+        <li><strong>Why adjust?</strong> VIIRS NOAA-20 (from 2018) sees far more fire than MODIS. We put every year on one scale.</li>
         {status?.final_until && (
-          <li><strong>Provisional:</strong> after {dateShort(status.final_until)}, near-real-time data that may still change.</li>
+          <li><strong>Provisional:</strong> data after {dateShort(status.final_until)} may still change.</li>
         )}
       </ul>
       <h3>What the terms mean</h3>
@@ -79,7 +69,6 @@ export function Reliability({ data, status }: { data: Analysis; status: Status |
         <div><dt>Satellite detection</dt><dd>One raw report from one satellite.</dd></div>
         <div><dt>Rank</dt><dd>This month among the same month of every year.</dd></div>
         <div><dt>Estimated fires</dt><dd>Touching burning squares, counted as one.</dd></div>
-        <div><dt>Provisional</dt><dd>Near-real-time data, finalised about 5 months later.</dd></div>
         <div><dt>Uncertain</dt><dd>Too few fires to compare reliably.</dd></div>
         <div><dt>Usual range</dt><dd>Where 8 years in 10 fall.</dd></div>
       </dl>

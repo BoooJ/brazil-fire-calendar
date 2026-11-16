@@ -6,7 +6,7 @@ import { BurningCalendar, HeatmapLegend } from './BurningCalendar';
 import { TypicalYearChart, YearlyChart } from './Charts';
 import { savePng, type EChartHandle } from './EChart';
 import type { Mode } from './FireCalendar';
-import { MON, MONTHS, compact as short, num, pctLong, pctShort } from '../format';
+import { MON, MONTHS, compact as short, num, pctShort } from '../format';
 
 /** how the main number is named on the page (the API's unit.main still uses its old name) */
 const UNIT = 'hotspots';
@@ -58,17 +58,17 @@ export default function Detailed({ data, mode, onMode, selected, onSelect, slug,
         <div className="cal-head">
           <div>
             <h2 id="hm-title">Fire calendar</h2>
-            <p className="muted">One cell per month since {firstYear}. Darker means more fire.</p>
+            <p className="muted">One square per month since {firstYear}. {mode === 'counts' ? 'Darker means more fire.' : 'Orange is above typical, purple below.'}</p>
           </div>
           <div className="tools">
-            <div className="seg seg-dark" role="radiogroup" aria-label="Calendar mode">
+            <div className="seg seg-small" role="radiogroup" aria-label="What the colour shows">
               <button role="radio" aria-checked={mode === 'counts'} className={mode === 'counts' ? 'on' : ''} onClick={() => onMode('counts')}>Intensity</button>
               <button role="radio" aria-checked={mode === 'vs'} className={mode === 'vs' ? 'on' : ''} onClick={() => onMode('vs')}>vs typical</button>
             </div>
             {/* view switch beside the mode, then the downloads; the label says what you get, so no pressed state */}
-            <button className="btn btn-ghost" onClick={() => setTable((t) => !t)} aria-label={table ? 'Show the heatmap' : 'Show as a table'}>{table ? 'Heatmap' : 'Table'}</button>
-            <button className="btn btn-ghost" onClick={() => savePng(calRef.current, `burning-calendar-${slug}-${mode}.png`)} aria-label="Download the burning calendar as a PNG image">PNG</button>
-            <button className="btn btn-ghost" onClick={onCsv} aria-label="Download the calendar as a CSV file">CSV</button>
+            <button className="btn btn-ghost btn-small" onClick={() => setTable((t) => !t)} aria-label={table ? 'Show the heatmap' : 'Show as a table'}>{table ? 'Heatmap' : 'Table'}</button>
+            <button className="btn btn-ghost btn-small" onClick={() => savePng(calRef.current, `fire-calendar-${slug}-${mode === 'counts' ? 'intensity' : 'vs-typical'}.png`)} aria-label="Download the fire calendar as a PNG image">PNG</button>
+            <button className="btn btn-ghost btn-small" onClick={onCsv} aria-label="Download the calendar as a CSV file">CSV</button>
           </div>
         </div>
         {table && <CalendarTable data={data} mode={mode} onPick={pick} period={period} />}
@@ -90,7 +90,7 @@ export default function Detailed({ data, mode, onMode, selected, onSelect, slug,
           <HeatmapLegend mode={mode} maxCount={maxCount} />
         </div>
         <p className="fineprint">
-          Top row: {period} average · * year in progress
+          * Year in progress
         </p>
       </section>
 
@@ -98,9 +98,8 @@ export default function Detailed({ data, mode, onMode, selected, onSelect, slug,
         <div className="cal-head">
           <div>
             <h2 id="typ-title">Hotspots in {place} by month</h2>
-            <p className="muted">Usual range ({period}) vs {data.cards.ref_year}. Hollow point: month in progress.</p>
           </div>
-          <button className="btn btn-ghost" onClick={() => savePng(typRef.current, `typical-year-${slug}.png`)} aria-label="Download the typical year chart as a PNG image">PNG</button>
+          <button className="btn btn-ghost btn-small" onClick={() => savePng(typRef.current, `hotspots-by-month-${slug}.png`)} aria-label="Download the hotspots by month chart as a PNG image">PNG</button>
         </div>
         <div className="chart-card">
           <TypicalYearChart ref={typRef} average={data.average_by_month} calendar={data.calendar} refYear={data.cards.ref_year} period={period} compact={compact} />
@@ -111,9 +110,9 @@ export default function Detailed({ data, mode, onMode, selected, onSelect, slug,
         <div className="cal-head">
           <div>
             <h2 id="yr-title">Year by year</h2>
-            <p className="muted">Raw satellite detections (bars) jump when VIIRS arrives in 2018; adjusted hotspots (line) don't. Hollow point: year in progress.</p>
+            <p className="muted">Satellite detections (bars) jump when VIIRS NOAA-20 arrives in 2018; hotspots (line) don't.</p>
           </div>
-          <button className="btn btn-ghost" onClick={() => savePng(yrRef.current, `year-by-year-${slug}.png`)} aria-label="Download the year-by-year chart as a PNG image">PNG</button>
+          <button className="btn btn-ghost btn-small" onClick={() => savePng(yrRef.current, `year-by-year-${slug}.png`)} aria-label="Download the year-by-year chart as a PNG image">PNG</button>
         </div>
         <div className="chart-card">
           <YearlyChart ref={yrRef} yearly={data.yearly} unitMain={UNIT} compact={compact} />
@@ -131,10 +130,10 @@ function CalendarTable({ data, mode, onPick, period }: { data: Analysis; mode: M
   return (
     <>
     {/* the words sit outside the scrolling box, so a phone shows them whole; the caption stays for screen readers */}
-    <p className="cal-table-note" aria-hidden="true">{mode === 'counts' ? 'Hotspots' : 'vs typical'} per month · top row: {period} average · * provisional</p>
+    <p className="cal-table-note" aria-hidden="true">{mode === 'counts' ? 'Hotspots' : 'vs typical'} per month · * year in progress</p>
     <div className="cal-table-wrap">
       <table className="cal-table">
-        <caption className="sr-only">Fire calendar as a table: {mode === 'counts' ? 'hotspots' : 'compared with the average'} per month, * provisional; first row: the {period} average; last column: the year's total. Choose a month for details and the map.</caption>
+        <caption className="sr-only">Fire calendar: {mode === 'counts' ? 'hotspots' : 'vs typical'} per month. First row: the {period} average. Last column: the year's total, * year in progress. Choose a month for details and the map.</caption>
         <thead><tr><th scope="col">Year</th>{MON.map((m) => <th scope="col" key={m}>{m}</th>)}<th scope="col">Total</th></tr></thead>
         <tbody>
           {/* the same average row as the heatmap: the API's monthly means, as they are */}
@@ -154,10 +153,10 @@ function CalendarTable({ data, mode, onPick, period }: { data: Analysis; mode: M
                 return (
                   <td key={m}>
                     {c ? (
-                      <button className={c.provisional ? 'is-prov' : undefined} onClick={() => onPick(y, i + 1)}>
+                      <button onClick={() => onPick(y, i + 1)}>
                         <span className="sr-only">{MONTHS[i]} {y}: </span>
                         {mode === 'counts' ? short(c.count) : pctShort(c.vs_avg_pct)}
-                        <span className="sr-only"> ({num(c.count)} hotspots, {pctLong(c.vs_avg_pct)}{c.provisional ? ', provisional' : ''})</span>
+                        <span className="sr-only"> ({num(c.count)} hotspots{c.vs_avg_pct != null ? `, ${pctShort(c.vs_avg_pct)} vs typical` : ''}{c.provisional ? ', provisional' : ''})</span>
                       </button>
                     ) : '–'}
                   </td>

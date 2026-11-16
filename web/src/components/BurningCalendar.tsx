@@ -7,7 +7,7 @@ import type { Mode } from './FireCalendar';
 import type { CalendarItem, MonthAverage, YearItem } from '../types';
 import { SATELLITES, SAT_NAMES } from '../types';
 import { ANOMALY_SCALE, ANOMALY_TICKS, COUNTS_SCALE, NEUTRAL_CELL, NO_FIRE, anomalyPosition } from '../colors';
-import { MON, MONTHS, compact as short, num, ordinal, pctShort } from '../format';
+import { MON, MONTHS, compact as short, num, ordinal, pctShort, times } from '../format';
 
 interface Props {
   calendar: CalendarItem[];
@@ -23,7 +23,7 @@ interface Props {
 }
 
 const log = (v: number) => Math.log10(v + 1);
-const AVG = 'avg';
+const AVG = 'Avg';
 
 export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningCalendar(
   { calendar, average, yearly, mode, selected, onSelect, compact, unitMain, period },
@@ -49,14 +49,10 @@ export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningC
       return {
         value: [c.month - 1, rowOf(c.year), v === null ? '-' : v],
         itemStyle: {
-          opacity: c.partial ? 0.5 : c.uncertain ? 0.6 : 1,
+          // faded = uncertain, as on the Quick view (no stripes: provisional and uncertain are said in the tooltip and the month card)
+          opacity: c.uncertain ? 0.45 : 1,
           borderColor: isSel ? '#1d1d1f' : CHART_BG,
           borderWidth: isSel ? 2.5 : compact ? 1 : 2,
-          decal: c.provisional
-            ? { symbol: 'rect', symbolSize: 1, dashArrayX: [1, 0], dashArrayY: [2, 4], rotation: -Math.PI / 4, color: 'rgba(255,255,255,0.7)' }
-            : c.uncertain
-              ? { symbol: 'circle', symbolSize: 0.5, dashArrayX: [[4, 4]], dashArrayY: [4, 0], color: 'rgba(255,255,255,0.75)' }
-              : undefined,
         },
         label: { color: darkText ? '#1d1d1f' : '#ffffff' },
       };
@@ -96,7 +92,7 @@ export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningC
           const d = p.data as any;
           if (d._avg) {
             const a = d._avg as MonthAverage;
-            return `<b>${MONTHS[a.month - 1]}, average</b> <span style="opacity:.6">(${period})</span><br/>Mean ${num(a.mean)} · median ${num(a.median)}<br/>Usual range ${num(a.p10)}–${num(a.p90)}`;
+            return `<b>${MONTHS[a.month - 1]} on average</b> <span style="opacity:.6">(${period})</span><br/>${num(a.mean)} ${unitMain}<br/>Usual range ${num(a.p10)}–${num(a.p90)}`;
           }
           const r = d._row as YearItem;
           return `<b>${r.year} total</b><br/>${num(r.count)} ${unitMain}${r.complete ? '' : '<br/><i>Year in progress</i>'}${r.provisional ? '<br/><i>Partly provisional</i>' : ''}`;
@@ -104,7 +100,7 @@ export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningC
         const c = cellIndex.get(`${years[y - 1]}-${x + 1}`);
         if (!c) return '';
         const flags = [
-          c.partial ? `First ${c.days_covered} days` : '',
+          c.partial ? 'Month in progress' : '',
           c.provisional ? 'Provisional' : '',
           c.uncertain ? 'Uncertain: few fires' : '',
         ].filter(Boolean);
@@ -156,10 +152,12 @@ export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningC
               const [x, y] = p.value;
               const c = cellIndex.get(`${years[y - 1]}-${x + 1}`);
               if (!c) return '';
-              if (mode === 'counts') return c.count == null ? '–' : c.count >= 1000 ? (c.count / 1000).toFixed(1) + 'k' : String(c.count);
+              if (mode === 'counts') return short(c.count);
               if (c.vs_avg_pct === null) return '–';
+              // 3 times or more as "3.6×" (no ".0"), like the rest of the site; below that a signed %
+              if (c.vs_avg_pct >= 200) return `${c.vs_avg_pct >= 900 ? Math.round(c.vs_avg_pct / 100 + 1) : times(c.vs_avg_pct)}×`;
               const r = Math.round(c.vs_avg_pct);
-              return r > 0 ? `+${r > 999 ? '999' : r}` : String(r);
+              return r > 0 ? `+${r}` : String(r);
             },
           },
           emphasis: { itemStyle: { borderColor: '#1d1d1f', borderWidth: 2 } },
@@ -178,7 +176,7 @@ export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningC
       ref={ref}
       option={option}
       height={height}
-      ariaLabel={`Fire calendar: ${years.length} years by 12 months of ${unitMain}. Hover a cell for numbers, click it for details and the map.`}
+      ariaLabel={`Fire calendar: ${unitMain} per month, ${years.length} years. Hover a month for numbers, click it for details and the map.`}
       onEvents={{
         click: (p: any) => {
           if (p.seriesIndex !== 0) return;
@@ -206,7 +204,7 @@ export function HeatmapLegend({ mode, maxCount }: { mode: Mode; maxCount: number
           ))}
         </div>
         <div className="hm-caption">
-          {mode === 'counts' ? 'Hotspots per month (log scale)' : '▼ lower · ▲ higher than typical'}
+          {mode === 'counts' ? 'Hotspots per month' : '▼ lower · ▲ higher than typical'}
         </div>
       </div>
     </div>
