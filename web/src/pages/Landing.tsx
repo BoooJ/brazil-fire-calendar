@@ -205,7 +205,7 @@ export default function Landing() {
         <section className="l-hero-more" aria-label="The tool">
           <div className="l-wrap">
             <figure className="l-shot l-hero__shot">
-              <img src={shotHero} alt="The Brazil Fire Calendar tool: a one-line answer about this month’s fire activity, the burning calendar and the map of the chosen area." width="2160" height="1350" />
+              <img src={shotHero} alt="The Brazil Fire Calendar tool: this month’s fire activity against a typical month, three quick answers, a typical year with the coming months, and the chosen state on the globe." width="2160" height="1350" />
             </figure>
             <dl className="l-facts">
               <div><dt>Analysed weekly since</dt><dd>January 2003</dd></div>
@@ -252,7 +252,7 @@ export default function Landing() {
               <Folder n="02" title="Get the short answer" text="Is fire here running above or below normal for this time of year? One line tells you." label="the tool’s one-line answer for the chosen area.">
                 <img src={shotHow2} alt="" loading="lazy" />
               </Folder>
-              <Folder n="03" title="Read the calendar" text="Every month since 2003, coloured by how much fire satellites saw. The season, its peak and the unusual years stand out." label="the tool’s burning calendar.">
+              <Folder n="03" title="Read the calendar" text="Every week since 2003, coloured by how much fire satellites saw. The season, its peak and the unusual years stand out." label="the tool’s burning calendar.">
                 <img src={shotHow3} alt="" loading="lazy" />
               </Folder>
             </ol>
