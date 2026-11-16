@@ -283,10 +283,12 @@ body { margin: 0; background: var(--canvas); color: var(--ink); }
 
 /* ---------- team and tools ---------- */
 /* our photo beside who brought what: the photo is as tall as the list. The picture is the whole portrait
-   shot (3:4, mostly sky on top); the frame cuts sky and legs, never the people at the sides (keep it 3:4 or wider) */
+   shot (3:4, mostly sky on top); the frame cuts sky and legs, never the people at the sides: the figure is
+   only the box, the picture is the visible frame and stops at 3:4 of its width (when a visitor's bigger
+   text makes the list taller than that, the photo simply ends above the list's last line) */
 .l-team { align-items: stretch; margin-top: 48px; }
-.l-team__photo { position: relative; min-height: 320px; border-radius: var(--r-l); border: 1px solid var(--line-soft); background: var(--line-soft); overflow: hidden; }
-.l-team__photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 75%; }
+.l-team__photo { position: relative; min-height: 320px; container-type: inline-size; }
+.l-team__photo img { position: absolute; inset: 0; width: 100%; height: 100%; max-height: 133.34cqw; border-radius: var(--r-l); border: 1px solid var(--line-soft); background: var(--line-soft); object-fit: cover; object-position: 50% 75%; }
 .l-people li { display: grid; gap: 6px; padding: 20px 0; border-top: 1px solid var(--line); }
 .l-people li:last-child { border-bottom: 1px solid var(--line); }
 .l-people__name { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; }

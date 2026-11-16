@@ -41,7 +41,7 @@ const PEOPLE = [
   ['Mikhail', 'Team lead · Front end, UI/UX', 'Led and managed the team, designed the UI and UX, built the front end and brought the final product together.'],
   ['Paul', 'Back end', 'Built the back end and integrated the machine-learning model into the interface.'],
   ['Andrey', 'Machine learning · Astrophysics', 'Built and trained from scratch the machine-learning model that estimates next week’s fire chance, and brought astrophysics expertise to the project.'],
-  ['Marcia', 'Mathematics', 'Brought mathematical expertise, and helped develop and integrate the machine-learning model.'],
+  ['Márcia', 'Mathematics', 'Brought mathematical expertise, and helped develop and integrate the machine-learning model.'],
 ];
 
 const FAQ = [
@@ -361,7 +361,7 @@ export default function Landing() {
             <div className="l-split l-split--top">
               <div className="l-col">
                 <p className="l-eyebrow">Team</p>
-                <h2 id="team-h"><span>Who we are.</span> Four people, three crafts, one calendar.</h2>
+                <h2 id="team-h"><span>Who we are.</span> Four people, one calendar.</h2>
               </div>
               <p className="l-col l-body">
                 FOGO was built in one weekend at the NASA Space Apps Challenge 2026 in
