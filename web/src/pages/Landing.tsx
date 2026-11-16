@@ -265,7 +265,7 @@ export default function Landing() {
               <Folder n="01" title="Choose your area" text="A state, your own location, a point with a radius, or a shape you draw on the map." label="the tool’s location step.">
                 <img src={shotHow1} alt="" loading="lazy" />
               </Folder>
-              <Folder n="02" title="Get the short answer" text="Is fire here running above or below normal for this time of year? One line tells you." label="the tool’s one-line answer for the chosen area.">
+              <Folder n="02" title="Access the analytics" text="Key indicators for your area: current hotspots, deviation from the multi-year average, fire season status." label="the tool’s first screen for the chosen area: fire activity against a typical month.">
                 <img src={shotHow2} alt="" loading="lazy" />
               </Folder>
               <Folder n="03" title="Read the calendar" text="Every week since 2003, coloured by how much fire satellites saw. The season, its peak and the unusual years stand out." label="the tool’s burning calendar.">
