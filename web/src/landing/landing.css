@@ -253,6 +253,17 @@ body { margin: 0; background: var(--canvas); color: var(--ink); }
 .l-faq p { color: var(--ink-2); max-width: 60ch; }
 
 /* ---------- team and tools ---------- */
+/* our photo beside who brought what: the photo is as tall as the list. The picture is the whole portrait
+   shot (3:4, mostly sky on top); the frame cuts sky and legs, never the people at the sides (keep it 3:4 or wider) */
+.l-team { align-items: stretch; margin-top: 48px; }
+.l-team__photo { position: relative; min-height: 320px; border-radius: var(--r-l); border: 1px solid var(--line-soft); background: var(--line-soft); overflow: hidden; }
+.l-team__photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 75%; }
+.l-people li { display: grid; gap: 6px; padding: 20px 0; border-top: 1px solid var(--line); }
+.l-people li:last-child { border-bottom: 1px solid var(--line); }
+.l-people__name { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; }
+.l-people__name span { margin-left: auto; font: 500 11px/1.4 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); white-space: nowrap; }
+.l-people li > p { font-size: 16px; line-height: 1.45; color: var(--ink-2); text-wrap: pretty; }
+.l-team + .l-folds { margin-top: 72px !important; }
 .l-tools { margin-top: 72px; }
 .l-list li { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 4px 20px; padding: 14px 0; border-top: 1px solid var(--line); font-size: 15px; }
 .l-list li:last-child { border-bottom: 1px solid var(--line); }
@@ -277,6 +288,7 @@ body { margin: 0; background: var(--canvas); color: var(--ink); }
   :root { --section: 80px; }
   .l-split { grid-template-columns: minmax(0, 1fr); gap: 40px; }
   .l-page h2 { max-width: 24ch; }
+  .l-team__photo { min-height: 0; aspect-ratio: 3 / 2; }
   .l-steps { grid-template-columns: minmax(0, 1fr); }
   .l-steps article { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: var(--pad); }
   .l-steps__pic { grid-row: span 2; margin: 0; }
@@ -316,6 +328,9 @@ body { margin: 0; background: var(--canvas); color: var(--ink); }
   .l-steps article { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; }
   .l-steps__pic { grid-row: auto; height: 220px; margin-bottom: 8px; }
   .l-lane__name i { margin-left: 0; flex-basis: 100%; }
+  .l-team { margin-top: 32px; }
+  .l-team__photo { aspect-ratio: 5 / 4; }
+  .l-people__name span { margin-left: 0; flex-basis: 100%; }
   .l-list li { grid-template-columns: minmax(0, 1fr); }
   .l-foot__cta { padding-bottom: 48px; }
   .l-foot__cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
