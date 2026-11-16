@@ -189,7 +189,7 @@ body { margin: 0; background: var(--canvas); color: var(--ink); }
 .l-fold { --face: var(--band); position: relative; height: 440px; border-radius: var(--r-l); border: 1px solid var(--line-soft); background: var(--canvas); overflow: hidden; cursor: default; }
 .l-sec--band .l-fold { --face: var(--canvas); background: var(--line-soft); }
 .l-fold__pic { position: absolute; left: 0; right: 0; top: 0; height: 270px; }
-.l-fold__pic > img { width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+.l-fold__pic > img { width: 100%; height: 100%; object-fit: cover; object-position: top center; } /* each picture is cut centred on its part of the tool */
 .l-fold__live { height: 100%; padding: 22px 22px 16px; background: var(--line-soft); display: grid; }
 .l-fold__live .l-yb > b { box-shadow: none; }
 .l-fold__live .l-rc { min-height: 0; gap: 10px; }

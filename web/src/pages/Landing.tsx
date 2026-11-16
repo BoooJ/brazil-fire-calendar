@@ -205,11 +205,11 @@ export default function Landing() {
         <section className="l-hero-more" aria-label="The tool">
           <div className="l-wrap">
             <figure className="l-shot l-hero__shot">
-              <img src={shotHero} alt="The Brazil Fire Calendar tool: a one-line answer about this month’s fire activity, the burning calendar and the map of the chosen area." width="2160" height="1350" />
+              <img src={shotHero} alt="The Brazil Fire Calendar tool: this month’s fire activity against a typical month, three quick answers, a typical year with the coming months, and the chosen state on the globe." width="2160" height="1350" />
             </figure>
             <dl className="l-facts">
-              <div><dt>Every month since</dt><dd>January 2003</dd></div>
-              <div><dt>Satellites combined</dt><dd>Two, on one scale</dd></div>
+              <div><dt>Analysed weekly since</dt><dd>January 2003</dd></div>
+              <div><dt>Satellite data integrated</dt><dd>VIIRS and MODIS</dd></div>
               <div><dt>Data source</dt><dd>NASA FIRMS</dd></div>
             </dl>
           </div>
@@ -222,12 +222,14 @@ export default function Landing() {
               <p className="l-eyebrow">The idea</p>
               <h2 id="idea-h"><span>A harmonized dataset</span> from two different instruments.</h2>
               <p className="l-body">
-                NASA has watched Brazil’s fires since 2000 with the MODIS instrument. In 2012, a second
-                instrument, VIIRS, joined it. MODIS sees the ground in 1 km pixels, while VIIRS uses 375 m pixels,
-                so it catches many smaller fires that MODIS misses. Without context, this can look like fire suddenly
-                increased when VIIRS started working. That is why we need to bring both onto one scale. In the chart,
-                the bars show what the satellites reported each year. They jump in 2018, when a newer VIIRS
-                satellite, NOAA-20, arrived.
+                NASA has monitored active fires over Brazil since the year 2000 with the MODIS sensor aboard the
+                Terra satellite. In 2012, the VIIRS sensor joined the record. MODIS has a nominal spatial resolution
+                of 1 km at nadir; VIIRS achieves 375 m, a pixel about seven times smaller in area, and therefore
+                registers many small and low-intensity fires below the MODIS detection threshold. Combined without
+                correction, the two records show an apparent rise in fire activity that reflects the change of
+                sensor, not a change on the ground. We therefore harmonize both onto a single scale, expressed in
+                VIIRS NOAA-20 equivalents. In the chart, the bars show the detections each sensor reported per year;
+                the step in 2018 marks the start of VIIRS observations from the NOAA-20 satellite.
               </p>
               <a className="l-link" href="#method">How we do it<Arrow /></a>
             </div>
@@ -250,7 +252,7 @@ export default function Landing() {
               <Folder n="02" title="Get the short answer" text="Is fire here running above or below normal for this time of year? One line tells you." label="the tool’s one-line answer for the chosen area.">
                 <img src={shotHow2} alt="" loading="lazy" />
               </Folder>
-              <Folder n="03" title="Read the calendar" text="Every month since 2003, coloured by how much fire satellites saw. The season, its peak and the unusual years stand out." label="the tool’s burning calendar.">
+              <Folder n="03" title="Read the calendar" text="Every week since 2003, coloured by how much fire satellites saw. The season, its peak and the unusual years stand out." label="the tool’s burning calendar.">
                 <img src={shotHow3} alt="" loading="lazy" />
               </Folder>
             </ol>
