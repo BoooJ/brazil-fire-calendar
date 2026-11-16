@@ -8,8 +8,8 @@ import { savePng, type EChartHandle } from './EChart';
 import type { Mode } from './FireCalendar';
 import { MON, MONTHS, compact as short, num, pctLong, pctShort } from '../format';
 
-/** how the main number is named on the page (the API's unit.main still says "fire-days", its old name) */
-const UNIT = 'hotspots (satellite-adjusted)';
+/** how the main number is named on the page (the API's unit.main still uses its old name) */
+const UNIT = 'hotspots';
 
 interface Props {
   data: Analysis;
@@ -19,6 +19,8 @@ interface Props {
   onSelect: (item: CalendarItem) => void;
   /** part of the file names, e.g. "pantanal" */
   slug: string;
+  /** the chosen area's name, for the chart titles */
+  place: string;
   onCsv: () => void;
 }
 
@@ -34,7 +36,7 @@ function useCompact() {
   return c;
 }
 
-export default function Detailed({ data, mode, onMode, selected, onSelect, slug, onCsv }: Props) {
+export default function Detailed({ data, mode, onMode, selected, onSelect, slug, place, onCsv }: Props) {
   const compact = useCompact();
   const calRef = useRef<EChartHandle>(null);
   const [table, setTable] = useState(false);
@@ -55,13 +57,13 @@ export default function Detailed({ data, mode, onMode, selected, onSelect, slug,
       <section className="cal" aria-labelledby="hm-title">
         <div className="cal-head">
           <div>
-            <h2 id="hm-title">Burning calendar</h2>
-            <p className="muted">Every month since {firstYear}, as a heatmap. {window.matchMedia('(pointer: coarse)').matches ? 'Tap' : 'Click'} a month for details and the map.</p>
+            <h2 id="hm-title">Fire calendar</h2>
+            <p className="muted">One cell per month since {firstYear}. Darker means more fire.</p>
           </div>
           <div className="tools">
             <div className="seg seg-dark" role="radiogroup" aria-label="Calendar mode">
-              <button role="radio" aria-checked={mode === 'counts'} className={mode === 'counts' ? 'on' : ''} onClick={() => onMode('counts')}>Counts</button>
-              <button role="radio" aria-checked={mode === 'vs'} className={mode === 'vs' ? 'on' : ''} onClick={() => onMode('vs')}>vs Average</button>
+              <button role="radio" aria-checked={mode === 'counts'} className={mode === 'counts' ? 'on' : ''} onClick={() => onMode('counts')}>Intensity</button>
+              <button role="radio" aria-checked={mode === 'vs'} className={mode === 'vs' ? 'on' : ''} onClick={() => onMode('vs')}>vs typical</button>
             </div>
             {/* view switch beside the mode, then the downloads; the label says what you get, so no pressed state */}
             <button className="btn btn-ghost" onClick={() => setTable((t) => !t)} aria-label={table ? 'Show the heatmap' : 'Show as a table'}>{table ? 'Heatmap' : 'Table'}</button>
@@ -88,15 +90,15 @@ export default function Detailed({ data, mode, onMode, selected, onSelect, slug,
           <HeatmapLegend mode={mode} maxCount={maxCount} />
         </div>
         <p className="fineprint">
-          Numbers are {UNIT}. * year not complete. The top row is the {period} average.
+          Top row: {period} average · * year in progress
         </p>
       </section>
 
       <section aria-labelledby="typ-title">
         <div className="cal-head">
           <div>
-            <h2 id="typ-title">Typical year</h2>
-            <p className="muted">The usual monthly range ({period}) against {data.cards.ref_year}. A hollow point: month not finished.</p>
+            <h2 id="typ-title">Hotspots in {place} by month</h2>
+            <p className="muted">Usual range ({period}) vs {data.cards.ref_year}. Hollow point: month in progress.</p>
           </div>
           <button className="btn btn-ghost" onClick={() => savePng(typRef.current, `typical-year-${slug}.png`)} aria-label="Download the typical year chart as a PNG image">PNG</button>
         </div>
@@ -108,8 +110,8 @@ export default function Detailed({ data, mode, onMode, selected, onSelect, slug,
       <section aria-labelledby="yr-title">
         <div className="cal-head">
           <div>
-            <h2 id="yr-title">Year by year: raw against corrected</h2>
-            <p className="muted">The bars jump when VIIRS arrives (2018). The corrected line does not. A hollow point: year not finished.</p>
+            <h2 id="yr-title">Year by year</h2>
+            <p className="muted">Raw satellite detections (bars) jump when VIIRS arrives in 2018; adjusted hotspots (line) don't. Hollow point: year in progress.</p>
           </div>
           <button className="btn btn-ghost" onClick={() => savePng(yrRef.current, `year-by-year-${slug}.png`)} aria-label="Download the year-by-year chart as a PNG image">PNG</button>
         </div>
@@ -129,15 +131,15 @@ function CalendarTable({ data, mode, onPick, period }: { data: Analysis; mode: M
   return (
     <>
     {/* the words sit outside the scrolling box, so a phone shows them whole; the caption stays for screen readers */}
-    <p className="cal-table-note" aria-hidden="true">{mode === 'counts' ? 'Hotspots' : 'Compared with the average'} per month, * provisional. Top row: the {period} average. Choose a month for details and the map.</p>
+    <p className="cal-table-note" aria-hidden="true">{mode === 'counts' ? 'Hotspots' : 'vs typical'} per month · top row: {period} average · * provisional</p>
     <div className="cal-table-wrap">
       <table className="cal-table">
-        <caption className="sr-only">Burning calendar as a table: {mode === 'counts' ? 'hotspots' : 'compared with the average'} per month, * provisional; first row: the {period} average; last column: the year's total. Choose a month for details and the map.</caption>
+        <caption className="sr-only">Fire calendar as a table: {mode === 'counts' ? 'hotspots' : 'compared with the average'} per month, * provisional; first row: the {period} average; last column: the year's total. Choose a month for details and the map.</caption>
         <thead><tr><th scope="col">Year</th>{MON.map((m) => <th scope="col" key={m}>{m}</th>)}<th scope="col">Total</th></tr></thead>
         <tbody>
           {/* the same average row as the heatmap: the API's monthly means, as they are */}
           <tr className="cal-table-avg">
-            <th scope="row">{mode === 'counts' ? 'Average' : 'Average count'}</th>
+            <th scope="row">Average</th>
             {MON.map((m, i) => {
               const a = data.average_by_month.find((x) => x.month === i + 1);
               return <td key={m}>{a?.mean == null ? '–' : short(a.mean)}</td>;

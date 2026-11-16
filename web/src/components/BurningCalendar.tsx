@@ -1,4 +1,4 @@
-// The burning calendar as a dense heatmap (detailed view): every year on one screen, and a PNG to download.
+// The fire calendar as a dense heatmap (detailed view): every year on one screen, and a PNG to download.
 // The quick view draws the same months as marked days: see FireCalendar.tsx.
 import { forwardRef, useMemo } from 'react';
 import type * as echarts from 'echarts';
@@ -96,18 +96,17 @@ export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningC
           const d = p.data as any;
           if (d._avg) {
             const a = d._avg as MonthAverage;
-            return `<b>${MONTHS[a.month - 1]}, typical</b> <span style="opacity:.6">(${period})</span><br/>Mean ${num(a.mean)} · median ${num(a.median)}<br/>Usual range ${num(a.p10)}–${num(a.p90)}` +
-              '';
+            return `<b>${MONTHS[a.month - 1]}, average</b> <span style="opacity:.6">(${period})</span><br/>Mean ${num(a.mean)} · median ${num(a.median)}<br/>Usual range ${num(a.p10)}–${num(a.p90)}`;
           }
           const r = d._row as YearItem;
-          return `<b>${r.year} total</b><br/>${num(r.count)} ${unitMain}${r.complete ? '' : '<br/><i>Year not finished</i>'}${r.provisional ? '<br/><i>Includes provisional data</i>' : ''}`;
+          return `<b>${r.year} total</b><br/>${num(r.count)} ${unitMain}${r.complete ? '' : '<br/><i>Year in progress</i>'}${r.provisional ? '<br/><i>Partly provisional</i>' : ''}`;
         }
         const c = cellIndex.get(`${years[y - 1]}-${x + 1}`);
         if (!c) return '';
         const flags = [
-          c.partial ? `◐ Partial: first ${c.days_covered} days` : '',
-          c.provisional ? '▨ Provisional (near-real-time data)' : '',
-          c.uncertain ? '⁙ Uncertain (few fires or a large conversion error)' : '',
+          c.partial ? `First ${c.days_covered} days` : '',
+          c.provisional ? 'Provisional' : '',
+          c.uncertain ? 'Uncertain: few fires' : '',
         ].filter(Boolean);
         const det = SATELLITES.map((s) =>
           c.detected[s] == null
@@ -116,10 +115,10 @@ export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningC
         ).join('<br/>');
         return `<div style="min-width:210px"><b style="font-size:14px">${MONTHS[c.month - 1]} ${c.year}</b><br/>
           <span style="font-size:20px;font-weight:700">${num(c.count)}</span> <span style="opacity:.7">${unitMain}</span><br/>
-          ${pctShort(c.vs_avg_pct)} vs average${c.rank != null ? ` · ${ordinal(c.rank)} of ${c.of_years} years` : ''}
+          ${pctShort(c.vs_avg_pct)} vs typical${c.rank != null ? ` · ${ordinal(c.rank)} of ${c.of_years}` : ''}
           ${flags.length ? `<div style="margin-top:6px;color:#b64400">${flags.join('<br/>')}</div>` : ''}
           <div style="margin-top:6px;font-size:12px;opacity:.85">Satellite detections<br/>${det}</div>
-          <div style="margin-top:6px;font-size:11px;opacity:.55">Click for details and the map</div></div>`;
+          <div style="margin-top:6px;font-size:11px;opacity:.55">Click: details and map</div></div>`;
       },
     };
 
@@ -179,7 +178,7 @@ export const BurningCalendar = forwardRef<EChartHandle, Props>(function BurningC
       ref={ref}
       option={option}
       height={height}
-      ariaLabel={`Burning calendar: ${years.length} years by 12 months of ${unitMain}. Hover a cell for numbers, click it for details and the map.`}
+      ariaLabel={`Fire calendar: ${years.length} years by 12 months of ${unitMain}. Hover a cell for numbers, click it for details and the map.`}
       onEvents={{
         click: (p: any) => {
           if (p.seriesIndex !== 0) return;
@@ -207,15 +206,9 @@ export function HeatmapLegend({ mode, maxCount }: { mode: Mode; maxCount: number
           ))}
         </div>
         <div className="hm-caption">
-          {mode === 'counts' ? 'Hotspots per month, satellite-adjusted (log scale)' : '▼ below average · ▲ above average (ratio to the multi-year mean)'}
+          {mode === 'counts' ? 'Hotspots per month (log scale)' : '▼ lower · ▲ higher than typical'}
         </div>
       </div>
-      <ul className="hm-keys">
-        <li><span className="swatch swatch-nofire" />No fires</li>
-        <li><span className="swatch swatch-provisional" />Provisional (striped)</li>
-        <li><span className="swatch swatch-uncertain" />Uncertain (faded, dotted)</li>
-        <li><span className="swatch swatch-partial" />Partial: month in progress</li>
-      </ul>
     </div>
   );
 }

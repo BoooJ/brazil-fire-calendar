@@ -1,4 +1,4 @@
-// The two charts of the detailed view: the typical year, and raw hotspots vs the corrected count, year by year.
+// The two charts of the detailed view: hotspots by month (usual range vs this year), and satellite detections vs adjusted hotspots, year by year.
 import { forwardRef, useMemo } from 'react';
 import type * as echarts from 'echarts';
 import { CHART_BG, CHART_FONT, EChart, type EChartHandle } from './EChart';
@@ -25,7 +25,7 @@ export const TypicalYearChart = forwardRef<EChartHandle, { average: MonthAverage
     const option = useMemo<echarts.EChartsOption>(() => {
       const byMonth = MON.map((_, i) => average.find((a) => a.month === i + 1) ?? null);
       const refCells = MON.map((_, i) => calendar.find((c) => c.year === refYear && c.month === i + 1) ?? null);
-      const band = compact ? 'Usual range' : `Usual range (p10–p90, ${period})`; // a phone: the legend stays on one line
+      const band = compact ? 'Usual range' : `Usual range (${period})`; // a phone: the legend stays on one line
       return {
         animationDuration: 500,
         tooltip: {
@@ -59,7 +59,7 @@ export const TypicalYearChart = forwardRef<EChartHandle, { average: MonthAverage
         ],
       };
     }, [average, calendar, refYear, period, compact]);
-    return <EChart ref={ref} option={option} height={compact ? 300 : 280} ariaLabel={`Typical year: usual monthly range compared with ${refYear}`} />;
+    return <EChart ref={ref} option={option} height={compact ? 300 : 280} ariaLabel={`Hotspots by month: usual range compared with ${refYear}`} />;
   },
 );
 
@@ -71,15 +71,15 @@ export const YearlyChart = forwardRef<EChartHandle, { yearly: YearItem[]; unitMa
       formatter: (ps: any) => {
         const r = yearly[ps[0].dataIndex];
         const raw = SATELLITES.map((s) => (r.detected[s] == null ? '' : `${SAT_NAMES[s]}: ${num(r.detected[s])}<br/>`)).join('');
-        return `<b>${r.year}</b>${r.complete ? '' : ' <i>(not finished)</i>'}<br/><b style="color:#d9480f">Corrected: ${num(r.count)}</b> ${unitMain}<br/><span style="opacity:.8">Satellite detections:</span><br/>${raw}`;
+        return `<b>${r.year}</b>${r.complete ? '' : ' <i>(in progress)</i>'}<br/><b style="color:#d9480f">${num(r.count)} ${unitMain}</b><br/><span style="opacity:.8">Satellite detections:</span><br/>${raw}`;
       },
     },
-    legend: { ...legendBase, data: [...SATELLITES.map((s) => SAT_NAMES[s]), 'Corrected (harmonized)'] },
+    legend: { ...legendBase, data: [...SATELLITES.map((s) => SAT_NAMES[s]), 'Hotspots (adjusted)'] },
     grid: { top: compact ? 96 : 56, left: compact ? 44 : 52, right: compact ? 40 : 52, bottom: 24 }, // a phone: the legend takes two or three lines
     xAxis: { type: 'category', data: yearly.map((r) => String(r.year)), axisLabel: axisText, axisLine: { lineStyle: { color: '#d6d6d6' } } },
     yAxis: [
       { type: 'value', name: 'satellite detections', nameTextStyle: { ...axisText, align: 'left' }, axisLabel: { ...axisText, formatter: thousands }, splitLine: split },
-      { type: 'value', name: compact ? 'corrected' : 'hotspots (adjusted)', nameTextStyle: { ...axisText, color: EMBER, align: 'right' }, axisLabel: { ...axisText, color: EMBER, formatter: thousands }, splitLine: { show: false } },
+      { type: 'value', name: 'hotspots', nameTextStyle: { ...axisText, color: EMBER, align: 'right' }, axisLabel: { ...axisText, color: EMBER, formatter: thousands }, splitLine: { show: false } },
     ],
     series: [
       ...SATELLITES.map((s) => ({
@@ -87,7 +87,7 @@ export const YearlyChart = forwardRef<EChartHandle, { yearly: YearItem[]; unitMa
         itemStyle: { color: SAT_COLOR[s], opacity: 0.85 }, barWidth: '62%',
       })),
       {
-        name: 'Corrected (harmonized)', type: 'line' as const, yAxisIndex: 1,
+        name: 'Hotspots (adjusted)', type: 'line' as const, yAxisIndex: 1,
         // a year not finished is a hollow point (yellow ring), so its lower total does not read as a drop
         data: yearly.map((r) => (r.complete ? r.count : { value: r.count, itemStyle: { color: CHART_BG, borderColor: EMBER, borderWidth: 2 } })),
         lineStyle: { color: EMBER, width: 3 }, itemStyle: { color: EMBER, borderColor: CHART_BG, borderWidth: 2 }, symbol: 'circle', symbolSize: 7, z: 5,

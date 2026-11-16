@@ -542,14 +542,7 @@ button.day:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px;
 .hm-ticks span:first-child { transform: none; }
 .hm-ticks span:last-child { transform: translateX(-100%); }
 .hm-caption { font-size: var(--t-xs); color: var(--ink-2); margin-top: 2px; }
-.hm-keys { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: var(--t-sm); color: var(--ink-2); }
-.hm-keys li { display: inline-flex; align-items: center; gap: 6px; }
-.swatch { width: 18px; height: 14px; border-radius: 3px; background-color: #f2682a; }
-.swatch-nofire { background-color: var(--soft); box-shadow: inset 0 0 0 1px var(--line-strong); }
 /* stripes and dots as tiny SVG tiles (flat marks, as in the heatmap's cells) */
-.swatch-provisional { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Cpath d='M-1 7 7 -1M-1 1 1 -1M5 7 7 5' stroke='%23fff' stroke-opacity='.8' stroke-width='1.6'/%3E%3C/svg%3E"); }
-.swatch-uncertain { opacity: 0.6; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Ccircle cx='2.5' cy='2.5' r='1' fill='%23fff' fill-opacity='.85'/%3E%3C/svg%3E"); }
-.swatch-partial { opacity: 0.5; }
 .cal-table-wrap { position: relative; overflow-x: auto; border-radius: var(--r-md); border: 1px solid var(--line); }
 .cal-table { width: 100%; border-collapse: collapse; font-size: var(--t-sm); font-variant-numeric: tabular-nums; }
 .cal-table-note { margin: 0 0 var(--s-2); font-size: var(--t-sm); color: var(--ink-2); }

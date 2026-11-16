@@ -500,7 +500,7 @@ export default function Tool() {
                       </section>
                     ) : detailed ? (
                       <Suspense fallback={<section><div className="sk sk-block" aria-busy="true" aria-label="Loading the charts" /></section>}>
-                        <Detailed data={data} mode={mode} onMode={setMode} selected={selected} onSelect={select} slug={slug} onCsv={calendarCsv} />
+                        <Detailed data={data} mode={mode} onMode={setMode} selected={selected} onSelect={select} slug={slug} place={area.label} onCsv={calendarCsv} />
                       </Suspense>
                     ) : (
                       <FireCalendar data={data} selected={selected} onSelect={select} onOpenMap={showOnMap} jump={jump} mode={mode} onMode={setMode} onCsv={calendarCsv} />
