@@ -18,7 +18,7 @@ import ErrorNote from '../components/ErrorNote';
 import ForecastPanel from '../components/ForecastPanel';
 import DateControls, { FIRST_YEAR } from '../components/Controls';
 import { KeyCards, Reliability, SourcesDialog } from '../components/Panels';
-import { Flame } from '../components/Brand';
+import { Wordmark } from '../components/Brand';
 import type { DrawMode } from '../components/MapView';
 import { CHANCE_STOPS, FRP_STOPS } from '../colors';
 import { MON, MONTHS, dateRange, num, todayIso } from '../format';
@@ -85,6 +85,8 @@ export default function Tool() {
 
   useEffect(() => {
     // the loading screen stays until the location step is complete: presets, status and the globe's map
+    // the loading screen and the landing page are dark, the tool is light: the browser's own bar follows
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#f5f5f7');
     splashUntil(
       getPresets().then(setPresets).catch(() => setPresets([])),
       getStatus().then(setStatus).catch(() => setStatus(null)),
@@ -322,8 +324,8 @@ export default function Tool() {
   return (
     <div className={'tool' + (stage === 'map' ? ' tool--map' : '')}>
       <header className={'topbar' + (area ? ' topbar--area' : '')}>
-        <a className="brand" href="#/">
-          <Flame /> <span className="brand-text">Brazil Fire Calendar</span>
+        <a className="brand" href="#/" aria-label="FOGO, Fire Occurrence Grid Outlook: to the start page">
+          <Wordmark />
         </a>
         <div className="topbar-actions">
           <button className="toplink" onClick={() => setShowSources(true)}>Data sources</button>
@@ -603,7 +605,7 @@ function Briefing({ data, place, detailed, coverage }: { data: Analysis; place: 
         </>
       ) : (
         <>
-          <h3>Brazil Fire Calendar can make mistakes</h3>
+          <h3>FOGO can make mistakes</h3>
           <p className="muted">
             {data.reliability.median_error_pct != null && <>Our adjusted counts are typically off by about ±{data.reliability.median_error_pct}%. </>}
             {data.reliability.validated_years.length > 0 && <>Checked against {data.reliability.validated_years.join(', ')}. </>}

@@ -117,7 +117,9 @@ abbr { text-decoration: none; }
 .topbar-actions { display: flex; align-items: center; gap: var(--s-2); min-width: 0; }
 .toplink { display: none; border: 0; background: none; min-height: 44px; padding: 0 var(--s-3); font-size: var(--t-base); font-weight: 500; color: var(--ink-2); transition: color 0.18s ease; }
 .toplink:hover { color: var(--ink); }
-.brand { display: inline-flex; align-items: center; gap: var(--s-2); min-height: 44px; font-weight: 600; text-decoration: none; letter-spacing: -0.015em; white-space: nowrap; }
+/* the FOGO wordmark in the logo's orange (the artwork: src/brand.ts) */
+.brand { flex: none; display: inline-flex; align-items: center; min-height: 44px; color: #f2682a; text-decoration: none; }
+.brand svg { display: block; width: auto; height: 22px; overflow: visible; }
 .pill { display: inline-flex; align-items: center; gap: var(--s-2); min-height: 40px; padding: 0 var(--s-4); border-radius: var(--r-pill); border: 1px solid var(--line-strong); background: var(--card); font-size: var(--t-base); font-weight: 550; min-width: 0; transition: border-color 0.18s ease; }
 .pill:hover { border-color: var(--edge); }
 .pill svg { flex: none; color: var(--fire); }
@@ -628,10 +630,10 @@ button.day:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px;
       .legend { margin-left: 0; }
   .states { max-height: 280px; }
 }
-/* small phones with an area chosen: the name folds to the flame so the area name in the pill is readable */
+/* small phones with an area chosen: the wordmark shrinks a little so the area name in the pill is readable */
 @media (max-width: 519px) {
-  .topbar--area .brand-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  .topbar--area .pill-text { max-width: calc(100vw - 190px); }
+  .topbar--area .brand svg { height: 20px; }
+  .topbar--area .pill-text { max-width: calc(100vw - 240px); }
 }
 @media (min-width: 600px) and (max-width: 899px) {
   .globe-wrap { height: 380px; }

@@ -1,9 +1,33 @@
-/** The flame mark beside the name, on both pages. */
-export function Flame({ size = 20 }: { size?: number }) {
+// FOGO's logo on both pages: the seal, the FOGO wordmark and the full name. The artwork lives in ../brand.ts
+// (plain SVG, also written into the loading screen by vite.config.ts). Each mark takes the text colour around it:
+// set `color` (the logo's orange is #f2682a) and a width or height in CSS.
+import { FULL_NAME, SEAL, WORDMARK, type Mark } from '../brand';
+
+interface Props {
+  className?: string;
+  /** Read aloud as an image. Leave it out when the link or heading around the mark already names it. */
+  label?: string;
+}
+
+function MarkSvg({ mark, className, label }: Props & { mark: Mark }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
-      <path fill="#ff6a1f" d="M12 2c1 3.5-1.5 5-3 7-1.6 2-2.5 3.7-2.5 6A5.5 5.5 0 0 0 12 20.5 5.5 5.5 0 0 0 17.5 15c0-2-.8-3.3-1.8-4.6-.3 1.3-1 2.2-2 2.6.6-3.5-.2-7.5-1.7-11z" />
-      <path fill="#ffd166" d="M12 20.5c-1.7 0-3-1.3-3-3 0-1.5 1-2.5 3-4.5 2 2 3 3 3 4.5 0 1.7-1.3 3-3 3z" />
-    </svg>
+    <svg
+      className={className}
+      viewBox={mark.viewBox}
+      width={mark.width}
+      height={mark.height}
+      role={label ? 'img' : undefined}
+      aria-label={label}
+      aria-hidden={label ? undefined : true}
+      focusable="false"
+      dangerouslySetInnerHTML={{ __html: mark.body }}
+    />
   );
 }
+
+/** The round seal: rings, "Fire Occurrence Grid Outlook" around, the flame and FOGO. */
+export const Seal = (p: Props) => <MarkSvg mark={SEAL} {...p} />;
+/** "FOGO" on its own. */
+export const Wordmark = (p: Props) => <MarkSvg mark={WORDMARK} {...p} />;
+/** "FIRE OCCURRENCE GRID OUTLOOK" on one line. */
+export const FullName = (p: Props) => <MarkSvg mark={FULL_NAME} {...p} />;

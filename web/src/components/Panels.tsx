@@ -53,7 +53,7 @@ export function Reliability({ data, status }: { data: Analysis; status: Status |
   const r = data.reliability;
   return (
     <section className="reliability" aria-labelledby="rel-title">
-      <h2 id="rel-title">Brazil Fire Calendar can make mistakes</h2>
+      <h2 id="rel-title">FOGO can make mistakes</h2>
       <dl className="kc kc-2">
         <div>
           <dt>Typical conversion error</dt>

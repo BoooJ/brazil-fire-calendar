@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import '../landing/landing.css';
 import { getShowcase, type Showcase } from '../api';
 import { RawVsCorrected, StepConvert, StepGrid, StepProvisional, Timeline } from '../landing/visuals';
-import { Flame } from '../components/Brand';
+import { FullName, Seal } from '../components/Brand';
 import shotHero from '../landing/pictures/hero.png';
 import shotHow1 from '../landing/pictures/how-1.png';
 import shotHow2 from '../landing/pictures/how-2.png';
@@ -171,16 +171,23 @@ export default function Landing() {
   return (
     <div className="l-page">
       <a className="l-skip" href="#top">Skip to content</a>
+      {/* the top bar, laid out like nasa.gov's: everything to the left, the seal in the middle, Calendar in the right corner */}
       <header className={'l-nav' + (menu ? ' is-open' : '')}>
-        <div className="l-wrap l-nav__bar">
-          <a className="l-logo" href="#top"><Flame size={20} />Brazil Fire Calendar</a>
-          <nav className="l-nav__links" id="l-menu" aria-label="Main">
-            {NAV.map(([href, label]) => <a key={href} href={href} onClick={() => setMenu(false)}>{label}</a>)}
-          </nav>
-          <Go small>Open the calendar</Go>
-          <button className="l-nav__toggle" type="button" aria-expanded={menu} aria-controls="l-menu" aria-label="Menu" onClick={() => setMenu(!menu)}>
-            <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d={menu ? 'M4 4l10 10M14 4L4 14' : 'M2 5.5h14M2 12.5h14'} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
-          </button>
+        <div className="l-nav__bar">
+          <div className="l-nav__left">
+            <button className="l-nav__toggle" type="button" aria-expanded={menu} aria-controls="l-menu" aria-label="Menu" onClick={() => setMenu(!menu)}>
+              <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d={menu ? 'M4 4l10 10M14 4L4 14' : 'M2 5.5h14M2 12.5h14'} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
+            </button>
+            {/* the full name beside the links where there is room; the seal is the link that names the site */}
+            <a className="l-nav__name" href="#top" tabIndex={-1} aria-hidden="true"><FullName /></a>
+            <nav className="l-nav__links" id="l-menu" aria-label="Main">
+              {NAV.map(([href, label]) => <a key={href} href={href} onClick={() => setMenu(false)}>{label}</a>)}
+            </nav>
+          </div>
+          <a className="l-nav__seal" href="#top" aria-label="FOGO, Fire Occurrence Grid Outlook: back to the top"><Seal /></a>
+          <div className="l-nav__right">
+            <Go small>Calendar</Go>
+          </div>
         </div>
       </header>
 
@@ -205,7 +212,7 @@ export default function Landing() {
         <section className="l-hero-more" aria-label="The tool">
           <div className="l-wrap">
             <figure className="l-shot l-hero__shot">
-              <img src={shotHero} alt="The Brazil Fire Calendar tool: this month’s fire activity against a typical month, three quick answers, a typical year with the coming months, and the chosen state on the globe." width="2160" height="1350" />
+              <img src={shotHero} alt="The FOGO tool: this month’s fire activity against a typical month, three quick answers, a typical year with the coming months, and the chosen state on the globe." width="2160" height="1350" />
             </figure>
             <dl className="l-facts">
               <div><dt>Analysed weekly since</dt><dd>January 2003</dd></div>
@@ -292,7 +299,7 @@ export default function Landing() {
               </div>
             </div>
             <figure className="l-shot l-tool__shot">
-              <img src={shotTool} alt="The tool’s burning calendar for one area: a row per year, a coloured brick per month, next to the map." loading="lazy" width="2160" height="1350" />
+              <img src={shotTool} alt="The tool’s fire calendar for one area: a row per year, a coloured brick per week, next to the map." loading="lazy" width="2160" height="1350" />
             </figure>
           </div>
         </section>
@@ -372,7 +379,7 @@ export default function Landing() {
           </div>
           <div className="l-foot__cols">
             <div className="l-foot__brand">
-              <a className="l-logo" href="#top"><Flame size={20} />Brazil Fire Calendar</a>
+              <a className="l-foot__logo" href="#top" aria-label="FOGO, Fire Occurrence Grid Outlook: back to the top"><Seal /><FullName /></a>
               <p>Brazil’s fire history from two NASA satellites, on one scale. Built for the NASA Space Apps Challenge 2026.</p>
             </div>
             <div><h3>Site</h3><ul>{NAV.map(([href, label]) => <li key={href}><a href={href}>{label}</a></li>)}</ul></div>

@@ -11,7 +11,9 @@
   --font: 'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --mono: 'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
   --ease: cubic-bezier(.22, 1, .36, 1);
-  --nav-h: 64px;
+  --nav-h: 76px;
+  /* the logo's own colours: its orange, and the warm black it was drawn on (the top bar) */
+  --logo: #f2682a; --logo-ground: #16110f;
   color-scheme: light;
 }
 html { background: var(--canvas); scroll-padding-top: 24px; -webkit-text-size-adjust: 100%; }
@@ -41,25 +43,48 @@ body { margin: 0; background: var(--canvas); color: var(--ink); }
 .l-body { color: var(--ink-2); max-width: 54ch; text-wrap: pretty; }
 .l-body strong { color: var(--ink); }
 
-/* ---------- nav ---------- */
-.l-nav { position: sticky; top: 0; z-index: 20; background: var(--canvas); border-bottom: 1px solid var(--line-soft); }
-.l-nav__bar { display: flex; align-items: center; gap: 24px; height: var(--nav-h); }
-.l-logo { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 17px; letter-spacing: -0.02em; text-decoration: none; white-space: nowrap; }
-.l-nav__links { display: flex; gap: 4px; margin: 0 auto; }
-.l-nav__links a { padding: 8px 12px; border-radius: var(--r-s); font-size: 14px; font-weight: 500; color: var(--ink-2); text-decoration: none; white-space: nowrap; transition: color .2s, background-color .2s; }
-.l-nav__links a:hover { color: var(--ink); background: var(--band); }
-.l-nav__toggle { display: none; width: 40px; height: 40px; place-items: center; border: 1px solid var(--line); border-radius: var(--r-s); background: var(--canvas); color: var(--ink); cursor: pointer; }
-@media (max-width: 899px) {
-  .l-nav__bar { gap: 12px; }
+/* ---------- nav ----------
+   The top bar, laid out like nasa.gov's: a dark bar from edge to edge, everything you can press on the left,
+   the seal in the middle, Calendar in the right corner. The three columns keep the seal centred whatever
+   stands beside it. Narrower screens drop the full name first, then fold the links into the menu button. */
+.l-nav { position: sticky; top: 0; z-index: 20; background: var(--logo-ground); color: #fff; }
+.l-nav__bar { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 16px; height: var(--nav-h); padding: 0 clamp(16px, 2.2vw, 32px); }
+.l-nav__left { display: flex; align-items: center; gap: 20px; min-width: 0; }
+.l-nav__right { display: flex; justify-content: flex-end; min-width: 0; }
+.l-nav :focus-visible { outline-color: #fff; }
+/* the marks take their colour on the <svg>: links on this page inherit theirs (.l-page a) */
+.l-nav__seal { display: block; border-radius: 50%; transition: transform .25s var(--ease); }
+.l-nav__seal svg { display: block; width: 62px; height: 62px; color: var(--logo); }
+.l-nav__seal:hover { transform: scale(1.05); }
+.l-nav__name { display: none; flex: none; }
+.l-nav__name svg { display: block; width: auto; height: 8.75px; overflow: visible; color: var(--logo); }
+.l-nav__links { display: flex; gap: 2px; }
+.l-nav__links a { padding: 8px 10px; border-radius: var(--r-s); font-size: 14px; font-weight: 500; color: #d9d4d0; text-decoration: none; white-space: nowrap; transition: color .2s, background-color .2s; }
+.l-nav__links a:hover { color: #fff; background: #2c2420; }
+.l-nav__toggle { display: none; flex: none; width: 40px; height: 40px; place-items: center; border: 1px solid #4a403a; border-radius: var(--r-s); background: transparent; color: #fff; cursor: pointer; }
+/* on the dark bar the start button turns over: a white block, ink label, the same ember square */
+.l-nav .l-go { background: #fff; color: var(--ink) !important; }
+@media (min-width: 1400px) { .l-nav__name { display: block; } }
+@media (min-width: 1520px) { .l-nav__name svg { height: 10px; } }
+@media (min-width: 1680px) { .l-nav__left { gap: 28px; } .l-nav__name svg { height: 11px; } }
+@media (max-width: 999px) {
+  .l-nav__left { gap: 14px; }
   .l-nav__toggle { display: grid; }
-  .l-nav .l-go { margin-left: auto; }
-  .l-nav__links { display: none; position: absolute; left: 0; right: 0; top: var(--nav-h); margin: 0; padding: 8px 20px 16px; flex-direction: column; background: var(--canvas); border-bottom: 1px solid var(--line-soft); }
+  .l-nav__name { display: block; }
+  .l-nav__links { display: none; position: absolute; left: 0; right: 0; top: var(--nav-h); padding: 8px 20px 16px; flex-direction: column; gap: 0; background: var(--logo-ground); border-top: 1px solid #2c2420; }
   .l-nav.is-open .l-nav__links { display: flex; }
-  .l-nav__links a { padding: 14px 12px; font-size: 17px; color: var(--ink); }
+  .l-nav__links a { padding: 14px 12px; font-size: 17px; color: #fff; }
 }
-@media (max-width: 559px) {
-  .l-nav .l-go { display: none; }
-  .l-nav__toggle { margin-left: auto; }
+@media (max-width: 639px) {
+  :root { --nav-h: 64px; }
+  .l-nav__bar { gap: 8px; }
+  .l-nav__name { display: none; }
+  .l-nav__seal svg { width: 50px; height: 50px; }
+}
+@media (max-width: 359px) {
+  /* the smallest phones: the button keeps its word and drops the square */
+  .l-nav .l-go { padding: 0 12px; }
+  .l-nav .l-go__sq { display: none; }
 }
 
 /* ---------- buttons ---------- */
@@ -101,6 +126,7 @@ body { margin: 0; background: var(--canvas); color: var(--ink); }
   /* colour change only: the square stays put, the label stays readable */
   .l-go, .l-go__sq, .l-go__arrow, .l-go__chev, .l-go__label, .l-btn, .l-link svg { transition: none; }
   .l-go:is(:hover, :focus-visible) { background: var(--ember-hover); }
+  .l-nav .l-go:is(:hover, :focus-visible) { color: #fff !important; }
   .l-go:is(:hover, :focus-visible) .l-go__sq { width: 40px; background: var(--ink); }
   .l-go--s:is(:hover, :focus-visible) .l-go__sq { width: 30px; }
   .l-go:is(:hover, :focus-visible) .l-go__arrow { opacity: 1; }
@@ -264,7 +290,11 @@ body { margin: 0; background: var(--canvas); color: var(--ink); }
 .l-foot__cta h2 { max-width: none; font-size: clamp(32px, 4.4vw, 56px); line-height: 1.05; letter-spacing: -0.03em; }
 .l-foot__cta .l-lead { margin-top: 12px; }
 .l-foot__cols { display: grid; grid-template-columns: minmax(0, 4fr) repeat(3, minmax(0, 2fr)); gap: 32px var(--gap); padding: 40px 0; border-top: 1px solid var(--line); }
-.l-foot__brand p { margin-top: 12px; font-size: 15px; color: var(--ink-2); max-width: 34ch; }
+.l-foot__logo { display: inline-flex; align-items: center; gap: 16px; max-width: 100%; text-decoration: none; }
+.l-foot__logo svg { color: var(--logo); }
+.l-foot__logo svg:first-child { flex: none; width: 64px; height: 64px; }
+.l-foot__logo svg:last-child { flex: 0 1 auto; min-width: 0; width: 264px; height: auto; overflow: visible; }
+.l-foot__brand p { margin-top: 16px; font-size: 15px; color: var(--ink-2); max-width: 34ch; }
 .l-foot__cols h3 { font: 500 12px/1.4 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 12px; }
 .l-foot__cols ul { display: grid; gap: 8px; font-size: 15px; }
 .l-foot__cols li a { display: inline-flex; align-items: center; text-decoration: none; }
