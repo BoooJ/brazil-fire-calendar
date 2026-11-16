@@ -1,4 +1,4 @@
-/* The landing page (#/): a light, flat page. White canvas, one pale band, ink type, one ember accent.
+/* The landing page (#/): a light, flat page under a dark top bar. White canvas, one pale band, ink type, one ember accent.
    Flat colours only: nothing here blends one colour into another. The tokens match the tool's (src/styles.css). */
 @import '@fontsource-variable/jetbrains-mono';
 
@@ -64,7 +64,9 @@ body { margin: 0; background: var(--canvas); color: var(--ink); }
 .l-nav__toggle { display: none; flex: none; width: 40px; height: 40px; place-items: center; border: 1px solid #4a403a; border-radius: var(--r-s); background: transparent; color: #fff; cursor: pointer; }
 /* on the dark bar the start button turns over: a white block, ink label, the same ember square */
 .l-nav .l-go { background: #fff; color: var(--ink) !important; }
-@media (min-width: 1400px) { .l-nav__name { display: block; } }
+@media (min-width: 1360px) { .l-nav__name { display: block; } }
+/* 1360 to 1519: the name fits beside the links only if they stand a little closer */
+@media (min-width: 1360px) and (max-width: 1519px) { .l-nav__left { gap: 16px; } .l-nav__links a { padding: 8px; } }
 @media (min-width: 1520px) { .l-nav__name svg { height: 10px; } }
 @media (min-width: 1680px) { .l-nav__left { gap: 28px; } .l-nav__name svg { height: 11px; } }
 @media (max-width: 999px) {

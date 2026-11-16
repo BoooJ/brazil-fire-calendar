@@ -1,4 +1,4 @@
-/** The loading screen (#splash in index.html): the name in the middle until the page is really ready,
+/** The loading screen (#splash in index.html): the logo in the middle until the page is really ready,
  *  then it fades away. Each page calls splashUntil() once with what it waits for; a hard cap makes sure
  *  a slow or failed load never keeps the visitor stuck behind it. */
 const CAP_MS = 8000;
