@@ -354,7 +354,7 @@ export default function Landing() {
             <div className="l-split l-split--top">
               <div className="l-col">
                 <p className="l-eyebrow">Team</p>
-                <h2 id="team-h"><span>Who we are.</span> Four people, three crafts, one calendar.</h2>
+                <h2 id="team-h"><span>Who we are.</span> Four people, one calendar.</h2>
               </div>
               <p className="l-col l-body">
                 Brazil Fire Calendar was built in one weekend at the NASA Space Apps Challenge 2026 in
