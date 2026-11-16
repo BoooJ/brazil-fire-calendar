@@ -222,12 +222,14 @@ export default function Landing() {
               <p className="l-eyebrow">The idea</p>
               <h2 id="idea-h"><span>A harmonized dataset</span> from two different instruments.</h2>
               <p className="l-body">
-                NASA has watched Brazil’s fires since 2000 with the MODIS instrument. In 2012, a second
-                instrument, VIIRS, joined it. MODIS sees the ground in 1 km pixels, while VIIRS uses 375 m pixels,
-                so it catches many smaller fires that MODIS misses. Without context, this can look like fire suddenly
-                increased when VIIRS started working. That is why we need to bring both onto one scale. In the chart,
-                the bars show what the satellites reported each year. They jump in 2018, when a newer VIIRS
-                satellite, NOAA-20, arrived.
+                NASA has monitored active fires over Brazil since the year 2000 with the MODIS sensor aboard the
+                Terra satellite. In 2012, the VIIRS sensor joined the record. MODIS has a nominal spatial resolution
+                of 1 km at nadir; VIIRS achieves 375 m, a pixel about seven times smaller in area, and therefore
+                registers many small and low-intensity fires below the MODIS detection threshold. Combined without
+                correction, the two records show an apparent rise in fire activity that reflects the change of
+                sensor, not a change on the ground. We therefore harmonize both onto a single scale, expressed in
+                VIIRS NOAA-20 equivalents. In the chart, the bars show the detections each sensor reported per year;
+                the step in 2018 marks the start of VIIRS observations from the NOAA-20 satellite.
               </p>
               <a className="l-link" href="#method">How we do it<Arrow /></a>
             </div>
