@@ -27,11 +27,6 @@ export function KeyCards({ data }: { data: Analysis }) {
           <dd className="kc-note">1st = most fire</dd>
         </div>
         <div>
-          <dt>Estimated fires</dt>
-          <dd>{c.estimated_fires == null ? '–' : `≈ ${num(c.estimated_fires)}`}</dd>
-          <dd className="kc-note">touching squares = one fire</dd>
-        </div>
-        <div>
           <dt>Peak month</dt>
           <dd>{c.peak_month == null ? '–' : MONTHS[c.peak_month - 1]}</dd>
           <dd className="kc-note">{c.worst_year == null ? 'on average' : <>busiest year: <b>{c.worst_year}</b></>}</dd>
@@ -68,7 +63,6 @@ export function Reliability({ data, status }: { data: Analysis; status: Status |
         <div><dt>Hotspot</dt><dd>A 1 km square with fire on one day, satellite-adjusted.</dd></div>
         <div><dt>Satellite detection</dt><dd>One raw report from one satellite.</dd></div>
         <div><dt>Rank</dt><dd>This month among the same month of every year.</dd></div>
-        <div><dt>Estimated fires</dt><dd>Touching burning squares, counted as one.</dd></div>
         <div><dt>Uncertain</dt><dd>Too few fires to compare reliably.</dd></div>
         <div><dt>Usual range</dt><dd>Where 8 years in 10 fall.</dd></div>
       </dl>
