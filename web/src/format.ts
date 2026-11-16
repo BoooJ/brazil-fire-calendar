@@ -20,7 +20,7 @@ export function pctShort(p: number | null | undefined): string {
   if (p == null) return '–';
   // arrows only outside the ±20% "near average" band (as the legends); inside it a plain sign
   const arrow = p >= 20 ? '▲' : p <= -20 ? '▼' : Math.round(p) > 0 ? '+' : Math.round(p) < 0 ? '−' : '';
-  if (p >= 200) return `${arrow}${(p / 100 + 1).toFixed(p >= 900 ? 0 : 1)}×`;
+  if (p >= 200) return `${arrow}${p >= 900 ? Math.round(p / 100 + 1) : times(p)}×`;
   return `${arrow}${Math.abs(Math.round(p))}%`;
 }
 

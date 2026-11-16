@@ -500,7 +500,7 @@ export default function Tool() {
                       </section>
                     ) : detailed ? (
                       <Suspense fallback={<section><div className="sk sk-block" aria-busy="true" aria-label="Loading the charts" /></section>}>
-                        <Detailed data={data} mode={mode} onMode={setMode} selected={selected} onSelect={select} slug={slug} onCsv={calendarCsv} />
+                        <Detailed data={data} mode={mode} onMode={setMode} selected={selected} onSelect={select} slug={slug} place={area.label} onCsv={calendarCsv} />
                       </Suspense>
                     ) : (
                       <FireCalendar data={data} selected={selected} onSelect={select} onOpenMap={showOnMap} jump={jump} mode={mode} onMode={setMode} onCsv={calendarCsv} />
@@ -512,7 +512,7 @@ export default function Tool() {
                     {detailed && <Reliability data={data} status={status} />}
                     <p className="sheet-disclaimer">Experimental estimate. Not a real forecast.</p>
                     <footer className="sheet-foot">
-                      <p>Data: NASA FIRMS (MODIS C6.1, VIIRS S-NPP and NOAA-20). Map imagery: NASA GIBS, for display only.</p>
+                      <p>Data: NASA FIRMS (MODIS Terra, VIIRS NOAA-20). Map imagery: NASA GIBS, for display only.</p>
                       <button className="btn btn-ghost" onClick={() => setShowSources(true)}>Data sources</button>
                     </footer>
                   </div>
@@ -591,7 +591,7 @@ function Briefing({ data, place, detailed, coverage }: { data: Analysis; place: 
 
       {detailed ? (
         <>
-          <h3>Detections by each satellite this month</h3>
+          <h3>Satellite detections this month</h3>
           <dl className="sats">
             {SATELLITES.map((k) => (
               <div key={k}>

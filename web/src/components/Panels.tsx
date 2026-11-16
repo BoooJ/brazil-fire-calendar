@@ -4,16 +4,13 @@ import { useClosing } from './useClosing';
 import type { Analysis, Status } from '../types';
 import { SAT_NAMES } from '../types';
 import { SAT_COLOR } from '../colors';
-import { MONTHS, dateShort, num, ordinal, pctLong } from '../format';
+import { MONTHS, dateShort, num, ordinal } from '../format';
 
 /** Every number comes from the API (`cards`); nothing is computed here. */
 export function KeyCards({ data }: { data: Analysis }) {
   const c = data.cards;
   const month = MONTHS[c.ref_month - 1];
-  const period = `${month} ${c.ref_year}${c.partial ? `, first ${c.days_covered} days` : ''}`;
-  const p = c.vs_avg_pct;
-  const tone = p == null ? '' : p >= 20 ? ' is-up' : p <= -20 ? ' is-down' : '';
-  const avg = data.average_period ? `${data.average_period.from}–${data.average_period.to}` : null;
+  const period = `${month} ${c.ref_year}`;
   return (
     <section className="keycards" aria-labelledby="key-title">
       <h2 id="key-title">Key numbers</h2>
@@ -22,27 +19,22 @@ export function KeyCards({ data }: { data: Analysis }) {
         <div className="kc-hot">
           <dt>Hotspots</dt>
           <dd>{num(c.count)}</dd>
-          <dd className="kc-note">1 km squares with fire on a day, satellite-adjusted</dd>
-        </div>
-        <div className={'kc-vs' + tone}>
-          <dt>{avg ? `Against the ${avg} average` : 'Against the average'}</dt>
-          <dd>{pctLong(p)}</dd>
-          <dd className="kc-note">{c.partial ? 'the same days in other years' : 'for this month'}</dd>
+          <dd className="kc-note">satellite-adjusted</dd>
         </div>
         <div>
           <dt>Rank</dt>
           <dd>{c.rank == null ? '–' : <>{ordinal(c.rank)}<small> of {c.of_years}</small></>}</dd>
-          <dd className="kc-note">1st = the most hotspots</dd>
+          <dd className="kc-note">1st = most fire</dd>
         </div>
         <div>
           <dt>Estimated fires</dt>
           <dd>{c.estimated_fires == null ? '–' : `≈ ${num(c.estimated_fires)}`}</dd>
-          <dd className="kc-note">burning cells that touch count as one</dd>
+          <dd className="kc-note">touching squares = one fire</dd>
         </div>
         <div>
           <dt>Peak month</dt>
           <dd>{c.peak_month == null ? '–' : MONTHS[c.peak_month - 1]}</dd>
-          <dd className="kc-note">{c.worst_year == null ? 'in a typical year' : <>most active year: <b>{c.worst_year}</b></>}</dd>
+          <dd className="kc-note">{c.worst_year == null ? 'on average' : <>busiest year: <b>{c.worst_year}</b></>}</dd>
         </div>
       </dl>
     </section>
@@ -56,34 +48,29 @@ export function Reliability({ data, status }: { data: Analysis; status: Status |
       <h2 id="rel-title">Brazil Fire Calendar can make mistakes</h2>
       <dl className="kc kc-2">
         <div>
-          <dt>Typical conversion error</dt>
+          <dt>Typical error</dt>
           <dd>{r.median_error_pct == null ? '–' : `±${r.median_error_pct}%`}</dd>
-          <dd className="kc-note">median, on years held out of the method</dd>
         </div>
         <div>
           <dt>Years checked</dt>
           <dd>{r.validated_years.join(', ') || '–'}</dd>
-          <dd className="kc-note">against months seen by two satellites at once</dd>
         </div>
       </dl>
       <p className="muted">{r.note}</p>
       <ul className="points">
-        <li><strong>Why correct at all?</strong> Newer satellites see smaller fires. VIIRS (NOAA-20, 2018 onwards) records many more detections than MODIS for the same burning, so raw counts jump when a satellite is added even if nothing changed on the ground.</li>
-        <li><strong>What we count:</strong> hotspots, the 1 km squares that burned on a given day, converted to one common scale (NOAA-20 equivalent).</li>
+        <li><strong>Why adjust?</strong> VIIRS NOAA-20 (from 2018) sees far more fire than MODIS. We put every year on one scale.</li>
         {status?.final_until && (
-          <li><strong>Provisional:</strong> data after {dateShort(status.final_until)} is NASA's near-real-time version and may still change.</li>
+          <li><strong>Provisional:</strong> data after {dateShort(status.final_until)} may still change.</li>
         )}
       </ul>
       <h3>What the terms mean</h3>
       <dl className="glossary">
-        <div><dt>Satellite detection</dt><dd>One raw report by one satellite. Sharper satellites report the same fire many times.</dd></div>
-        <div><dt>Hotspot</dt><dd>A 1 km square where fire was seen on one day, counted once however many detections fell in it.</dd></div>
-        <div><dt>Corrected count</dt><dd>Hotspots converted to one scale (the NOAA-20 satellite), so every year can be compared.</dd></div>
-        <div><dt>Rank</dt><dd>Where this month stands among the same month of every year. 1st is the most fire.</dd></div>
-        <div><dt>Estimated fires</dt><dd>Burning squares that touch each other, counted as one fire.</dd></div>
-        <div><dt>Provisional</dt><dd>Built on NASA’s near-real-time data, which is replaced by final data about five months later.</dd></div>
-        <div><dt>Uncertain</dt><dd>Very few fires, or a large conversion error: read the comparison with care.</dd></div>
-        <div><dt>Usual range</dt><dd>What 8 years in 10 fall between (the 10th to 90th percentile).</dd></div>
+        <div><dt>Hotspot</dt><dd>A 1 km square with fire on one day, satellite-adjusted.</dd></div>
+        <div><dt>Satellite detection</dt><dd>One raw report from one satellite.</dd></div>
+        <div><dt>Rank</dt><dd>This month among the same month of every year.</dd></div>
+        <div><dt>Estimated fires</dt><dd>Touching burning squares, counted as one.</dd></div>
+        <div><dt>Uncertain</dt><dd>Too few fires to compare reliably.</dd></div>
+        <div><dt>Usual range</dt><dd>Where 8 years in 10 fall.</dd></div>
       </dl>
     </section>
   );

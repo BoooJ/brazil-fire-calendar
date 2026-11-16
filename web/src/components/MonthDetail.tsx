@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { CalendarItem, Coverage, SatelliteKey } from '../types';
 import { SATELLITES, SAT_NAMES } from '../types';
-import { MONTHS, coverageNote, num, ordinal, pctLong } from '../format';
+import { MONTHS, coverageNote, num, ordinal, vsTypicalShort } from '../format';
 import ErrorNote from './ErrorNote';
 import { useClosing } from './useClosing';
 
@@ -50,21 +50,20 @@ export default function MonthDetail({ item, map, onShowMap, onCsv, onClose, cove
       <button ref={closeRef} className="detail-close" onClick={close} aria-label="Close details">×</button>
       <p className="eyebrow">
         {MONTHS[item.month - 1]} {item.year}
-        {item.partial && ` · first ${item.days_covered} days`}
       </p>
       <p className="detail-big">
-        {num(item.count)} <span>hotspots</span>
+        {num(item.count)} <span>{item.count === 1 ? 'hotspot' : 'hotspots'}</span>
       </p>
       <p className="detail-line">
-        {pctLong(item.vs_avg_pct)}
+        {item.vs_avg_pct == null ? 'Nothing to compare with yet' : `${vsTypicalShort(item.vs_avg_pct)}${Math.abs(item.vs_avg_pct) < 20 ? '' : ' than typical'}`}
         {item.rank != null && <> · <span className="nobr">{item.rank === 1 ? 'the most active' : `${ordinal(item.rank)} most active`} {MONTHS[item.month - 1]} of {item.of_years}</span></>}
       </p>
-      <p className="fineprint detail-unit">A hotspot is a 1 km square where a satellite saw fire on one day, adjusted so every satellite counts alike.</p>
+      <p className="fineprint detail-unit">Hotspot: a 1 km square with fire on one day, satellite-adjusted.</p>
       {(item.provisional || item.uncertain || item.partial) && (
         <ul className="flags">
-          {item.partial && <li>Month not finished: compared with the same days in other years.</li>}
-          {item.provisional && <li>Provisional: includes NASA near-real-time data that is replaced by final data about 5 months later.</li>}
-          {item.uncertain && <li>Uncertain: very few fires or a large conversion error.</li>}
+          {item.partial && <li>Month in progress: compared with the same days in other years.</li>}
+          {item.provisional && <li>Provisional: recent data that NASA may still revise.</li>}
+          {item.uncertain && <li>Uncertain: too few fires to compare reliably.</li>}
         </ul>
       )}
       <dl className="sats">
@@ -75,12 +74,12 @@ export default function MonthDetail({ item, map, onShowMap, onCsv, onClose, cove
           </div>
         ))}
       </dl>
-      <p className="fineprint">Raw detections per satellite, before we put them on one scale.</p>
+      <p className="fineprint">Satellite detections, before adjustment.</p>
 
       {map.kind === 'shown' ? (
         <p className="note">
           {map.returned === 0
-            ? 'No detections in this month.'
+            ? 'No satellite detections this month.'
             : map.truncated
               ? `Showing ${num(map.returned)} of ${num(map.total)} satellite detections on the map.`
               : `Showing all ${num(map.total)} satellite detections on the map.`}
