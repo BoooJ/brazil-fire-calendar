@@ -304,7 +304,7 @@ export default function Landing() {
               </div>
             </div>
             <figure className="l-shot l-tool__shot">
-              <img src={shotTool} alt="The tool’s burning calendar for one state: a row per year since 2003, a column per month, each cell coloured and numbered by its hotspots. One month’s card is open, with its hotspots, how far above average it was, and the detections per satellite. Beside it, the state outlined on the globe." loading="lazy" width="2160" height="1350" />
+              <img src={shotTool} alt="The tool’s fire calendar for one state, in the detailed view: a row per year since 2003, a column per month, each cell coloured and numbered by its hotspots. One month’s card is open, with its hotspots, how far above typical it was, and the detections per satellite. Beside it, the state outlined on the globe." loading="lazy" width="2160" height="1350" />
             </figure>
           </div>
         </section>
