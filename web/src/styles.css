@@ -544,14 +544,7 @@ button.day:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px;
 .hm-ticks span:first-child { transform: none; }
 .hm-ticks span:last-child { transform: translateX(-100%); }
 .hm-caption { font-size: var(--t-xs); color: var(--ink-2); margin-top: 2px; }
-.hm-keys { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: var(--t-sm); color: var(--ink-2); }
-.hm-keys li { display: inline-flex; align-items: center; gap: 6px; }
-.swatch { width: 18px; height: 14px; border-radius: 3px; background-color: #f2682a; }
-.swatch-nofire { background-color: var(--soft); box-shadow: inset 0 0 0 1px var(--line-strong); }
 /* stripes and dots as tiny SVG tiles (flat marks, as in the heatmap's cells) */
-.swatch-provisional { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Cpath d='M-1 7 7 -1M-1 1 1 -1M5 7 7 5' stroke='%23fff' stroke-opacity='.8' stroke-width='1.6'/%3E%3C/svg%3E"); }
-.swatch-uncertain { opacity: 0.6; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Ccircle cx='2.5' cy='2.5' r='1' fill='%23fff' fill-opacity='.85'/%3E%3C/svg%3E"); }
-.swatch-partial { opacity: 0.5; }
 .cal-table-wrap { position: relative; overflow-x: auto; border-radius: var(--r-md); border: 1px solid var(--line); }
 .cal-table { width: 100%; border-collapse: collapse; font-size: var(--t-sm); font-variant-numeric: tabular-nums; }
 .cal-table-note { margin: 0 0 var(--s-2); font-size: var(--t-sm); color: var(--ink-2); }
@@ -560,7 +553,6 @@ button.day:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px;
 .cal-table th[scope='row'] { padding: 0 var(--s-3); text-align: left; }
 .cal-table button { width: 100%; min-width: 44px; min-height: 36px; border: 0; border-radius: var(--r-xs); background: none; color: var(--ink); font: inherit; }
 .cal-table button:hover { background: var(--soft); }
-.cal-table button.is-prov::after { content: '*'; }
 .cal-table-avg td, .cal-table-avg th, .cal-table-avg th[scope="row"] { height: 40px; font-style: italic; color: var(--ink-2); background: var(--soft); }
 .cal-table-total { padding: 0 var(--s-3); font-weight: 600; color: var(--ink-2); }
 @media (hover: hover) and (pointer: fine) and (min-width: 600px) { .cal-table { table-layout: fixed; } .cal-table thead th:first-child { width: 64px; } .cal-table thead th:last-child { width: 52px; } .cal-table button { min-width: 0; min-height: 32px; padding: 0; } .cal-table-avg td, .cal-table-avg th { height: 36px; } .cal-table th[scope='row'], .cal-table-total { padding: 0 var(--s-2); } }
@@ -658,8 +650,9 @@ button.day:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px;
   .map-legend { left: var(--s-4); top: 72px; max-width: calc(100% - 32px); }
   .map-banner { top: var(--s-4); }
   .detail { left: auto; right: 40px; bottom: 40px; width: 380px; border-radius: var(--r-lg); }
-  .kc { grid-template-columns: 1.15fr 1fr 1fr; }
-  .kc .kc-hot { grid-column: auto; grid-row: span 2; justify-content: center; }
+  /* desktop: the four key numbers in one row, hotspots first */
+  .kc { grid-template-columns: 1.15fr 1fr 1fr 1fr; }
+  .kc .kc-hot { grid-column: auto; justify-content: center; }
   .kc .kc-vs, .kc:not(.kc-2) > div:last-child { grid-column: auto; }
   .kc-2 { grid-template-columns: repeat(2, 1fr); }
   .chart-card { padding: var(--s-5) var(--s-4) var(--s-4); }

@@ -10,6 +10,7 @@ import shotHow1 from '../landing/pictures/how-1.png';
 import shotHow2 from '../landing/pictures/how-2.png';
 import shotHow3 from '../landing/pictures/how-3.png';
 import shotTool from '../landing/pictures/tool.png';
+import teamPhoto from '../landing/pictures/team.jpg';
 import heroVideo from '../landing/media/hero.mp4';
 import heroVideoSmall from '../landing/media/hero-720.mp4';
 import heroPoster from '../landing/media/hero-poster.jpg';
@@ -33,6 +34,14 @@ const TOOLS = [
   ['Python · DuckDB · FastAPI', 'The data pipeline and the API'],
   ['React · MapLibre · ECharts', 'This website, its map and charts'],
   ['Claude Code', 'AI coding assistant used during the hackathon'],
+];
+
+// The four of us: name, what each did, what each brought (the team's own words, 15 Nov)
+const PEOPLE = [
+  ['Mikhail', 'Team lead · Front end, UI/UX', 'Led and managed the team, designed the UI and UX, built the front end and brought the final product together.'],
+  ['Paul', 'Back end', 'Built the back end and integrated the machine-learning model into the interface.'],
+  ['Andrey', 'Machine learning · Astrophysics', 'Built and trained from scratch the machine-learning model that estimates next week’s fire chance, and brought astrophysics expertise to the project.'],
+  ['Marcia', 'Mathematics', 'Brought mathematical expertise, and helped develop and integrate the machine-learning model.'],
 ];
 
 const FAQ = [
@@ -299,7 +308,7 @@ export default function Landing() {
               </div>
             </div>
             <figure className="l-shot l-tool__shot">
-              <img src={shotTool} alt="The tool’s fire calendar for one area: a row per year, a coloured brick per week, next to the map." loading="lazy" width="2160" height="1350" />
+              <img src={shotTool} alt="The tool’s burning calendar for one state: a row per year since 2003, a column per month, each cell coloured and numbered by its hotspots. One month’s card is open, with its hotspots, how far above average it was, and the detections per satellite. Beside it, the state outlined on the globe." loading="lazy" width="2160" height="1350" />
             </figure>
           </div>
         </section>
@@ -343,11 +352,32 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* 8. team and tools */}
+        {/* 8. the team (our photo beside who brought what), its three crafts, and the tools */}
         <section className="l-sec l-sec--band" id="team" aria-labelledby="team-h">
           <div className="l-wrap">
-            <p className="l-eyebrow">Team</p>
-            <h2 id="team-h"><span>Who we are.</span> Three crafts, one calendar.</h2>
+            <div className="l-split l-split--top">
+              <div className="l-col">
+                <p className="l-eyebrow">Team</p>
+                <h2 id="team-h"><span>Who we are.</span> Four people, three crafts, one calendar.</h2>
+              </div>
+              <p className="l-col l-body">
+                FOGO was built in one weekend at the NASA Space Apps Challenge 2026 in
+                Florianópolis. Here is what each of us brought to the table.
+              </p>
+            </div>
+            <div className="l-split l-team">
+              <figure className="l-col l-team__photo">
+                <img src={teamPhoto} alt="The four team members side by side on a terrace, in NASA Space Apps Challenge Florianópolis 2026 T-shirts, with the sea and hills behind them." loading="lazy" decoding="async" width="1200" height="1600" />
+              </figure>
+              <ul className="l-col l-people">
+                {PEOPLE.map(([name, role, text]) => (
+                  <li key={name}>
+                    <div className="l-people__name"><h3>{name}</h3><span>{role}</span></div>
+                    <p>{text}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
             <ul className="l-folds">
               <Folder n="01" title="Infrastructure" text="Cleans more than 41 million NASA detections and serves any area of Brazil in seconds." label="satellite detections per year and the single record built from them.">
                 <div className="l-fold__live"><RawVsCorrected show={show} /></div>
