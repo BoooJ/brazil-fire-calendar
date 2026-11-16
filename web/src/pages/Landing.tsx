@@ -285,18 +285,21 @@ export default function Landing() {
             <div className="l-split l-split--top">
               <div className="l-col">
                 <p className="l-eyebrow">Who it’s for</p>
-                <h2 id="tool-h"><span>For people who</span> plan around fire.</h2>
+                <h2 id="tool-h"><span>For people who</span> live with fire risk.</h2>
               </div>
               <div className="l-col l-stack">
                 <p className="l-body">
-                  Early-warning teams deciding when to be on alert. Scientists who need a record that doesn’t break
-                  when a satellite does. Farmers and land managers timing burns and firebreaks. They all ask the
-                  same two things: is this normal, and when is it worst?
+                  The end users are the people who live in Brazil’s fire-prone areas, where wildfires in forest and
+                  natural vegetation and fires set for agriculture and land clearing put lives, property and health
+                  at risk. They can select their area and examine its fire record: seasonal patterns, the most active
+                  years, and how the current month compares with the historical average.
                 </p>
                 <p className="l-body">
-                  The calendar is history, <strong>not a forecast</strong>. Recent months stay marked provisional
-                  until NASA finalises them. The one look ahead, next week’s fire chance, is an experimental model
-                  estimate and always says so.
+                  The tool also serves the audience NASA names in the challenge: early warning and emergency
+                  responders, scientists, land managers and firefighters. It gives them one harmonized MODIS and
+                  VIIRS hotspot record for any area of interest in Brazil. With it they can examine historical fire
+                  patterns, unusual conditions and critical periods, including anomalies against the multi-year
+                  average, and export the data as CSV.
                 </p>
               </div>
             </div>
