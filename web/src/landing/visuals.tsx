@@ -68,7 +68,7 @@ export function RawVsCorrected({ show, record = true }: { show: Show; record?: b
   const span = years.length ? `${years[0].year} to ${years[years.length - 1].year}` : '';
   return (
     <div className="l-rc" role="img"
-      aria-label={`Detections reported per year jump when the sharper VIIRS sensor arrives in 2018${record ? '; the harmonized record stays on one scale' : ''}. ${show?.areaName ?? ''}${span && `, ${span}`}${show?.demo ? ' (demo data)' : ''}.`}>
+      aria-label={`Detections reported per year jump in 2018, when VIIRS observations from the NOAA-20 satellite begin${record ? '; the harmonized record stays on one scale' : ''}. ${show?.areaName ?? ''}${span && `, ${span}`}${show?.demo ? ' (demo data)' : ''}.`}>
       <div className="l-rc__head">
         <p>{show ? `${show.areaName}, ${span}` : ' '}</p>
         {show?.demo && <Demo />}
