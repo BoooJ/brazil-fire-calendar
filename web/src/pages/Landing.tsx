@@ -208,8 +208,8 @@ export default function Landing() {
               <img src={shotHero} alt="The Brazil Fire Calendar tool: a one-line answer about this month’s fire activity, the burning calendar and the map of the chosen area." width="2160" height="1350" />
             </figure>
             <dl className="l-facts">
-              <div><dt>Every month since</dt><dd>January 2003</dd></div>
-              <div><dt>Satellites combined</dt><dd>Two, on one scale</dd></div>
+              <div><dt>Analysed weekly since</dt><dd>January 2003</dd></div>
+              <div><dt>Satellite data integrated</dt><dd>VIIRS and MODIS</dd></div>
               <div><dt>Data source</dt><dd>NASA FIRMS</dd></div>
             </dl>
           </div>
